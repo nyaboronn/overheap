@@ -54,7 +54,7 @@ Symbol Table
     Key_U   =  0405     |     Key_V   =  8006     |     Key_W   =  0807 
     Key_X   =  8007     |     Key_Y   =  0805     |     Key_Z   =  8008 
     PAL_INKR=  0040     |     PAL_PENR=  0000     |     PPI_PORT=  00F5 
-    _c      =  0009     |   0 a_no_pul   00F1 R   |   0 buc        00A3 R
+    _c      =  0009     |   0 a_no_pul   00EB R   |   0 buc        009A R
     cpct_dis   **** GX  |     cpct_dra   **** GX  |     cpct_get   **** GX
     cpct_isK   **** GX  |     cpct_pag=  0000     |     cpct_pag=  0010 
     cpct_pag=  0020     |     cpct_pag=  0030     |     cpct_sca   **** GX
@@ -63,26 +63,27 @@ Hexadecimal [16-Bits]
 
 Symbol Table
 
-    cpct_set   **** GX  |     cpct_wai   **** GX  |   0 d_no_pul   00FD R
+    cpct_set   **** GX  |     cpct_wai   **** GX  |   0 d_no_pul   00F7 R
     e_col   =  0006     |     e_h     =  0005     |     e_up_h  =  0008 
     e_up_l  =  0007     |     e_vx    =  0002     |     e_vy    =  0003 
     e_w     =  0004     |     e_x     =  0000     |     e_y     =  0001 
-  0 enemy_da   005A GR  |   0 ent_clea   00CB GR  |   0 ent_copy   0093 GR
-  0 ent_doFo   0099 GR  |   0 ent_draw   00B1 GR  |   0 ent_move   010D R
-  0 ent_move   00E2 R   |   0 ent_new    007D GR  |   0 ent_upda   00DB GR
-  0 entity_v   0000 R   |   0 entity_v   0009 R   |   0 entity_v   0012 R
-  0 entity_v   001B R   |   0 entity_v   0024 R   |   0 entity_v   002D R
-  0 entity_v   0036 R   |   0 entity_v   003F R   |   0 entity_v   0048 R
-  0 hero_dat   0051 GR  |   0 hero_jum   0079 R   |   0 hero_sal   0063 R
-  0 jumptabl   006C R   |     k_entity=  0009     |     k_max_nu=  0009 
-  0 m_next_e   007B R   |   0 m_num_en   007A R   |   0 metodo  =  00A5 R
-    opc_DI  =  00F3     |     opc_EI  =  00FB     |     opc_JR  =  0018 
-    opc_LD_D=  0016     |   0 startJum   0120 R   |   0 w_no_pul   0105 R
+  0 end_of_j   014B R   |   0 enemy_da   005A GR  |   0 ent_clea   00C2 GR
+  0 ent_copy   008A GR  |   0 ent_doFo   0090 GR  |   0 ent_draw   00A8 GR
+  0 ent_move   010A R   |   0 ent_move   00DC R   |   0 ent_new    0074 GR
+  0 ent_upda   00D2 GR  |   0 entity_v   0000 R   |   0 entity_v   0009 R
+  0 entity_v   0012 R   |   0 entity_v   001B R   |   0 entity_v   0024 R
+  0 entity_v   002D R   |   0 entity_v   0036 R   |   0 entity_v   003F R
+  0 entity_v   0048 R   |   0 hero_dat   0051 GR  |   0 hero_jum   0070 R
+  0 hero_jum   0063 R   |   0 jumpCont   0129 R   |     k_entity=  0009 
+    k_max_nu=  0009     |   0 m_next_e   0072 R   |   0 m_num_en   0071 R
+  0 metodo  =  009C R   |     opc_DI  =  00F3     |     opc_EI  =  00FB 
+    opc_JR  =  0018     |     opc_LD_D=  0016     |   0 startJum   011D R
+  0 w_no_pul   0102 R
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
 Hexadecimal [16-Bits]
 
 Area Table
 
-   0 _CODE      size  12C   flags    0
+   0 _CODE      size  151   flags    0
 

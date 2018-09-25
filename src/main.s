@@ -18,14 +18,11 @@ _main::
 
   call ent_new
   ex	de, hl
-  ld    hl,#enemy_data
+  ld    hl,#hero_data
   call ent_copy
  
 loop:
   ld    ix, #hero_data
-  call ent_clear
-  call ent_update
-  call ent_draw
 
   ld  hl, #ent_clear
   call ent_doForAll

@@ -7,15 +7,9 @@
 -k /home/alex/cpctelera-development/cpctelera/tools/sdcc-3.6.8-r9946/share/sdcc/lib/z80
 -l /home/alex/cpctelera-development/cpctelera/cpctelera.lib
 -l z80
-obj/principalClase.rel
-obj/obstacles.h.rel
-obj/hero.rel
-obj/obstacles.rel
-obj/hero.h.rel
-obj/cpcFunctions.h.rel
+obj/main.rel
 obj/entity.rel
 obj/main.h.rel
-obj/main.rel
 obj/entity.h.rel
 
 -e

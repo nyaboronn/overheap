@@ -2580,25 +2580,22 @@ Hexadecimal [16-Bits]
                              18 
    0008 CD 00 00      [17]   19   call ent_new
    000B EB            [ 4]   20   ex	de, hl
-   000C 21 00 00      [10]   21   ld    hl,#enemy_data
+   000C 21 00 00      [10]   21   ld    hl,#hero_data
    000F CD 00 00      [17]   22   call ent_copy
                              23  
    0012                      24 loop:
    0012 DD 21 00 00   [14]   25   ld    ix, #hero_data
-   0016 CD 00 00      [17]   26   call ent_clear
-   0019 CD 00 00      [17]   27   call ent_update
-   001C CD 00 00      [17]   28   call ent_draw
+                             26 
+   0016 21 00 00      [10]   27   ld  hl, #ent_clear
+   0019 CD 00 00      [17]   28   call ent_doForAll
                              29 
-   001F 21 00 00      [10]   30   ld  hl, #ent_clear
-   0022 CD 00 00      [17]   31   call ent_doForAll
+   001C 21 00 00      [10]   30   ld  hl, #ent_update
+   001F CD 00 00      [17]   31   call ent_doForAll
                              32 
-   0025 21 00 00      [10]   33   ld  hl, #ent_update
-   0028 CD 00 00      [17]   34   call ent_doForAll
+   0022 21 00 00      [10]   33   ld hl, #ent_draw
+   0025 CD 00 00      [17]   34   call ent_doForAll
                              35 
-   002B 21 00 00      [10]   36   ld hl, #ent_draw
-   002E CD 00 00      [17]   37   call ent_doForAll
-                             38 
-   0031 CD 00 00      [17]   39   call cpct_waitVSYNC_asm
-                             40  
-                             41   ;; Loop forever
-   0034 18 DC         [12]   42   jr    loop
+   0028 CD 00 00      [17]   36   call cpct_waitVSYNC_asm
+                             37  
+                             38   ;; Loop forever
+   002B 18 E5         [12]   39   jr    loop

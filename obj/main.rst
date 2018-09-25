@@ -2571,34 +2571,31 @@ Hexadecimal [16-Bits]
                               9 
                      0000    10 entity_contador = 0
                              11 
-   4295                      12 _main::
+   4000                      12 _main::
                              13   ;; Disable firmware to prevent it from interfering with string drawing
-   4295 CD F6 42      [17]   14   call cpct_disableFirmware_asm
+   4000 CD A9 41      [17]   14   call cpct_disableFirmware_asm
                              15  
-   4298 0E 00         [ 7]   16   ld    c, #0
-   429A CD E9 42      [17]   17   call cpct_setVideoMode_asm
+   4003 0E 00         [ 7]   16   ld    c, #0
+   4005 CD 94 41      [17]   17   call cpct_setVideoMode_asm
                              18 
-   429D CD E6 41      [17]   19   call ent_new
-   42A0 EB            [ 4]   20   ex	de, hl
-   42A1 21 C3 41      [10]   21   ld    hl,#enemy_data
-   42A4 CD FC 41      [17]   22   call ent_copy
+   4008 CD A1 40      [17]   19   call ent_new
+   400B EB            [ 4]   20   ex	de, hl
+   400C 21 7E 40      [10]   21   ld    hl,#hero_data
+   400F CD B7 40      [17]   22   call ent_copy
                              23  
-   42A7                      24 loop:
-   42A7 DD 21 BA 41   [14]   25   ld    ix, #hero_data
-   42AB CD 34 42      [17]   26   call ent_clear
-   42AE CD 44 42      [17]   27   call ent_update
-   42B1 CD 1A 42      [17]   28   call ent_draw
+   4012                      24 loop:
+   4012 DD 21 7E 40   [14]   25   ld    ix, #hero_data
+                             26 
+   4016 21 EF 40      [10]   27   ld  hl, #ent_clear
+   4019 CD BD 40      [17]   28   call ent_doForAll
                              29 
-   42B4 21 34 42      [10]   30   ld  hl, #ent_clear
-   42B7 CD 02 42      [17]   31   call ent_doForAll
+   401C 21 FF 40      [10]   30   ld  hl, #ent_update
+   401F CD BD 40      [17]   31   call ent_doForAll
                              32 
-   42BA 21 44 42      [10]   33   ld  hl, #ent_update
-   42BD CD 02 42      [17]   34   call ent_doForAll
+   4022 21 D5 40      [10]   33   ld hl, #ent_draw
+   4025 CD BD 40      [17]   34   call ent_doForAll
                              35 
-   42C0 21 1A 42      [10]   36   ld hl, #ent_draw
-   42C3 CD 02 42      [17]   37   call ent_doForAll
-                             38 
-   42C6 CD E1 42      [17]   39   call cpct_waitVSYNC_asm
-                             40  
-                             41   ;; Loop forever
-   42C9 18 DC         [12]   42   jr    loop
+   4028 CD A1 41      [17]   36   call cpct_waitVSYNC_asm
+                             37  
+                             38   ;; Loop forever
+   402B 18 E5         [12]   39   jr    loop

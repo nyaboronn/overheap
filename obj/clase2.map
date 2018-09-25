@@ -9,65 +9,50 @@ Area                                    Addr        Size        Decimal Bytes (A
       -----  --------------------------------   ------------------------
      00000000  .__.ABS.                           cpct_keyboard
      00000000  l__DATA                         
-     00000400  l__CODE                         
+     000002B3  l__CODE                         
      00004000  s__CODE                         
-     00004400  s__DATA                         
+     000042B3  s__DATA                         
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00004000    00000400 =        1024. bytes (REL,CON)
+_CODE                               00004000    000002B3 =         691. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     0000405D  hero_update                        cpct_keyboard
-     00004064  hero_getPtrHL                      cpct_keyboard
-     00004068  hero_draw                          cpct_keyboard
-     0000406E  hero_erase                         cpct_keyboard
-     00004107  obstacle_update                    cpct_keyboard
-     00004113  obstacle_checkCollision            cpct_keyboard
-     00004137  obstacle_draw                      cpct_keyboard
-     0000413D  obstacle_erase                     cpct_keyboard
-     000041BA  hero_data                          cpct_keyboard
-     000041C3  enemy_data                         cpct_keyboard
-     000041E6  ent_new                            cpct_keyboard
-     000041FC  ent_copy                           cpct_keyboard
-     00004202  ent_doForAll                       cpct_keyboard
-     0000421A  ent_draw                           cpct_keyboard
-     00004234  ent_clear                          cpct_keyboard
-     00004244  ent_update                         cpct_keyboard
-     00004295  _main                              cpct_keyboard
-     000042CB  _cpct_isKeyPressed                 cpct_keyboard
-     000042CB  cpct_isKeyPressed_asm              cpct_keyboard
-     000042D7  _cpct_keyboardStatusBuffer         cpct_keyboard
-     000042E1  _cpct_waitVSYNC                    cpct_video
-     000042E1  cpct_waitVSYNC_asm                 cpct_video
-     000042E9  cpct_setVideoMode_asm              cpct_video
-     000042F6  _cpct_disableFirmware              cpct_firmware
-     000042F6  _cpct_removeInterruptHandler       cpct_firmware
-     000042F6  cpct_disableFirmware_asm           cpct_firmware
-     000042F6  cpct_removeInterruptHandler_asm    cpct_firmware
-     00004306  cpct_drawSolidBox_asm              cpct_sprites
-     000043B2  _cpct_mode_rom_status              cpct_firmware
-     000043B3  cpct_getScreenPtr_asm              cpct_video
-     000043CF  _cpct_scanKeyboard                 cpct_keyboard
-     000043CF  cpct_scanKeyboard_asm              cpct_keyboard
-
+     00004000  _main                              cpct_keyboard
+     0000407E  hero_data                          cpct_keyboard
+     00004087  enemy_data                         cpct_keyboard
+     000040A1  ent_new                            cpct_keyboard
+     000040B7  ent_copy                           cpct_keyboard
+     000040BD  ent_doForAll                       cpct_keyboard
+     000040D5  ent_draw                           cpct_keyboard
+     000040EF  ent_clear                          cpct_keyboard
+     000040FF  ent_update                         cpct_keyboard
+     0000417E  _cpct_isKeyPressed                 cpct_keyboard
+     0000417E  cpct_isKeyPressed_asm              cpct_keyboard
+     0000418A  _cpct_keyboardStatusBuffer         cpct_keyboard
+     00004194  cpct_setVideoMode_asm              cpct_video
+     000041A1  _cpct_waitVSYNC                    cpct_video
+     000041A1  cpct_waitVSYNC_asm                 cpct_video
+     000041A9  _cpct_disableFirmware              cpct_firmware
+     000041A9  _cpct_removeInterruptHandler       cpct_firmware
+     000041A9  cpct_disableFirmware_asm           cpct_firmware
+     000041A9  cpct_removeInterruptHandler_asm    cpct_firmware
+     000041B9  cpct_drawSolidBox_asm              cpct_sprites
+     00004265  _cpct_mode_rom_status              cpct_firmware
+     00004266  cpct_getScreenPtr_asm              cpct_video
+     00004282  _cpct_scanKeyboard                 cpct_keyboard
+     00004282  cpct_scanKeyboard_asm              cpct_keyboard
 ASxxxx Linker V03.00 + NoICE + sdld,  page 3.
 
 Files Linked                              [ module(s) ]
 
-obj/principalClase.rel                    [ cpct_keyboard ]
-obj/obstacles.h.rel                       [  ]
-obj/hero.rel                              [ cpct_keyboard ]
-obj/obstacles.rel                         [ cpct_keyboard ]
-obj/hero.h.rel                            [  ]
-obj/cpcFunctions.h.rel                    [  ]
+obj/main.rel                              [ cpct_keyboard ]
 obj/entity.rel                            [ cpct_keyboard ]
 obj/main.h.rel                            [  ]
-obj/main.rel                              [ cpct_keyboard ]
 obj/entity.h.rel                          [  ]
 
 
@@ -78,9 +63,9 @@ Libraries Linked                          [ object file ]
 /home/alex/cpctelera-development/cpctelera/cpctelera.lib
                                           [ keyboard.rel ]
 /home/alex/cpctelera-development/cpctelera/cpctelera.lib
-                                          [ cpct_waitVSYNC.rel ]
-/home/alex/cpctelera-development/cpctelera/cpctelera.lib
                                           [ cpct_setVideoMode_asmbindings.re ]
+/home/alex/cpctelera-development/cpctelera/cpctelera.lib
+                                          [ cpct_waitVSYNC.rel ]
 /home/alex/cpctelera-development/cpctelera/cpctelera.lib
                                           [ cpct_removeInterruptHandler.rel ]
 /home/alex/cpctelera-development/cpctelera/cpctelera.lib
