@@ -9,7 +9,26 @@
 DefineNEntities entity_vector, 9
 DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard
 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
- 
+
+;; Lo uso de prueba al adaptar el código
+DefineEntity hero_salta, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0xF0, ent_moveKeyboard
+
+;;
+;; Jump Table
+;;
+jumptable:
+    .db #-12, #-8, #-4, #-4
+    .db #-4, #00, #00, #04
+    .db #04, #04, #08, #012
+    .db #0x80                   ;; El último byte se marca con el #0x80
+                                ;; De esta forma no hace falta un contador
+;;
+;; Hero Jump Status (IF Not Jumping, hero_jump = -1)
+;;
+hero_jump:  .db #-1             ;; (-1 is not jumping)
+
+
+
  ;;
  ;;Cosas para poder crear entidades
  ;;
@@ -137,18 +156,24 @@ ent_update:
 ent_moveKeyboard:
   call  cpct_scanKeyboard_asm
  
-  ld    hl, #Key_O
+  ld    hl, #Key_A
   call  cpct_isKeyPressed_asm
-  jr    z, o_no_pulsada
+  jr    z, a_no_pulsada
      ld e_vx(ix), #-1
-o_no_pulsada:
+a_no_pulsada:
  
-  ld    hl, #Key_P
+  ld    hl, #Key_D
   call  cpct_isKeyPressed_asm
-  jr    z, p_no_pulsada
+  jr    z, d_no_pulsada
      ld e_vx(ix), #1
- 
-p_no_pulsada:
+d_no_pulsada:
+
+;; COMPROBAR SI SE HA PULSADO 'W'
+  ld    hl, #Key_W
+  call  cpct_isKeyPressed_asm
+  jr    z, w_no_pulsada         ;; IF KEY_W IS pressed: lest JUMP
+     ;;ld e_vx(ix), #1            ;; Call Jump Function
+w_no_pulsada:
  
   call  ent_move
  
@@ -172,3 +197,53 @@ ent_move:
   ld    e_y(ix), a
  
   ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HACER EL SALTO
+;; REGISTROS DESTRUIDOS:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  startJump:
+    ld a, (hero_jump)             ;; A = hero_jump
+    cp #-1                        ;; A == -1? 
+    ret nz                        ;; A != 0. Jump is no activate, lest do
+
+    ;; Jump is inactive, active it
+    ld a, #0
+    ld (hero_jump), a
+    
+    ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CONTROLA EL SALTO
+;; REGISTROS DESTRUIDOS:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+jumpControl:
+
+  ;; Check if we are jumping right now
+  ld a, (hero_jump)           ;; A = hero_jump status
+  cp #-1                      ;; A == -1? (-1 is not jumping)
+  ret z                       ;; If  A == -1, not jumping
+
+
+  ;; Move Hero
+  
+
+  ;; Check End of Jumping
+
+  ;; Do jump movement
+
+
+  ;; Increment hero_jump index
+
+  ret
+
+  ;; Put -1 in the jump index when jump ends
+  end_of_jump:
+  ld a, #-1                   ;; |
+  ld (hero_jump), a           ;; \ hero_jump = -1
+
+  ret
+
+

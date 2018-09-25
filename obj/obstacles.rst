@@ -2651,13 +2651,13 @@ Hexadecimal [16-Bits]
    414A 4F            [ 4]  140     ld c, a                             ;; \X Coordinate
    414B 3A 04 41      [13]  141     ld a, (obstacle_y)                  ;; |
    414E 47            [ 4]  142     ld b, a                             ;; \Y Coordinate
-   414F CD 75 43      [17]  143     call  cpct_getScreenPtr_asm
+   414F CD B3 43      [17]  143     call  cpct_getScreenPtr_asm
                             144 
                             145     ;; Draw A Box
    4152 EB            [ 4]  146     ex de, hl                           ;; Location
    4153 F1            [10]  147     pop af                              ;; A = User selected color
    4154 01 01 04      [10]  148     ld bc, #0x0401                      ;; 4x4 pixels WithdxHeight
-   4157 CD C8 42      [17]  149     call cpct_drawSolidBox_asm          ;; Draw a solid box
+   4157 CD 06 43      [17]  149     call cpct_drawSolidBox_asm          ;; Draw a solid box
                             150 
    415A C9            [10]  151     ret
                             152 
@@ -2667,11 +2667,11 @@ Hexadecimal [16-Bits]
                             156 ;;===========================================================
    415B                     157 checkUserInput:
                             158     ;; Scan the whole keyboard
-   415B CD 91 43      [17]  159     call cpct_scanKeyboard_asm
+   415B CD CF 43      [17]  159     call cpct_scanKeyboard_asm
                             160 
                             161     ;; Check fpr Key 'L' being pressed
    415E 21 04 10      [10]  162     ld hl, #Key_L                   ;; HL = Key_I keycode
-   4161 CD 8D 42      [17]  163     call cpct_isKeyPressed_asm      ;; Check if Key_I is pressed
+   4161 CD CB 42      [17]  163     call cpct_isKeyPressed_asm      ;; Check if Key_I is pressed
    4164 FE 00         [ 7]  164     cp #0                           ;; Check A == 0
    4166 28 00         [12]  165     jr z, L_not_pressed             ;; Jump if A == 0
                             166 

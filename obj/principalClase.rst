@@ -2618,41 +2618,41 @@ Hexadecimal [16-Bits]
                              42 
    4000                      43 _main::
                              44   ;; Disable firmware to prevent it from interfering with string drawing
-   4000 CD B8 42      [17]   45   call cpct_disableFirmware_asm
+   4000 CD F6 42      [17]   45   call cpct_disableFirmware_asm
                              46  
    4003 0E 00         [ 7]   47   ld    c, #0
-   4005 CD AB 42      [17]   48   call cpct_setVideoMode_asm
+   4005 CD E9 42      [17]   48   call cpct_setVideoMode_asm
                              49 
-   4008 CD CF 41      [17]   50   call ent_new
+   4008 CD E6 41      [17]   50   call ent_new
    400B EB            [ 4]   51   ex	de, hl
    400C 21 C3 41      [10]   52   ld    hl,#enemy_data
-   400F CD E5 41      [17]   53   call ent_copy
+   400F CD FC 41      [17]   53   call ent_copy
                              54  
    4012                      55 loop:
    4012 DD 21 BA 41   [14]   56   ld    ix, #hero_data
-   4016 CD 1D 42      [17]   57   call ent_clear
-   4019 CD 2D 42      [17]   58   call ent_update
-   401C CD 03 42      [17]   59   call ent_draw
+   4016 CD 34 42      [17]   57   call ent_clear
+   4019 CD 44 42      [17]   58   call ent_update
+   401C CD 1A 42      [17]   59   call ent_draw
                              60  
                              61  ;; ld    ix, #enemy_data
                              62  ;; call ent_clear
                              63  ;; call ent_update
                              64  ;; call ent_draw
                              65 
-   401F 21 1D 42      [10]   66   ld  hl, #ent_clear
-   4022 CD EB 41      [17]   67   call ent_doForAll
+   401F 21 34 42      [10]   66   ld  hl, #ent_clear
+   4022 CD 02 42      [17]   67   call ent_doForAll
                              68 
-   4025 21 2D 42      [10]   69   ld  hl, #ent_update
-   4028 CD EB 41      [17]   70   call ent_doForAll
+   4025 21 44 42      [10]   69   ld  hl, #ent_update
+   4028 CD 02 42      [17]   70   call ent_doForAll
                              71 
-   402B 21 03 42      [10]   72   ld hl, #ent_draw
-   402E CD EB 41      [17]   73   call ent_doForAll
+   402B 21 1A 42      [10]   72   ld hl, #ent_draw
+   402E CD 02 42      [17]   73   call ent_doForAll
                              74 
                              75 
-   4031 CD 91 43      [17]   76   call  cpct_scanKeyboard_asm
+   4031 CD CF 43      [17]   76   call  cpct_scanKeyboard_asm
                              77  
    4034 21 08 20      [10]   78   ld    hl, #Key_A
-   4037 CD 8D 42      [17]   79  call  cpct_isKeyPressed_asm
+   4037 CD CB 42      [17]   79  call  cpct_isKeyPressed_asm
    403A 28 0A         [12]   80   jr    z, a_no_pulsada
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 53.
 Hexadecimal [16-Bits]
@@ -2660,15 +2660,15 @@ Hexadecimal [16-Bits]
 
 
                              81 
-   403C CD CF 41      [17]   82     call ent_new
+   403C CD E6 41      [17]   82     call ent_new
    403F EB            [ 4]   83     ex	de, hl
    4040 21 C3 41      [10]   84     ld    hl,#enemy_data
-   4043 CD E5 41      [17]   85     call ent_copy
+   4043 CD FC 41      [17]   85     call ent_copy
                              86 
    4046                      87 a_no_pulsada:
                              88 
                              89 
-   4046 CD A3 42      [17]   90   call cpct_waitVSYNC_asm
+   4046 CD E1 42      [17]   90   call cpct_waitVSYNC_asm
                              91  
                              92   ;; Loop forever
    4049 18 C7         [12]   93   jr    loop

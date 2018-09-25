@@ -1,34 +1,42 @@
+.include "cpctelera.h.s"
+.include "entity.h.s"
+.include "main.h.s"
+
+ 
 .area _DATA
 .area _CODE
+ 
 
-.include "hero.h.s"
-.include "cpcFunctions.h.s"
-.include "obstacles.h.s"
+entity_contador = 0
 
-;;==========================================================================
-;; Main program entry
-;;==========================================================================
 _main::
-    ;; Disable firmware to prevent it from interfering with string drawing
-    call cpct_disableFirmware_asm
+  ;; Disable firmware to prevent it from interfering with string drawing
+  call cpct_disableFirmware_asm
+ 
+  ld    c, #0
+  call cpct_setVideoMode_asm
 
-    call hero_erase                     ;; Erases the hero
-    call obstacle_erase                 ;; Erases the obstacle  
+  call ent_new
+  ex	de, hl
+  ld    hl,#enemy_data
+  call ent_copy
+ 
+loop:
+  ld    ix, #hero_data
+  call ent_clear
+  call ent_update
+  call ent_draw
 
-    call hero_update                    ;; Updates the hero
-    call obstacle_update                ;; Updates the obstacle
-    
-    ;;;;;;;;; borrar :OOOOOOOO ;;;;;;;
-    ;; de momento pintamos el valor de la llamada a obstacle
-    call hero_getPtrHL
-    call obstacle_checkCollision
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ld  hl, #ent_clear
+  call ent_doForAll
 
-    ld (0xC000), a
+  ld  hl, #ent_update
+  call ent_doForAll
 
-    call hero_draw                      ;; Draw the hero
-    call obstacle_draw                  ;; Draw the obstacle
+  ld hl, #ent_draw
+  call ent_doForAll
 
-    call cpct_waitVSYNC_asm             ;; Wait for raster
-
-    jr    _main
+  call cpct_waitVSYNC_asm
+ 
+  ;; Loop forever
+  jr    loop

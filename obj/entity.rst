@@ -2559,22 +2559,13 @@ Hexadecimal [16-Bits]
 
 
                               6 .include "main.h.s"
-                              1 ;###########################################################################
-                              2 ;#### FICHERO: main.h.s
-                              3 ;###########################################################################
-                              4 ;;
-                              5 ;; Declare all function entry points as global symbols for the compiler.
-                              6 ;; (The linker will know what to do with them)
-                              7 ;; WARNING: Every global symbol declared will be linked, so DO NOT declare
-                              8 ;; symbols for functions you do not use.
-                              9 ;;
-                             10 .globl cpct_disableFirmware_asm
-                             11 .globl cpct_drawSolidBox_asm
-                             12 .globl cpct_getScreenPtr_asm
-                             13 .globl cpct_waitVSYNC_asm
-                             14 .globl cpct_setVideoMode_asm
-                             15 .globl cpct_scanKeyboard_asm
-                             16 .globl cpct_isKeyPressed_asm
+                              1 .globl cpct_getScreenPtr_asm
+                              2 .globl cpct_drawSolidBox_asm
+                              3 .globl cpct_scanKeyboard_asm
+                              4 .globl cpct_isKeyPressed_asm
+                              5 .globl cpct_disableFirmware_asm
+                              6 .globl cpct_setVideoMode_asm
+                              7 .globl cpct_waitVSYNC_asm
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 52.
 Hexadecimal [16-Bits]
 
@@ -2680,189 +2671,241 @@ Hexadecimal [16-Bits]
    41BC 00 00                 3    .db   0x00, 0x00     ;; VX, VY
    41BE 02 08                 4    .db    0x02, 0x08     ;; W, H
    41C0 0F                    5    .db   0x0F           ;; Color
-   41C1 34 42                 6    .dw   ent_moveKeyboard        ;; Update
+   41C1 4B 42                 6    .dw   ent_moveKeyboard        ;; Update
    41C3                      11 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
    005A                       1 enemy_data:
    41C3 20 01                 2    .db    0x20, 0x01     ;; X, Y
    41C5 FF 00                 3    .db   0xFF, 0x00     ;; VX, VY
    41C7 02 08                 4    .db    0x02, 0x08     ;; W, H
    41C9 FF                    5    .db   0xFF           ;; Color
-   41CA 57 42                 6    .dw   ent_move        ;; Update
-                             12  
-                             13  ;;
-                             14  ;;Cosas para poder crear entidades
-                             15  ;;
-                             16 
-                     0009    17  k_max_num_ent = 9
-                     0009    18  k_entity_size = 9
+   41CA 76 42                 6    .dw   ent_move        ;; Update
+                             12 
+                             13 ;; Lo uso de prueba al adaptar el código
+   41CC                      14 DefineEntity hero_salta, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0xF0, ent_moveKeyboard
+   0063                       1 hero_salta:
+   41CC 14 21                 2    .db    0x14, 0x21     ;; X, Y
+   41CE 00 00                 3    .db   0x00, 0x00     ;; VX, VY
+   41D0 02 08                 4    .db    0x02, 0x08     ;; W, H
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 54.
 Hexadecimal [16-Bits]
 
 
 
-   41CC 00                   19  m_num_ent: .db 00
-   41CD 69 41                20  m_next_entity: .dw entity_vector0
-                             21 
-                             22  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             23  ;; REGISTRA UNA NUEVA ENTIDAD
-                             24  ;; REGISTROS DESTRUIDOS
-                             25  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             26 
-   41CF                      27  ent_new:
-   41CF 3A CC 41      [13]   28     ld  a, (m_num_ent)
-   41D2 3C            [ 4]   29     inc    a
-   41D3 32 CC 41      [13]   30     ld (m_num_ent), a
-                             31     
-   41D6 2A CD 41      [16]   32     ld hl, (m_next_entity)  ;; 0x10FF  +  9 = 0x1008
-   41D9 01 09 00      [10]   33     ld  bc, #k_entity_size
-   41DC 09            [11]   34     add  hl, bc
-   41DD 22 CD 41      [16]   35     ld (m_next_entity), hl
-   41E0 01 F7 FF      [10]   36     ld  bc, #-k_entity_size         ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
-   41E3 09            [11]   37     add  hl, bc                     ;;Se cambia por las 2                           sbc hl, bc
-                             38     
-                             39     
-                             40     ;;add l
-                             41     ;;ld	l, a
-                             42     ;;ld	a, h
-                             43     ;;adc #0 suma con acarreo
-   41E4 C9            [10]   44     ret
+   41D2 F0                    5    .db   0xF0           ;; Color
+   41D3 4B 42                 6    .dw   ent_moveKeyboard        ;; Update
+                             15 
+                             16 ;;
+                             17 ;; Jump Table
+                             18 ;;
+   41D5                      19 jumptable:
+   41D5 F4 F8 FC FC          20     .db #-12, #-8, #-4, #-4
+   41D9 FC 00 00 04          21     .db #-4, #00, #00, #04
+   41DD 04 04 08 0C          22     .db #04, #04, #08, #012
+   41E1 80                   23     .db #0x80                   ;; El último byte se marca con el #0x80
+                             24                                 ;; De esta forma no hace falta un contador
+                             25 ;;
+                             26 ;; Hero Jump Status (IF Not Jumping, hero_jump = -1)
+                             27 ;;
+   41E2 FF                   28 hero_jump:  .db #-1             ;; (-1 is not jumping)
+                             29 
+                             30 
+                             31 
+                             32  ;;
+                             33  ;;Cosas para poder crear entidades
+                             34  ;;
+                             35 
+                     0009    36  k_max_num_ent = 9
+                     0009    37  k_entity_size = 9
+   41E3 00                   38  m_num_ent: .db 00
+   41E4 69 41                39  m_next_entity: .dw entity_vector0
+                             40 
+                             41  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             42  ;; REGISTRA UNA NUEVA ENTIDAD
+                             43  ;; REGISTROS DESTRUIDOS
+                             44  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              45 
-                             46 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             47 ;;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
-                             48 ;;; REGISTROS DESTRUIDOS:
-                             49 ;;; ENTRADA: 
-                             50 ;;;        HL -> ENTIDAD ORIGEN
-                             51 ;;;        DE -> EMTODAD DESTINO
-                             52  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   41E5                      53 ent_copy:
-   41E5 01 09 00      [10]   54     ld bc, #k_entity_size
-   41E8 ED B0         [21]   55     ldir
-                             56 
-   41EA C9            [10]   57     ret
-                             58 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             59 ;; DIBUJAR UNA ENTIDAD
-                             60 ;; ENTRADA HL -> PUNTERO AL MÉTODO A EJECUTAR
-                             61 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             62 
-   41EB                      63 ent_doForAll:
-   41EB 3A CC 41      [13]   64     ld  a, (m_num_ent)
-   41EE DD 21 69 41   [14]   65     ld  ix, #entity_vector0
-   41F2 22 F7 41      [16]   66     ld  (metodo), hl
-   41F5                      67  buc:
-   41F5 F5            [11]   68         push af
-                     008E    69         metodo = . + 1      ;; . es la dir.mem en la que estoy si le sumo 1 es el call
-   41F6 CD 03 42      [17]   70         call ent_draw
-   41F9 F1            [10]   71         pop af
-   41FA 01 09 00      [10]   72         ld bc, #k_entity_size
-   41FD DD 09         [15]   73         add ix, bc
+   41E6                      46  ent_new:
+   41E6 3A E3 41      [13]   47     ld  a, (m_num_ent)
+   41E9 3C            [ 4]   48     inc    a
+   41EA 32 E3 41      [13]   49     ld (m_num_ent), a
+                             50     
+   41ED 2A E4 41      [16]   51     ld hl, (m_next_entity)  ;; 0x10FF  +  9 = 0x1008
+   41F0 01 09 00      [10]   52     ld  bc, #k_entity_size
+   41F3 09            [11]   53     add  hl, bc
+   41F4 22 E4 41      [16]   54     ld (m_next_entity), hl
+   41F7 01 F7 FF      [10]   55     ld  bc, #-k_entity_size         ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
+   41FA 09            [11]   56     add  hl, bc                     ;;Se cambia por las 2                           sbc hl, bc
+                             57     
+                             58     
+                             59     ;;add l
+                             60     ;;ld	l, a
+                             61     ;;ld	a, h
+                             62     ;;adc #0 suma con acarreo
+   41FB C9            [10]   63     ret
+                             64 
+                             65 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             66 ;;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
+                             67 ;;; REGISTROS DESTRUIDOS:
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 55.
 Hexadecimal [16-Bits]
 
 
 
-                             74         
+                             68 ;;; ENTRADA: 
+                             69 ;;;        HL -> ENTIDAD ORIGEN
+                             70 ;;;        DE -> EMTODAD DESTINO
+                             71  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   41FC                      72 ent_copy:
+   41FC 01 09 00      [10]   73     ld bc, #k_entity_size
+   41FF ED B0         [21]   74     ldir
                              75 
-   41FF 3D            [ 4]   76         dec a
-   4200 20 F3         [12]   77         jr nz, buc
-                             78 
-   4202 C9            [10]   79     ret
-                             80 
+   4201 C9            [10]   76     ret
+                             77 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             78 ;; DIBUJAR UNA ENTIDAD
+                             79 ;; ENTRADA HL -> PUNTERO AL MÉTODO A EJECUTAR
+                             80 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              81 
-                             82 
-                             83 
-                             84 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             85 ;; DIBUJAR UNA ENTIDAD
-                             86 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
-                             87 ;; ENTRADA: IX -> Puntero a entidad
-                             88 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   4203                      89 ent_draw:
-   4203 11 00 C0      [10]   90   ld    de, #0xC000       ;;Comienzo memoria de video
-   4206 DD 4E 00      [19]   91   ld     c, e_x(ix)         ;; C = Entity Y
-   4209 DD 46 01      [19]   92   ld     b, e_y(ix)         ;; B = Entity X
-   420C CD 75 43      [17]   93   call cpct_getScreenPtr_asm
-                             94  
-   420F EB            [ 4]   95   ex    de, hl   ;; DE = Puntero a memoria
-   4210 DD 7E 06      [19]   96   ld  a, e_col(ix)   ;; Color
-   4213 DD 46 05      [19]   97   ld  b, e_h(ix)   ;; alto
-   4216 DD 4E 04      [19]   98   ld  c, e_w(ix)   ;; Ancho
-                             99  
-   4219 CD C8 42      [17]  100   call cpct_drawSolidBox_asm
-                            101  
-   421C C9            [10]  102   ret
-                            103 
-                            104  
-                            105 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            106 ;; BORRA UNA ENTIDAD
-                            107 ;; REGISTROS DESTRUIDOS: AF',AF, BC, DE, HL
-                            108 ;; ENTRADA: IX -> Puntero a entidad
-                            109 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   421D                     110 ent_clear:
-   421D DD 7E 06      [19]  111   ld  a, e_col(ix)
-   4220 08            [ 4]  112   ex af, af'
+   4202                      82 ent_doForAll:
+   4202 3A E3 41      [13]   83     ld  a, (m_num_ent)
+   4205 DD 21 69 41   [14]   84     ld  ix, #entity_vector0
+   4209 22 0E 42      [16]   85     ld  (metodo), hl
+   420C                      86  buc:
+   420C F5            [11]   87         push af
+                     00A5    88         metodo = . + 1      ;; . es la dir.mem en la que estoy si le sumo 1 es el call
+   420D CD 1A 42      [17]   89         call ent_draw
+   4210 F1            [10]   90         pop af
+   4211 01 09 00      [10]   91         ld bc, #k_entity_size
+   4214 DD 09         [15]   92         add ix, bc
+                             93         
+                             94 
+   4216 3D            [ 4]   95         dec a
+   4217 20 F3         [12]   96         jr nz, buc
+                             97 
+   4219 C9            [10]   98     ret
+                             99 
+                            100 
+                            101 
+                            102 
+                            103 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            104 ;; DIBUJAR UNA ENTIDAD
+                            105 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+                            106 ;; ENTRADA: IX -> Puntero a entidad
+                            107 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   421A                     108 ent_draw:
+   421A 11 00 C0      [10]  109   ld    de, #0xC000       ;;Comienzo memoria de video
+   421D DD 4E 00      [19]  110   ld     c, e_x(ix)         ;; C = Entity Y
+   4220 DD 46 01      [19]  111   ld     b, e_y(ix)         ;; B = Entity X
+   4223 CD B3 43      [17]  112   call cpct_getScreenPtr_asm
                             113  
-   4221 DD 36 06 00   [19]  114    ld  e_col(ix), #0
-                            115  
-   4225 CD 03 42      [17]  116    call ent_draw
-   4228 08            [ 4]  117    ex af, af'
-   4229 DD 77 06      [19]  118   ld e_col(ix), a
-                            119  
-   422C C9            [10]  120   ret
-                            121  
-                            122 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            123 ;; ACTUALIZAR UNA ENTIDAD
-                            124 ;; REGISTROS DESTRUIDOS:
-                            125 ;; ENTRADA: IX -> Puntero a entidad
-                            126 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   422D                     127 ent_update:
-   422D DD 66 08      [19]  128   ld     h, e_up_h(ix)
+   4226 EB            [ 4]  114   ex    de, hl   ;; DE = Puntero a memoria
+   4227 DD 7E 06      [19]  115   ld  a, e_col(ix)   ;; Color
+   422A DD 46 05      [19]  116   ld  b, e_h(ix)   ;; alto
+   422D DD 4E 04      [19]  117   ld  c, e_w(ix)   ;; Ancho
+                            118  
+   4230 CD 06 43      [17]  119   call cpct_drawSolidBox_asm
+                            120  
+   4233 C9            [10]  121   ret
+                            122 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 56.
 Hexadecimal [16-Bits]
 
 
 
-   4230 DD 6E 07      [19]  129   ld     l, e_up_l(ix)
-   4233 E9            [ 4]  130   jp    (hl)
-                            131  
-                            132 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            133 ;; MOVER UNA ENTIDAD CON TECLADO
-                            134 ;; REGISTROS DESTRUIDOS:
-                            135 ;; ENTRADA: IX -> Puntero a entidad
-                            136 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   4234                     137 ent_moveKeyboard:
-   4234 CD 91 43      [17]  138   call  cpct_scanKeyboard_asm
-                            139  
-   4237 21 04 04      [10]  140   ld    hl, #Key_O
-   423A CD 8D 42      [17]  141   call  cpct_isKeyPressed_asm
-   423D 28 04         [12]  142   jr    z, o_no_pulsada
-   423F DD 36 02 FF   [19]  143      ld e_vx(ix), #-1
-   4243                     144 o_no_pulsada:
-                            145  
-   4243 21 03 08      [10]  146   ld    hl, #Key_P
-   4246 CD 8D 42      [17]  147   call  cpct_isKeyPressed_asm
-   4249 28 04         [12]  148   jr    z, p_no_pulsada
-   424B DD 36 02 01   [19]  149      ld e_vx(ix), #1
+                            123  
+                            124 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            125 ;; BORRA UNA ENTIDAD
+                            126 ;; REGISTROS DESTRUIDOS: AF',AF, BC, DE, HL
+                            127 ;; ENTRADA: IX -> Puntero a entidad
+                            128 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   4234                     129 ent_clear:
+   4234 DD 7E 06      [19]  130   ld  a, e_col(ix)
+   4237 08            [ 4]  131   ex af, af'
+                            132  
+   4238 DD 36 06 00   [19]  133    ld  e_col(ix), #0
+                            134  
+   423C CD 1A 42      [17]  135    call ent_draw
+   423F 08            [ 4]  136    ex af, af'
+   4240 DD 77 06      [19]  137   ld e_col(ix), a
+                            138  
+   4243 C9            [10]  139   ret
+                            140  
+                            141 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            142 ;; ACTUALIZAR UNA ENTIDAD
+                            143 ;; REGISTROS DESTRUIDOS:
+                            144 ;; ENTRADA: IX -> Puntero a entidad
+                            145 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   4244                     146 ent_update:
+   4244 DD 66 08      [19]  147   ld     h, e_up_h(ix)
+   4247 DD 6E 07      [19]  148   ld     l, e_up_l(ix)
+   424A E9            [ 4]  149   jp    (hl)
                             150  
-   424F                     151 p_no_pulsada:
-                            152  
-   424F CD 57 42      [17]  153   call  ent_move
-                            154  
-   4252 DD 36 02 00   [19]  155   ld e_vx(ix), #0
-                            156  
-   4256 C9            [10]  157   ret
+                            151 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            152 ;; MOVER UNA ENTIDAD CON TECLADO
+                            153 ;; REGISTROS DESTRUIDOS:
+                            154 ;; ENTRADA: IX -> Puntero a entidad
+                            155 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   424B                     156 ent_moveKeyboard:
+   424B CD CF 43      [17]  157   call  cpct_scanKeyboard_asm
                             158  
-                            159  
-                            160 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            161 ;; MOVER UNA ENTIDAD
-                            162 ;; REGISTROS DESTRUIDOS:
-                            163 ;; ENTRADA: IX -> Puntero a entidad
-                            164 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   4257                     165 ent_move:
-   4257 DD 7E 00      [19]  166   ld    a, e_x(ix)
-   425A DD 86 02      [19]  167   add   e_vx(ix)
-   425D DD 77 00      [19]  168   ld    e_x(ix), a
-                            169  
-   4260 DD 7E 01      [19]  170   ld    a, e_y(ix)
-   4263 DD 86 03      [19]  171   add   e_vy(ix)
-   4266 DD 77 01      [19]  172   ld    e_y(ix), a
-                            173  
-   4269 C9            [10]  174   ret
+   424E 21 08 20      [10]  159   ld    hl, #Key_A
+   4251 CD CB 42      [17]  160   call  cpct_isKeyPressed_asm
+   4254 28 04         [12]  161   jr    z, a_no_pulsada
+   4256 DD 36 02 FF   [19]  162      ld e_vx(ix), #-1
+   425A                     163 a_no_pulsada:
+                            164  
+   425A 21 07 20      [10]  165   ld    hl, #Key_D
+   425D CD CB 42      [17]  166   call  cpct_isKeyPressed_asm
+   4260 28 04         [12]  167   jr    z, d_no_pulsada
+   4262 DD 36 02 01   [19]  168      ld e_vx(ix), #1
+   4266                     169 d_no_pulsada:
+                            170 
+                            171 ;; COMPROBAR SI SE HA PULSADO 'W'
+   4266 21 07 08      [10]  172   ld    hl, #Key_W
+   4269 CD CB 42      [17]  173   call  cpct_isKeyPressed_asm
+   426C 28 00         [12]  174   jr    z, w_no_pulsada         ;; IF KEY_W IS pressed: do JUMP
+                            175      ;;ld e_vx(ix), #1            ;; Call Jump Function
+   426E                     176 w_no_pulsada:
+                            177  
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 57.
+Hexadecimal [16-Bits]
+
+
+
+   426E CD 76 42      [17]  178   call  ent_move
+                            179  
+   4271 DD 36 02 00   [19]  180   ld e_vx(ix), #0
+                            181  
+   4275 C9            [10]  182   ret
+                            183  
+                            184  
+                            185 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            186 ;; MOVER UNA ENTIDAD
+                            187 ;; REGISTROS DESTRUIDOS:
+                            188 ;; ENTRADA: IX -> Puntero a entidad
+                            189 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   4276                     190 ent_move:
+   4276 DD 7E 00      [19]  191   ld    a, e_x(ix)
+   4279 DD 86 02      [19]  192   add   e_vx(ix)
+   427C DD 77 00      [19]  193   ld    e_x(ix), a
+                            194  
+   427F DD 7E 01      [19]  195   ld    a, e_y(ix)
+   4282 DD 86 03      [19]  196   add   e_vy(ix)
+   4285 DD 77 01      [19]  197   ld    e_y(ix), a
+                            198  
+   4288 C9            [10]  199   ret
+                            200 
+                            201 
+                            202 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            203 ;; HACER EL SALTO DEL HEROE
+                            204 ;; REGISTROS DESTRUIDOS:
+                            205 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   4289                     206   startJump:
+   4289 3A E2 41      [13]  207     ld a, (hero_jump)             ;; A = hero_jump
+   428C FE FF         [ 7]  208     cp #-1                        ;; A == -1? 
+   428E C0            [11]  209     ret nz                        ;; A != 0. Jump is no activate, lest do
+                            210 
+                            211     ;; Jump is inactive, active it
+   428F 3E 00         [ 7]  212     ld a, #0
+   4291 32 E2 41      [13]  213     ld (hero_jump), a
+                            214     
+   4294 C9            [10]  215     ret

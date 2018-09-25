@@ -2688,11 +2688,11 @@ Hexadecimal [16-Bits]
                             177 ;;===========================================================
    40C0                     178 checkUserInput:
                             179     ;; Scan the whole keyboard
-   40C0 CD 91 43      [17]  180     call cpct_scanKeyboard_asm
+   40C0 CD CF 43      [17]  180     call cpct_scanKeyboard_asm
                             181 
                             182     ;; Check fpr Key 'D' being pressed
    40C3 21 07 20      [10]  183     ld hl, #Key_D                   ;; HL = Key_D keycode
-   40C6 CD 8D 42      [17]  184     call cpct_isKeyPressed_asm      ;; Check if Key_D is pressed
+   40C6 CD CB 42      [17]  184     call cpct_isKeyPressed_asm      ;; Check if Key_D is pressed
    40C9 FE 00         [ 7]  185     cp #0                           ;; Check A == 0
    40CB 28 03         [12]  186     jr z, d_not_pressed             ;; Jump if A == 0
                             187 
@@ -2703,7 +2703,7 @@ Hexadecimal [16-Bits]
                             192 
                             193     ;; Check fpr Key 'A' being pressed
    40D0 21 08 20      [10]  194     ld hl, #Key_A                   ;; HL = Key_A keycode
-   40D3 CD 8D 42      [17]  195     call cpct_isKeyPressed_asm      ;; Check if Key_A is pressed
+   40D3 CD CB 42      [17]  195     call cpct_isKeyPressed_asm      ;; Check if Key_A is pressed
    40D6 FE 00         [ 7]  196     cp #0                           ;; Check A == 0
    40D8 28 03         [12]  197     jr z, a_not_pressed             ;; Jump if A == 0
                             198 
@@ -2719,7 +2719,7 @@ Hexadecimal [16-Bits]
                             203 
                             204     ;; Check fpr Key 'A' being pressed
    40DD 21 07 08      [10]  205     ld hl, #Key_W                   ;; HL = Key_A keycode
-   40E0 CD 8D 42      [17]  206     call cpct_isKeyPressed_asm      ;; Check if Key_A is pressed
+   40E0 CD CB 42      [17]  206     call cpct_isKeyPressed_asm      ;; Check if Key_A is pressed
    40E3 FE 00         [ 7]  207     cp #0                           ;; Check A == 0
    40E5 28 03         [12]  208     jr z, w_not_pressed             ;; Jump if A == 0
                             209 
@@ -2744,12 +2744,12 @@ Hexadecimal [16-Bits]
    40F2 4F            [ 4]  228     ld c, a                         ;; \X Coordinate
    40F3 3A 4C 40      [13]  229     ld a, (hero_y)                  ;; |
    40F6 47            [ 4]  230     ld b, a                         ;; \Y Coordinate
-   40F7 CD 75 43      [17]  231     call  cpct_getScreenPtr_asm
+   40F7 CD B3 43      [17]  231     call  cpct_getScreenPtr_asm
                             232 
                             233     ;; Draw A Box
    40FA EB            [ 4]  234     ex de, hl                       ;; Location
    40FB F1            [10]  235     pop af                          ;; A = User selected color
    40FC 01 02 08      [10]  236     ld bc, #0x0802                  ;; 8x8 pixels WithdxHeight
-   40FF CD C8 42      [17]  237     call cpct_drawSolidBox_asm      ;; Draw a solid box
+   40FF CD 06 43      [17]  237     call cpct_drawSolidBox_asm      ;; Draw a solid box
                             238 
    4102 C9            [10]  239     ret

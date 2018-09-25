@@ -11,3 +11,4 @@ Hexadecimal [16-Bits]
                               6 
                               7 .globl cpct_waitVSYNC_asm
                               8 .globl cpct_disableFirmware_asm
+                              9 .globl cpct_setVideoMode_asm

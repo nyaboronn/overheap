@@ -117,6 +117,7 @@ jumpControl:
     ld (hero_jump), a           ;; \ hero_jump++
 
     ret
+    
     ;; Put -1 in the jump index when jump ends
     end_of_jump:
     ld a, #-1                   ;; |
