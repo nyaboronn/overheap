@@ -2616,59 +2616,59 @@ Hexadecimal [16-Bits]
                              40 ;;
                      0000    41 entity_contador = 0
                              42 
-   426A                      43 _main::
+   404B                      43 _main::
                              44   ;; Disable firmware to prevent it from interfering with string drawing
-   426A CD E0 42      [17]   45   call cpct_disableFirmware_asm
+   404B CD E0 42      [17]   45   call cpct_disableFirmware_asm
                              46  
-   426D 0E 00         [ 7]   47   ld    c, #0
-   426F CD D3 42      [17]   48   call cpct_setVideoMode_asm
+   404E 0E 00         [ 7]   47   ld    c, #0
+   4050 CD D3 42      [17]   48   call cpct_setVideoMode_asm
                              49 
-   4272 CD CF 41      [17]   50   call ent_new
-   4275 EB            [ 4]   51   ex	de, hl
-   4276 21 C3 41      [10]   52   ld    hl,#enemy_data
-   4279 CD E5 41      [17]   53   call ent_copy
+   4053 CD 1A 42      [17]   50   call ent_new
+   4056 EB            [ 4]   51   ex	de, hl
+   4057 21 0E 42      [10]   52   ld    hl,#enemy_data
+   405A CD 30 42      [17]   53   call ent_copy
                              54  
-   427C                      55 loop:
-   427C DD 21 BA 41   [14]   56   ld    ix, #hero_data
-   4280 CD 1D 42      [17]   57   call ent_clear
-   4283 CD 2D 42      [17]   58   call ent_update
-   4286 CD 03 42      [17]   59   call ent_draw
+   405D                      55 loop:
+   405D DD 21 05 42   [14]   56   ld    ix, #hero_data
+   4061 CD 68 42      [17]   57   call ent_clear
+   4064 CD 78 42      [17]   58   call ent_update
+   4067 CD 4E 42      [17]   59   call ent_draw
                              60  
                              61  ;; ld    ix, #enemy_data
                              62  ;; call ent_clear
                              63  ;; call ent_update
                              64  ;; call ent_draw
                              65 
-   4289 21 1D 42      [10]   66   ld  hl, #ent_clear
-   428C CD EB 41      [17]   67   call ent_doForAll
+   406A 21 68 42      [10]   66   ld  hl, #ent_clear
+   406D CD 36 42      [17]   67   call ent_doForAll
                              68 
-   428F 21 2D 42      [10]   69   ld  hl, #ent_update
-   4292 CD EB 41      [17]   70   call ent_doForAll
+   4070 21 78 42      [10]   69   ld  hl, #ent_update
+   4073 CD 36 42      [17]   70   call ent_doForAll
                              71 
-   4295 21 03 42      [10]   72   ld hl, #ent_draw
-   4298 CD EB 41      [17]   73   call ent_doForAll
+   4076 21 4E 42      [10]   72   ld hl, #ent_draw
+   4079 CD 36 42      [17]   73   call ent_doForAll
                              74 
                              75 
-   429B CD B9 43      [17]   76   call  cpct_scanKeyboard_asm
+   407C CD B9 43      [17]   76   call  cpct_scanKeyboard_asm
                              77  
-   429E 21 08 20      [10]   78   ld    hl, #Key_A
-   42A1 CD B5 42      [17]   79  call  cpct_isKeyPressed_asm
-   42A4 28 0A         [12]   80   jr    z, a_no_pulsada
+   407F 21 08 20      [10]   78   ld    hl, #Key_A
+   4082 CD B5 42      [17]   79  call  cpct_isKeyPressed_asm
+   4085 28 0A         [12]   80   jr    z, a_no_pulsada
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 53.
 Hexadecimal [16-Bits]
 
 
 
                              81 
-   42A6 CD CF 41      [17]   82     call ent_new
-   42A9 EB            [ 4]   83     ex	de, hl
-   42AA 21 C3 41      [10]   84     ld    hl,#enemy_data
-   42AD CD E5 41      [17]   85     call ent_copy
+   4087 CD 1A 42      [17]   82     call ent_new
+   408A EB            [ 4]   83     ex	de, hl
+   408B 21 0E 42      [10]   84     ld    hl,#enemy_data
+   408E CD 30 42      [17]   85     call ent_copy
                              86 
-   42B0                      87 a_no_pulsada:
+   4091                      87 a_no_pulsada:
                              88 
                              89 
-   42B0 CD CB 42      [17]   90   call cpct_waitVSYNC_asm
+   4091 CD CB 42      [17]   90   call cpct_waitVSYNC_asm
                              91  
                              92   ;; Loop forever
-   42B3 18 C7         [12]   93   jr    loop
+   4094 18 C7         [12]   93   jr    loop

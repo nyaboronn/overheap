@@ -2582,7 +2582,7 @@ Hexadecimal [16-Bits]
 
                               7  
                               8 
-   4000                       9 DefineNEntities entity_vector, 9
+   4169                       9 DefineNEntities entity_vector, 9
                      0000     1   _c = 0
                               2   .rept 9
                               3      DefineEntityDefault entity_vector, \_c
@@ -2591,49 +2591,49 @@ Hexadecimal [16-Bits]
    0000                       1      DefineEntityDefault entity_vector, \_c
    0000                       1    DefineEntity entity_vector0, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    0000                       1 entity_vector0:
-   4000 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4002 00 00                 3    .db   0, 0     ;; VX, VY
-   4004 00 00                 4    .db    0, 0     ;; W, H
-   4006 00                    5    .db   0           ;; Color
-   4007 FF FF                 6    .dw   0xFFFF        ;; Update
+   4169 AA 00                 2    .db    0xAA, 0     ;; X, Y
+   416B 00 00                 3    .db   0, 0     ;; VX, VY
+   416D 00 00                 4    .db    0, 0     ;; W, H
+   416F 00                    5    .db   0           ;; Color
+   4170 FF FF                 6    .dw   0xFFFF        ;; Update
                      0001     2      _c = _c + 1
-   4009                       1      DefineEntityDefault entity_vector, \_c
+   4172                       1      DefineEntityDefault entity_vector, \_c
    0009                       1    DefineEntity entity_vector1, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    0009                       1 entity_vector1:
-   4009 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   400B 00 00                 3    .db   0, 0     ;; VX, VY
-   400D 00 00                 4    .db    0, 0     ;; W, H
-   400F 00                    5    .db   0           ;; Color
-   4010 FF FF                 6    .dw   0xFFFF        ;; Update
+   4172 AA 00                 2    .db    0xAA, 0     ;; X, Y
+   4174 00 00                 3    .db   0, 0     ;; VX, VY
+   4176 00 00                 4    .db    0, 0     ;; W, H
+   4178 00                    5    .db   0           ;; Color
+   4179 FF FF                 6    .dw   0xFFFF        ;; Update
                      0002     2      _c = _c + 1
-   4012                       1      DefineEntityDefault entity_vector, \_c
+   417B                       1      DefineEntityDefault entity_vector, \_c
    0012                       1    DefineEntity entity_vector2, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    0012                       1 entity_vector2:
-   4012 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4014 00 00                 3    .db   0, 0     ;; VX, VY
-   4016 00 00                 4    .db    0, 0     ;; W, H
-   4018 00                    5    .db   0           ;; Color
-   4019 FF FF                 6    .dw   0xFFFF        ;; Update
+   417B AA 00                 2    .db    0xAA, 0     ;; X, Y
+   417D 00 00                 3    .db   0, 0     ;; VX, VY
+   417F 00 00                 4    .db    0, 0     ;; W, H
+   4181 00                    5    .db   0           ;; Color
+   4182 FF FF                 6    .dw   0xFFFF        ;; Update
                      0003     2      _c = _c + 1
-   401B                       1      DefineEntityDefault entity_vector, \_c
+   4184                       1      DefineEntityDefault entity_vector, \_c
    001B                       1    DefineEntity entity_vector3, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    001B                       1 entity_vector3:
-   401B AA 00                 2    .db    0xAA, 0     ;; X, Y
-   401D 00 00                 3    .db   0, 0     ;; VX, VY
-   401F 00 00                 4    .db    0, 0     ;; W, H
-   4021 00                    5    .db   0           ;; Color
-   4022 FF FF                 6    .dw   0xFFFF        ;; Update
+   4184 AA 00                 2    .db    0xAA, 0     ;; X, Y
+   4186 00 00                 3    .db   0, 0     ;; VX, VY
+   4188 00 00                 4    .db    0, 0     ;; W, H
+   418A 00                    5    .db   0           ;; Color
+   418B FF FF                 6    .dw   0xFFFF        ;; Update
                      0004     2      _c = _c + 1
-   4024                       1      DefineEntityDefault entity_vector, \_c
+   418D                       1      DefineEntityDefault entity_vector, \_c
    0024                       1    DefineEntity entity_vector4, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    0024                       1 entity_vector4:
-   4024 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4026 00 00                 3    .db   0, 0     ;; VX, VY
-   4028 00 00                 4    .db    0, 0     ;; W, H
-   402A 00                    5    .db   0           ;; Color
-   402B FF FF                 6    .dw   0xFFFF        ;; Update
+   418D AA 00                 2    .db    0xAA, 0     ;; X, Y
+   418F 00 00                 3    .db   0, 0     ;; VX, VY
+   4191 00 00                 4    .db    0, 0     ;; W, H
+   4193 00                    5    .db   0           ;; Color
+   4194 FF FF                 6    .dw   0xFFFF        ;; Update
                      0005     2      _c = _c + 1
-   402D                       1      DefineEntityDefault entity_vector, \_c
+   4196                       1      DefineEntityDefault entity_vector, \_c
    002D                       1    DefineEntity entity_vector5, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 53.
 Hexadecimal [16-Bits]
@@ -2641,53 +2641,53 @@ Hexadecimal [16-Bits]
 
 
    002D                       1 entity_vector5:
-   402D AA 00                 2    .db    0xAA, 0     ;; X, Y
-   402F 00 00                 3    .db   0, 0     ;; VX, VY
-   4031 00 00                 4    .db    0, 0     ;; W, H
-   4033 00                    5    .db   0           ;; Color
-   4034 FF FF                 6    .dw   0xFFFF        ;; Update
+   4196 AA 00                 2    .db    0xAA, 0     ;; X, Y
+   4198 00 00                 3    .db   0, 0     ;; VX, VY
+   419A 00 00                 4    .db    0, 0     ;; W, H
+   419C 00                    5    .db   0           ;; Color
+   419D FF FF                 6    .dw   0xFFFF        ;; Update
                      0006     2      _c = _c + 1
-   4036                       1      DefineEntityDefault entity_vector, \_c
+   419F                       1      DefineEntityDefault entity_vector, \_c
    0036                       1    DefineEntity entity_vector6, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    0036                       1 entity_vector6:
-   4036 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4038 00 00                 3    .db   0, 0     ;; VX, VY
-   403A 00 00                 4    .db    0, 0     ;; W, H
-   403C 00                    5    .db   0           ;; Color
-   403D FF FF                 6    .dw   0xFFFF        ;; Update
+   419F AA 00                 2    .db    0xAA, 0     ;; X, Y
+   41A1 00 00                 3    .db   0, 0     ;; VX, VY
+   41A3 00 00                 4    .db    0, 0     ;; W, H
+   41A5 00                    5    .db   0           ;; Color
+   41A6 FF FF                 6    .dw   0xFFFF        ;; Update
                      0007     2      _c = _c + 1
-   403F                       1      DefineEntityDefault entity_vector, \_c
+   41A8                       1      DefineEntityDefault entity_vector, \_c
    003F                       1    DefineEntity entity_vector7, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    003F                       1 entity_vector7:
-   403F AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4041 00 00                 3    .db   0, 0     ;; VX, VY
-   4043 00 00                 4    .db    0, 0     ;; W, H
-   4045 00                    5    .db   0           ;; Color
-   4046 FF FF                 6    .dw   0xFFFF        ;; Update
+   41A8 AA 00                 2    .db    0xAA, 0     ;; X, Y
+   41AA 00 00                 3    .db   0, 0     ;; VX, VY
+   41AC 00 00                 4    .db    0, 0     ;; W, H
+   41AE 00                    5    .db   0           ;; Color
+   41AF FF FF                 6    .dw   0xFFFF        ;; Update
                      0008     2      _c = _c + 1
-   4048                       1      DefineEntityDefault entity_vector, \_c
+   41B1                       1      DefineEntityDefault entity_vector, \_c
    0048                       1    DefineEntity entity_vector8, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
    0048                       1 entity_vector8:
-   4048 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   404A 00 00                 3    .db   0, 0     ;; VX, VY
-   404C 00 00                 4    .db    0, 0     ;; W, H
-   404E 00                    5    .db   0           ;; Color
-   404F FF FF                 6    .dw   0xFFFF        ;; Update
+   41B1 AA 00                 2    .db    0xAA, 0     ;; X, Y
+   41B3 00 00                 3    .db   0, 0     ;; VX, VY
+   41B5 00 00                 4    .db    0, 0     ;; W, H
+   41B7 00                    5    .db   0           ;; Color
+   41B8 FF FF                 6    .dw   0xFFFF        ;; Update
                      0009     2      _c = _c + 1
-   4051                      10 DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard
+   41BA                      10 DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard
    0051                       1 hero_data:
-   4051 14 21                 2    .db    0x14, 0x21     ;; X, Y
-   4053 00 00                 3    .db   0x00, 0x00     ;; VX, VY
-   4055 02 08                 4    .db    0x02, 0x08     ;; W, H
-   4057 0F                    5    .db   0x0F           ;; Color
-   4058 CB 40                 6    .dw   ent_moveKeyboard        ;; Update
-   405A                      11 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
+   41BA 14 21                 2    .db    0x14, 0x21     ;; X, Y
+   41BC 00 00                 3    .db   0x00, 0x00     ;; VX, VY
+   41BE 02 08                 4    .db    0x02, 0x08     ;; W, H
+   41C0 0F                    5    .db   0x0F           ;; Color
+   41C1 34 42                 6    .dw   ent_moveKeyboard        ;; Update
+   41C3                      11 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
    005A                       1 enemy_data:
-   405A 20 01                 2    .db    0x20, 0x01     ;; X, Y
-   405C FF 00                 3    .db   0xFF, 0x00     ;; VX, VY
-   405E 02 08                 4    .db    0x02, 0x08     ;; W, H
-   4060 FF                    5    .db   0xFF           ;; Color
-   4061 EE 40                 6    .dw   ent_move        ;; Update
+   41C3 20 01                 2    .db    0x20, 0x01     ;; X, Y
+   41C5 FF 00                 3    .db   0xFF, 0x00     ;; VX, VY
+   41C7 02 08                 4    .db    0x02, 0x08     ;; W, H
+   41C9 FF                    5    .db   0xFF           ;; Color
+   41CA 57 42                 6    .dw   ent_move        ;; Update
                              12  
                              13  ;;
                              14  ;;Cosas para poder crear entidades
@@ -2700,32 +2700,32 @@ Hexadecimal [16-Bits]
 
 
 
-   4063 00                   19  m_num_ent: .db 00
-   4064 00 40                20  m_next_entity: .dw entity_vector0
+   41CC 00                   19  m_num_ent: .db 00
+   41CD 69 41                20  m_next_entity: .dw entity_vector0
                              21 
                              22  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              23  ;; REGISTRA UNA NUEVA ENTIDAD
                              24  ;; REGISTROS DESTRUIDOS
                              25  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              26 
-   4066                      27  ent_new:
-   4066 3A 63 40      [13]   28     ld  a, (m_num_ent)
-   4069 3C            [ 4]   29     inc    a
-   406A 32 63 40      [13]   30     ld (m_num_ent), a
+   41CF                      27  ent_new:
+   41CF 3A CC 41      [13]   28     ld  a, (m_num_ent)
+   41D2 3C            [ 4]   29     inc    a
+   41D3 32 CC 41      [13]   30     ld (m_num_ent), a
                              31     
-   406D 2A 64 40      [16]   32     ld hl, (m_next_entity)  ;; 0x10FF  +  9 = 0x1008
-   4070 01 09 00      [10]   33     ld  bc, #k_entity_size
-   4073 09            [11]   34     add  hl, bc
-   4074 22 64 40      [16]   35     ld (m_next_entity), hl
-   4077 01 F7 FF      [10]   36     ld  bc, #-k_entity_size         ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
-   407A 09            [11]   37     add  hl, bc                     ;;Se cambia por las 2                           sbc hl, bc
+   41D6 2A CD 41      [16]   32     ld hl, (m_next_entity)  ;; 0x10FF  +  9 = 0x1008
+   41D9 01 09 00      [10]   33     ld  bc, #k_entity_size
+   41DC 09            [11]   34     add  hl, bc
+   41DD 22 CD 41      [16]   35     ld (m_next_entity), hl
+   41E0 01 F7 FF      [10]   36     ld  bc, #-k_entity_size         ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
+   41E3 09            [11]   37     add  hl, bc                     ;;Se cambia por las 2                           sbc hl, bc
                              38     
                              39     
                              40     ;;add l
                              41     ;;ld	l, a
                              42     ;;ld	a, h
                              43     ;;adc #0 suma con acarreo
-   407B C9            [10]   44     ret
+   41E4 C9            [10]   44     ret
                              45 
                              46 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              47 ;;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
@@ -2734,27 +2734,27 @@ Hexadecimal [16-Bits]
                              50 ;;;        HL -> ENTIDAD ORIGEN
                              51 ;;;        DE -> EMTODAD DESTINO
                              52  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   407C                      53 ent_copy:
-   407C 01 09 00      [10]   54     ld bc, #k_entity_size
-   407F ED B0         [21]   55     ldir
+   41E5                      53 ent_copy:
+   41E5 01 09 00      [10]   54     ld bc, #k_entity_size
+   41E8 ED B0         [21]   55     ldir
                              56 
-   4081 C9            [10]   57     ret
+   41EA C9            [10]   57     ret
                              58 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              59 ;; DIBUJAR UNA ENTIDAD
                              60 ;; ENTRADA HL -> PUNTERO AL MÉTODO A EJECUTAR
                              61 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              62 
-   4082                      63 ent_doForAll:
-   4082 3A 63 40      [13]   64     ld  a, (m_num_ent)
-   4085 DD 21 00 40   [14]   65     ld  ix, #entity_vector0
-   4089 22 8E 40      [16]   66     ld  (metodo), hl
-   408C                      67  buc:
-   408C F5            [11]   68         push af
+   41EB                      63 ent_doForAll:
+   41EB 3A CC 41      [13]   64     ld  a, (m_num_ent)
+   41EE DD 21 69 41   [14]   65     ld  ix, #entity_vector0
+   41F2 22 F7 41      [16]   66     ld  (metodo), hl
+   41F5                      67  buc:
+   41F5 F5            [11]   68         push af
                      008E    69         metodo = . + 1      ;; . es la dir.mem en la que estoy si le sumo 1 es el call
-   408D CD 9A 40      [17]   70         call ent_draw
-   4090 F1            [10]   71         pop af
-   4091 01 09 00      [10]   72         ld bc, #k_entity_size
-   4094 DD 09         [15]   73         add ix, bc
+   41F6 CD 03 42      [17]   70         call ent_draw
+   41F9 F1            [10]   71         pop af
+   41FA 01 09 00      [10]   72         ld bc, #k_entity_size
+   41FD DD 09         [15]   73         add ix, bc
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 55.
 Hexadecimal [16-Bits]
 
@@ -2762,10 +2762,10 @@ Hexadecimal [16-Bits]
 
                              74         
                              75 
-   4096 3D            [ 4]   76         dec a
-   4097 20 F3         [12]   77         jr nz, buc
+   41FF 3D            [ 4]   76         dec a
+   4200 20 F3         [12]   77         jr nz, buc
                              78 
-   4099 C9            [10]   79     ret
+   4202 C9            [10]   79     ret
                              80 
                              81 
                              82 
@@ -2775,20 +2775,20 @@ Hexadecimal [16-Bits]
                              86 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
                              87 ;; ENTRADA: IX -> Puntero a entidad
                              88 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   409A                      89 ent_draw:
-   409A 11 00 C0      [10]   90   ld    de, #0xC000       ;;Comienzo memoria de video
-   409D DD 4E 00      [19]   91   ld     c, e_x(ix)         ;; C = Entity Y
-   40A0 DD 46 01      [19]   92   ld     b, e_y(ix)         ;; B = Entity X
-   40A3 CD 34 42      [17]   93   call cpct_getScreenPtr_asm
+   4203                      89 ent_draw:
+   4203 11 00 C0      [10]   90   ld    de, #0xC000       ;;Comienzo memoria de video
+   4206 DD 4E 00      [19]   91   ld     c, e_x(ix)         ;; C = Entity Y
+   4209 DD 46 01      [19]   92   ld     b, e_y(ix)         ;; B = Entity X
+   420C CD 9D 43      [17]   93   call cpct_getScreenPtr_asm
                              94  
-   40A6 EB            [ 4]   95   ex    de, hl   ;; DE = Puntero a memoria
-   40A7 DD 7E 06      [19]   96   ld  a, e_col(ix)   ;; Color
-   40AA DD 46 05      [19]   97   ld  b, e_h(ix)   ;; alto
-   40AD DD 4E 04      [19]   98   ld  c, e_w(ix)   ;; Ancho
+   420F EB            [ 4]   95   ex    de, hl   ;; DE = Puntero a memoria
+   4210 DD 7E 06      [19]   96   ld  a, e_col(ix)   ;; Color
+   4213 DD 46 05      [19]   97   ld  b, e_h(ix)   ;; alto
+   4216 DD 4E 04      [19]   98   ld  c, e_w(ix)   ;; Ancho
                              99  
-   40B0 CD 87 41      [17]  100   call cpct_drawSolidBox_asm
+   4219 CD F0 42      [17]  100   call cpct_drawSolidBox_asm
                             101  
-   40B3 C9            [10]  102   ret
+   421C C9            [10]  102   ret
                             103 
                             104  
                             105 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2796,59 +2796,59 @@ Hexadecimal [16-Bits]
                             107 ;; REGISTROS DESTRUIDOS: AF',AF, BC, DE, HL
                             108 ;; ENTRADA: IX -> Puntero a entidad
                             109 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40B4                     110 ent_clear:
-   40B4 DD 7E 06      [19]  111   ld  a, e_col(ix)
-   40B7 08            [ 4]  112   ex af, af'
+   421D                     110 ent_clear:
+   421D DD 7E 06      [19]  111   ld  a, e_col(ix)
+   4220 08            [ 4]  112   ex af, af'
                             113  
-   40B8 DD 36 06 00   [19]  114    ld  e_col(ix), #0
+   4221 DD 36 06 00   [19]  114    ld  e_col(ix), #0
                             115  
-   40BC CD 9A 40      [17]  116    call ent_draw
-   40BF 08            [ 4]  117    ex af, af'
-   40C0 DD 77 06      [19]  118   ld e_col(ix), a
+   4225 CD 03 42      [17]  116    call ent_draw
+   4228 08            [ 4]  117    ex af, af'
+   4229 DD 77 06      [19]  118   ld e_col(ix), a
                             119  
-   40C3 C9            [10]  120   ret
+   422C C9            [10]  120   ret
                             121  
                             122 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             123 ;; ACTUALIZAR UNA ENTIDAD
                             124 ;; REGISTROS DESTRUIDOS:
                             125 ;; ENTRADA: IX -> Puntero a entidad
                             126 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40C4                     127 ent_update:
-   40C4 DD 66 08      [19]  128   ld     h, e_up_h(ix)
+   422D                     127 ent_update:
+   422D DD 66 08      [19]  128   ld     h, e_up_h(ix)
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 56.
 Hexadecimal [16-Bits]
 
 
 
-   40C7 DD 6E 07      [19]  129   ld     l, e_up_l(ix)
-   40CA E9            [ 4]  130   jp    (hl)
+   4230 DD 6E 07      [19]  129   ld     l, e_up_l(ix)
+   4233 E9            [ 4]  130   jp    (hl)
                             131  
                             132 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             133 ;; MOVER UNA ENTIDAD CON TECLADO
                             134 ;; REGISTROS DESTRUIDOS:
                             135 ;; ENTRADA: IX -> Puntero a entidad
                             136 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40CB                     137 ent_moveKeyboard:
-   40CB CD 50 42      [17]  138   call  cpct_scanKeyboard_asm
+   4234                     137 ent_moveKeyboard:
+   4234 CD B9 43      [17]  138   call  cpct_scanKeyboard_asm
                             139  
-   40CE 21 04 04      [10]  140   ld    hl, #Key_O
-   40D1 CD 4C 41      [17]  141   call  cpct_isKeyPressed_asm
-   40D4 28 04         [12]  142   jr    z, o_no_pulsada
-   40D6 DD 36 02 FF   [19]  143      ld e_vx(ix), #-1
-   40DA                     144 o_no_pulsada:
+   4237 21 04 04      [10]  140   ld    hl, #Key_O
+   423A CD B5 42      [17]  141   call  cpct_isKeyPressed_asm
+   423D 28 04         [12]  142   jr    z, o_no_pulsada
+   423F DD 36 02 FF   [19]  143      ld e_vx(ix), #-1
+   4243                     144 o_no_pulsada:
                             145  
-   40DA 21 03 08      [10]  146   ld    hl, #Key_P
-   40DD CD 4C 41      [17]  147   call  cpct_isKeyPressed_asm
-   40E0 28 04         [12]  148   jr    z, p_no_pulsada
-   40E2 DD 36 02 01   [19]  149      ld e_vx(ix), #1
+   4243 21 03 08      [10]  146   ld    hl, #Key_P
+   4246 CD B5 42      [17]  147   call  cpct_isKeyPressed_asm
+   4249 28 04         [12]  148   jr    z, p_no_pulsada
+   424B DD 36 02 01   [19]  149      ld e_vx(ix), #1
                             150  
-   40E6                     151 p_no_pulsada:
+   424F                     151 p_no_pulsada:
                             152  
-   40E6 CD EE 40      [17]  153   call  ent_move
+   424F CD 57 42      [17]  153   call  ent_move
                             154  
-   40E9 DD 36 02 00   [19]  155   ld e_vx(ix), #0
+   4252 DD 36 02 00   [19]  155   ld e_vx(ix), #0
                             156  
-   40ED C9            [10]  157   ret
+   4256 C9            [10]  157   ret
                             158  
                             159  
                             160 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2856,13 +2856,13 @@ Hexadecimal [16-Bits]
                             162 ;; REGISTROS DESTRUIDOS:
                             163 ;; ENTRADA: IX -> Puntero a entidad
                             164 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40EE                     165 ent_move:
-   40EE DD 7E 00      [19]  166   ld    a, e_x(ix)
-   40F1 DD 86 02      [19]  167   add   e_vx(ix)
-   40F4 DD 77 00      [19]  168   ld    e_x(ix), a
+   4257                     165 ent_move:
+   4257 DD 7E 00      [19]  166   ld    a, e_x(ix)
+   425A DD 86 02      [19]  167   add   e_vx(ix)
+   425D DD 77 00      [19]  168   ld    e_x(ix), a
                             169  
-   40F7 DD 7E 01      [19]  170   ld    a, e_y(ix)
-   40FA DD 86 03      [19]  171   add   e_vy(ix)
-   40FD DD 77 01      [19]  172   ld    e_y(ix), a
+   4260 DD 7E 01      [19]  170   ld    a, e_y(ix)
+   4263 DD 86 03      [19]  171   add   e_vy(ix)
+   4266 DD 77 01      [19]  172   ld    e_y(ix), a
                             173  
-   4100 C9            [10]  174   ret
+   4269 C9            [10]  174   ret

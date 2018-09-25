@@ -3,34 +3,35 @@ Hexadecimal [16-Bits]
 
 
 
-                              1 ;###########################################################################
-                              2 ;#### FICHERO: main.s
-                              3 ;###########################################################################
-                              4 ;;-----------------------------LICENSE NOTICE------------------------------------
-                              5 ;;  This file is part of CPCtelera: An Amstrad CPC Game Engine
-                              6 ;;  Copyright (C) 2018 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
-                              7 ;;
-                              8 ;;  This program is free software: you can redistribute it and/or modify
-                              9 ;;  it under the terms of the GNU Lesser General Public License as published by
-                             10 ;;  the Free Software Foundation, either version 3 of the License, or
-                             11 ;;  (at your option) any later version.
-                             12 ;;
-                             13 ;;  This program is distributed in the hope that it will be useful,
-                             14 ;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
-                             15 ;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-                             16 ;;  GNU Lesser General Public License for more details.
-                             17 ;;
-                             18 ;;  You should have received a copy of the GNU Lesser General Public License
-                             19 ;;  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-                             20 ;;-------------------------------------------------------------------------------
-                             21  
-                             22 ;; Include all CPCtelera constant definitions, macros and variables
+                              1 .area _DATA
+                              2 .area _CODE
+                              3 
+                              4 
+                              5 ;;======================================================
+                              6 ;;======================================================
+                              7 ;; PRIVATE DATA
+                              8 ;;======================================================
+                              9 ;;======================================================
+                             10 
+                             11 ;;
+                             12 ;; Obstacle data
+                             13 ;;
+   0000 4F                   14 obstacle_x:     .db #80-1
+   0001 52                   15 obstacle_y:     .db #82
+   0002 01                   16 obstacle_w:     .db #1
+   0003 04                   17 obstacle_h:     .db #4
+                             18 
+                             19 ;; CPCtelera Symbols
+                             20 .globl cpct_getScreenPtr_asm
+                             21 .globl cpct_drawSolidBox_asm
+                             22 .globl cpct_scanKeyboard_asm
+                             23 .globl cpct_isKeyPressed_asm
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 
 
-                             23 .include "cpctelera.h.s"
+                             24 .include "cpctelera.h.s"
                               1 ;;-----------------------------LICENSE NOTICE------------------------------------
                               2 ;;  This file is part of CPCtelera: An Amstrad CPC Game Engine
                               3 ;;  Copyright (C) 2017 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
@@ -2522,153 +2523,161 @@ Hexadecimal [16-Bits]
 
 
 
-                             24 .include "entity.h.s"
-                              1 ;###########################################################################
-                              2 ;#### FICHERO: entity.h.s
-                              3 ;###########################################################################
-                              4 .macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd
-                              5 _name:
-                              6    .db    _x, _y     ;; X, Y
-                              7    .db   _vx, _vy     ;; VX, VY
-                              8    .db    _w, _h     ;; W, H
-                              9    .db   _col           ;; Color
-                             10    .dw   _upd        ;; Update
-                             11 .endm
-                             12 .macro DefineEntityDefault _name, _suf
-                             13    DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-                             14 .endm
-                             15 
-                             16 .macro DefineNEntities _name, _n
-                             17   _c = 0
-                             18   .rept _n
-                             19      DefineEntityDefault _name, \_c
-                             20      _c = _c + 1
-                             21   .endm
-                             22 .endm
-                             23 
-                             24 
-                             25 ;;.macro ent_draw_default _pos, _y, _x, _de, _e_col, _e_h, _e_w
-                             26   ;  ent_draw #0xC000, 0x00,0x00, 0xC000, 0xFF, 0x02, 0x08
-                             27 ;;.endm
-                             28 
-                             29 
-                             30 
-                     0000    31 e_x = 0
-                     0001    32 e_y = 1
-                     0002    33 e_vx = 2
-                     0003    34 e_vy = 3
-                     0004    35 e_w = 4
-                     0005    36 e_h = 5
-                     0006    37 e_col = 6
-                     0007    38 e_up_l = 7
-                     0008    39 e_up_h = 8
-                             40  
-                             41  
-                             42 .globl ent_draw
-                             43 .globl ent_clear
-                             44 .globl ent_update
-                             45 .globl ent_copy
-                             46 .globl ent_new
-                             47 .globl hero_data
-                             48 .globl enemy_data
-                             49 .globl ent_doForAll
+                             25 
+                             26 ;;======================================================
+                             27 ;;======================================================
+                             28 ;; PUBLIC FUNCTIONS
+                             29 ;;======================================================
+                             30 ;;======================================================
+                             31 
+                             32 ;;=========================================
+                             33 ;; Update Obstacle Status
+                             34 ;; DESTROYS: AF, BC, HL
+                             35 ;;=========================================
+   0004                      36 obstacle_update::
+                             37 
+                             38     ;; Move Obstacle to the left 
+   0004 3A 00 00      [13]   39     ld a, (obstacle_x)                      ;; A = obstacleX value
+                             40     
+                             41     ; dec a. Activa los flags 
+                             42     ; no es necesario hacer un cp
+   0007 3D            [ 4]   43     dec a                                   ;; obstacle_x --
+   0008 20 02         [12]   44     jr nz, not_restart_x                    ;; if obstacleX == 0 restart x
+                             45     
+                             46         ;; Restart obstacleX when it is 0
+   000A 3E 4F         [ 7]   47         ld a, #80-1                         ;; A = start location
+                             48 
+   000C                      49     not_restart_x:
+   000C 32 00 00      [13]   50     ld (obstacle_x), a                      ;; Update obstacleX value
+                             51 
+   000F C9            [10]   52     ret
+                             53 
+                             54 ;;=========================================
+                             55 ;; Checks Collision between obstacle and other obstacle
+                             56 ;; Input:
+                             57 ;;      => HL: Points to the other entity
+                             58 ;; Return XXXXXXXXXXX
+                             59 ;; DESTROYS: HL
+                             60 ;;=========================================
+   0010                      61 obstacle_checkCollision::
+                             62     ;;
+                             63     ;; If (obs_x + obs_w <= hero_x) => r_no_collision
+                             64     ;; CENCIA
+                             65     ;; obs_x + obs_w - hero_x <= 0
+                             66     ;; Comprobar si está a la izquierda 
+   0010 3A 00 00      [13]   67     ld a, (obstacle_x)              ;; A = obstacle_x
+   0013 4F            [ 4]   68     ld c, a                         ;; C = obstacle_x
+   0014 3A 02 00      [13]   69     ld a, (obstacle_w)              ;; A = obstacle_y
+   0017 81            [ 4]   70     add c                           ;; A += C 
+   0018 96            [ 7]   71     sub (hl)                        ;; A -= hero_x
+   0019 28 16         [12]   72     jr z, no_collision              ;; if (<= 0)
+   001B FA 31 00      [10]   73     jp m, no_collision              ;; then  no_colision
+                             74 
+                             75     ;;
+                             76     ;; if (herox + herow <= obsx) => l_no_collision
+                             77     ;; herox + herow - obsx
+                             78     ;;
+   001E 7E            [ 7]   79     ld a, (hl)                      ;; A = hero_x
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 51.
 Hexadecimal [16-Bits]
 
 
 
-                             25 .include "main.h.s"
-                              1 ;###########################################################################
-                              2 ;#### FICHERO: main.h.s
-                              3 ;###########################################################################
-                              4 ;;
-                              5 ;; Declare all function entry points as global symbols for the compiler.
-                              6 ;; (The linker will know what to do with them)
-                              7 ;; WARNING: Every global symbol declared will be linked, so DO NOT declare
-                              8 ;; symbols for functions you do not use.
-                              9 ;;
-                             10 .globl cpct_disableFirmware_asm
-                             11 .globl cpct_drawSolidBox_asm
-                             12 .globl cpct_getScreenPtr_asm
-                             13 .globl cpct_waitVSYNC_asm
-                             14 .globl cpct_setVideoMode_asm
-                             15 .globl cpct_scanKeyboard_asm
-                             16 .globl cpct_isKeyPressed_asm
+   001F 23            [ 6]   80     inc hl                          ;; hl++ (heroy)
+   0020 23            [ 6]   81     inc hl                          ;; hl++ (herow)
+   0021 86            [ 7]   82     add (hl)                        ;; A +=  hero_w
+   0022 4F            [ 4]   83     ld c, a                         ;; C = A
+   0023 3A 00 00      [13]   84     ld a, (obstacle_x)              ;; A = obstacle_x
+   0026 47            [ 4]   85     ld b, a                         ;; :O
+   0027 79            [ 4]   86     ld a, c                         ;; :D
+   0028 90            [ 4]   87     sub a, b                        ;; A = herox + herow - obsx
+   0029 28 06         [12]   88     jr z, no_collision              ;; If (<=0) no collision
+   002B FA 31 00      [10]   89     jp m, no_collision              ;;  theb no_collision    
+                             90 
+                             91     ;; Collision
+   002E 3E FF         [ 7]   92     ld a, #0xFF
+   0030 C9            [10]   93     ret
+                             94 
+   0031                      95     no_collision:
+   0031 3E 00         [ 7]   96         ld a, #00
+   0033 C9            [10]   97     ret
+                             98 
+                             99 ;;=========================================
+                            100 ;; Draws the Obstacle
+                            101 ;; DESTROYS:
+                            102 ;;=========================================
+   0034                     103 obstacle_draw::
+                            104     
+   0034 3E 0F         [ 7]  105     ld a, #0x0F                 ;; Patter color
+   0036 CD 40 00      [17]  106     call drawObstacle           ;; Draw the obstacle
+                            107 
+   0039 C9            [10]  108     ret
+                            109     
+                            110 ;;=========================================
+                            111 ;; Erases the Obstacle
+                            112 ;; DESTROYS:
+                            113 ;;=========================================
+   003A                     114 obstacle_erase::
+                            115     
+   003A 3E 00         [ 7]  116     ld a, #0x00                 ;; Pattern color
+   003C CD 40 00      [17]  117     call drawObstacle           ;; Erase the obstacle
+                            118 
+   003F C9            [10]  119     ret
+                            120 
+                            121 
+                            122 ;;======================================================
+                            123 ;;======================================================
+                            124 ;; PRIVATE FUNCTIONS
+                            125 ;;======================================================
+                            126 ;;======================================================
+                            127 
+                            128 ;;===========================================================
+                            129 ;; Draw the Object
+                            130 ;; INPUTS:
+                            131 ;;      A => Colour Pattern
+                            132 ;; DESTROYS: AF, BC, DE, HL
+                            133 ;;===========================================================
+   0040                     134 drawObstacle:
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 52.
 Hexadecimal [16-Bits]
 
 
 
-                             26 
-                             27  
-                             28 ;;
-                             29 ;; Start of _DATA area
-                             30 ;;  SDCC requires at least _DATA and _CODE areas to be declared, but you may use
-                             31 ;;  any one of them for any purpose. Usually, compiler puts _DATA area contents
-                             32 ;;  right after _CODE area contents.
-                             33 ;;
-                             34 .area _DATA
-                             35 .area _CODE
-                             36  
-                             37 ;;
-                             38 ;; MAIN function. This is the entry point of the application.
-                             39 ;;    _main:: global symbol is required for correctly compiling and linking
-                             40 ;;
-                     0000    41 entity_contador = 0
-                             42 
-   426A                      43 _main::
-                             44   ;; Disable firmware to prevent it from interfering with string drawing
-   426A CD E0 42      [17]   45   call cpct_disableFirmware_asm
-                             46  
-   426D 0E 00         [ 7]   47   ld    c, #0
-   426F CD D3 42      [17]   48   call cpct_setVideoMode_asm
-                             49 
-   4272 CD CF 41      [17]   50   call ent_new
-   4275 EB            [ 4]   51   ex	de, hl
-   4276 21 C3 41      [10]   52   ld    hl,#enemy_data
-   4279 CD E5 41      [17]   53   call ent_copy
-                             54  
-   427C                      55 loop:
-   427C DD 21 BA 41   [14]   56   ld    ix, #hero_data
-   4280 CD 1D 42      [17]   57   call ent_clear
-   4283 CD 2D 42      [17]   58   call ent_update
-   4286 CD 03 42      [17]   59   call ent_draw
-                             60  
-                             61  ;; ld    ix, #enemy_data
-                             62  ;; call ent_clear
-                             63  ;; call ent_update
-                             64  ;; call ent_draw
-                             65 
-   4289 21 1D 42      [10]   66   ld  hl, #ent_clear
-   428C CD EB 41      [17]   67   call ent_doForAll
-                             68 
-   428F 21 2D 42      [10]   69   ld  hl, #ent_update
-   4292 CD EB 41      [17]   70   call ent_doForAll
-                             71 
-   4295 21 03 42      [10]   72   ld hl, #ent_draw
-   4298 CD EB 41      [17]   73   call ent_doForAll
-                             74 
-                             75 
-   429B CD B9 43      [17]   76   call  cpct_scanKeyboard_asm
-                             77  
-   429E 21 08 20      [10]   78   ld    hl, #Key_A
-   42A1 CD B5 42      [17]   79  call  cpct_isKeyPressed_asm
-   42A4 28 0A         [12]   80   jr    z, a_no_pulsada
-ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 53.
-Hexadecimal [16-Bits]
-
-
-
-                             81 
-   42A6 CD CF 41      [17]   82     call ent_new
-   42A9 EB            [ 4]   83     ex	de, hl
-   42AA 21 C3 41      [10]   84     ld    hl,#enemy_data
-   42AD CD E5 41      [17]   85     call ent_copy
-                             86 
-   42B0                      87 a_no_pulsada:
-                             88 
-                             89 
-   42B0 CD CB 42      [17]   90   call cpct_waitVSYNC_asm
-                             91  
-                             92   ;; Loop forever
-   42B3 18 C7         [12]   93   jr    loop
+   0040 F5            [11]  135     push af                             ;; Save A in the stack
+                            136 
+                            137     ;; Calculate Screen Position
+   0041 11 00 C0      [10]  138     ld de, #0xC000                      ;; Video memory start position
+   0044 3A 00 00      [13]  139     ld a, (obstacle_x)                  ;; |
+   0047 4F            [ 4]  140     ld c, a                             ;; \X Coordinate
+   0048 3A 01 00      [13]  141     ld a, (obstacle_y)                  ;; |
+   004B 47            [ 4]  142     ld b, a                             ;; \Y Coordinate
+   004C CD 00 00      [17]  143     call  cpct_getScreenPtr_asm
+                            144 
+                            145     ;; Draw A Box
+   004F EB            [ 4]  146     ex de, hl                           ;; Location
+   0050 F1            [10]  147     pop af                              ;; A = User selected color
+   0051 01 01 04      [10]  148     ld bc, #0x0401                      ;; 4x4 pixels WithdxHeight
+   0054 CD 00 00      [17]  149     call cpct_drawSolidBox_asm          ;; Draw a solid box
+                            150 
+   0057 C9            [10]  151     ret
+                            152 
+                            153 ;;===========================================================
+                            154 ;; Check User Input
+                            155 ;; DESTROYS: AF, BC, DE, HL
+                            156 ;;===========================================================
+   0058                     157 checkUserInput:
+                            158     ;; Scan the whole keyboard
+   0058 CD 00 00      [17]  159     call cpct_scanKeyboard_asm
+                            160 
+                            161     ;; Check fpr Key 'L' being pressed
+   005B 21 04 10      [10]  162     ld hl, #Key_L                   ;; HL = Key_I keycode
+   005E CD 00 00      [17]  163     call cpct_isKeyPressed_asm      ;; Check if Key_I is pressed
+   0061 FE 00         [ 7]  164     cp #0                           ;; Check A == 0
+   0063 28 00         [12]  165     jr z, L_not_pressed             ;; Jump if A == 0
+                            166 
+                            167         ;; key_D is pressed
+                            168         ;;call moveHeroRight          ;; move hero right 
+                            169 
+   0065                     170     L_not_pressed:
+                            171 
+   0065 C9            [10]  172     ret

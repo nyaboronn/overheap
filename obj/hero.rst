@@ -3,34 +3,45 @@ Hexadecimal [16-Bits]
 
 
 
-                              1 ;###########################################################################
-                              2 ;#### FICHERO: main.s
-                              3 ;###########################################################################
-                              4 ;;-----------------------------LICENSE NOTICE------------------------------------
-                              5 ;;  This file is part of CPCtelera: An Amstrad CPC Game Engine
-                              6 ;;  Copyright (C) 2018 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
-                              7 ;;
-                              8 ;;  This program is free software: you can redistribute it and/or modify
-                              9 ;;  it under the terms of the GNU Lesser General Public License as published by
-                             10 ;;  the Free Software Foundation, either version 3 of the License, or
-                             11 ;;  (at your option) any later version.
+                              1 .area _DATA
+                              2 .area _CODE
+                              3 
+                              4 ;;================================================
+                              5 ;;================================================
+                              6 ;; PRIVATE DATA
+                              7 ;;================================================
+                              8 ;;================================================
+                              9 
+                             10 ;;
+                             11 ;; Hero Data
                              12 ;;
-                             13 ;;  This program is distributed in the hope that it will be useful,
-                             14 ;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
-                             15 ;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-                             16 ;;  GNU Lesser General Public License for more details.
-                             17 ;;
-                             18 ;;  You should have received a copy of the GNU Lesser General Public License
-                             19 ;;  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-                             20 ;;-------------------------------------------------------------------------------
-                             21  
-                             22 ;; Include all CPCtelera constant definitions, macros and variables
+   404B 27                   13 hero_x:     .db #39
+   404C 50                   14 hero_y:     .db #80
+   404D 02                   15 hero_w:     .db #2
+   404E 08                   16 hero_h:     .db #8
+   404F FF                   17 hero_jump:  .db #-1             ;; (-1 is not jumping)
+                             18 
+                             19 ;;
+                             20 ;; Jump Table
+                             21 ;;
+   4050                      22 jumptable:
+   4050 F4 F8 FC FC          23     .db #-12, #-8, #-4, #-4
+   4054 FC 00 00 04          24     .db #-4, #00, #00, #04
+   4058 04 04 08 0C          25     .db #04, #04, #08, #012
+   405C 80                   26     .db #0x80                   ;; El último byte se marca con el #0x80
+                             27                                 ;; De esta forma no hace falta un contador
+                             28 
+                             29 ;; CPCtelera Symbols
+                             30 .globl cpct_getScreenPtr_asm
+                             31 .globl cpct_drawSolidBox_asm
+                             32 .globl cpct_scanKeyboard_asm
+                             33 .globl cpct_isKeyPressed_asm
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 
 
-                             23 .include "cpctelera.h.s"
+                             34 .include "cpctelera.h.s"
                               1 ;;-----------------------------LICENSE NOTICE------------------------------------
                               2 ;;  This file is part of CPCtelera: An Amstrad CPC Game Engine
                               3 ;;  Copyright (C) 2017 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
@@ -2522,153 +2533,223 @@ Hexadecimal [16-Bits]
 
 
 
-                             24 .include "entity.h.s"
-                              1 ;###########################################################################
-                              2 ;#### FICHERO: entity.h.s
-                              3 ;###########################################################################
-                              4 .macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd
-                              5 _name:
-                              6    .db    _x, _y     ;; X, Y
-                              7    .db   _vx, _vy     ;; VX, VY
-                              8    .db    _w, _h     ;; W, H
-                              9    .db   _col           ;; Color
-                             10    .dw   _upd        ;; Update
-                             11 .endm
-                             12 .macro DefineEntityDefault _name, _suf
-                             13    DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-                             14 .endm
-                             15 
-                             16 .macro DefineNEntities _name, _n
-                             17   _c = 0
-                             18   .rept _n
-                             19      DefineEntityDefault _name, \_c
-                             20      _c = _c + 1
-                             21   .endm
-                             22 .endm
-                             23 
-                             24 
-                             25 ;;.macro ent_draw_default _pos, _y, _x, _de, _e_col, _e_h, _e_w
-                             26   ;  ent_draw #0xC000, 0x00,0x00, 0xC000, 0xFF, 0x02, 0x08
-                             27 ;;.endm
-                             28 
-                             29 
-                             30 
-                     0000    31 e_x = 0
-                     0001    32 e_y = 1
-                     0002    33 e_vx = 2
-                     0003    34 e_vy = 3
-                     0004    35 e_w = 4
-                     0005    36 e_h = 5
-                     0006    37 e_col = 6
-                     0007    38 e_up_l = 7
-                     0008    39 e_up_h = 8
-                             40  
-                             41  
-                             42 .globl ent_draw
-                             43 .globl ent_clear
-                             44 .globl ent_update
-                             45 .globl ent_copy
-                             46 .globl ent_new
-                             47 .globl hero_data
-                             48 .globl enemy_data
-                             49 .globl ent_doForAll
+                             35 
+                             36 ;;================================================
+                             37 ;;================================================
+                             38 ;; PUBLIC FUNCTIONS
+                             39 ;;================================================
+                             40 ;;================================================
+                             41 
+                             42 ;;===========================================================
+                             43 ;; Updates the Hero
+                             44 ;; DESTROYS:
+                             45 ;;===========================================================
+   405D                      46 hero_update::
+   405D CD 74 40      [17]   47     call jumpControl                ;; Do jump
+   4060 CD C0 40      [17]   48     call checkUserInput             ;; Check if User presses Keys
+                             49 
+   4063 C9            [10]   50     ret
+                             51 
+                             52 ;;===========================================================
+                             53 ;; Gets a pointer to hero data in HL
+                             54 ;; DESTROYS: HL
+                             55 ;; RETURNS:
+                             56 ;;    HL: Pointer to Hero Data
+                             57 ;;===========================================================
+   4064                      58 hero_getPtrHL::
+   4064 21 4B 40      [10]   59     ld hl, #hero_x                  ;; HL pointer to the hero data
+   4067 C9            [10]   60     ret
+                             61 
+                             62 ;;===========================================================
+                             63 ;; Draws the Hero
+                             64 ;; DESTROYS:
+                             65 ;;===========================================================
+   4068                      66 hero_draw::
+   4068 3E FF         [ 7]   67     ld a, #0xFF                     ;; Red Hero
+   406A CD EB 40      [17]   68     call drawHero                   ;; Draw Our Hero
+                             69 
+   406D C9            [10]   70     ret
+                             71 ;;===========================================================
+                             72 ;; Erases the Hero
+                             73 ;; DESTROYS:
+                             74 ;;===========================================================
+   406E                      75 hero_erase::
+   406E 3E 00         [ 7]   76     ld a, #0x00                     ;; Red Hero
+   4070 CD EB 40      [17]   77     call drawHero                   ;; Draw Our Hero
+                             78 
+   4073 C9            [10]   79     ret
+                             80 
+                             81 ;;================================================
+                             82 ;;================================================
+                             83 ;; PRIVATE FUNCTIONS
+                             84 ;;================================================
+                             85 ;;================================================
+                             86 
+                             87 ;;===========================================================
+                             88 ;; Controls Jump Movements
+                             89 ;; DESTROYS: A
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 51.
 Hexadecimal [16-Bits]
 
 
 
-                             25 .include "main.h.s"
-                              1 ;###########################################################################
-                              2 ;#### FICHERO: main.h.s
-                              3 ;###########################################################################
-                              4 ;;
-                              5 ;; Declare all function entry points as global symbols for the compiler.
-                              6 ;; (The linker will know what to do with them)
-                              7 ;; WARNING: Every global symbol declared will be linked, so DO NOT declare
-                              8 ;; symbols for functions you do not use.
-                              9 ;;
-                             10 .globl cpct_disableFirmware_asm
-                             11 .globl cpct_drawSolidBox_asm
-                             12 .globl cpct_getScreenPtr_asm
-                             13 .globl cpct_waitVSYNC_asm
-                             14 .globl cpct_setVideoMode_asm
-                             15 .globl cpct_scanKeyboard_asm
-                             16 .globl cpct_isKeyPressed_asm
+                             90 ;;===========================================================
+   4074                      91 jumpControl:
+                             92     ;; Check if we are jumping right now
+   4074 3A 4F 40      [13]   93     ld a, (hero_jump)           ;; A = hero_jump status
+   4077 FE FF         [ 7]   94     cp #-1                      ;; A == -1? (-1 is not jumping)
+   4079 C8            [11]   95     ret z                       ;; If  A == -1, not jumping
+                             96 
+                             97     ;; Move Hero (forma de recorrer arrays)
+   407A 21 50 40      [10]   98     ld hl, #jumptable           ;; Direccion base del array JumpTable
+   407D 4F            [ 4]   99     ld c, a                     ;; | Sumarle la posición del índice para acceder
+   407E 06 00         [ 7]  100     ld b, #0                    ;; | BC =  A (offset)
+   4080 09            [11]  101     add hl, bc                  ;; \ HL += BC
+                            102 
+                            103     ;; Check End of jumping
+   4081 7E            [ 7]  104     ld a, (hl)                  ;; A = jump movement
+   4082 FE 80         [ 7]  105     cp #0x80                    ;; Jump value == 0
+   4084 28 10         [12]  106     jr z, end_of_jump           ;; if 0x80, end of jump
+                            107 
+                            108     ;; Do jump movement (ya tenemos la posicion, falta aplicar el valor de esa dirc)
+   4086 47            [ 4]  109     ld b, a                  ;; B = Jump Movement
+   4087 3A 4C 40      [13]  110     ld a, (hero_y)              ;; A = hero_y
+   408A 80            [ 4]  111     add b                       ;; A += b (add jump movement)
+   408B 32 4C 40      [13]  112     ld (hero_y), a             ;; Update hero_y value
+                            113 
+                            114     ;; Increment Hero_jump Index
+   408E 3A 4F 40      [13]  115     ld a, (hero_jump)           ;; A = hero_jump
+   4091 3C            [ 4]  116     inc a                       ;; | 
+   4092 32 4F 40      [13]  117     ld (hero_jump), a           ;; \ hero_jump++
+                            118 
+   4095 C9            [10]  119     ret
+                            120     ;; Put -1 in the jump index when jump ends
+   4096                     121     end_of_jump:
+   4096 3E FF         [ 7]  122     ld a, #-1                   ;; |
+   4098 32 4F 40      [13]  123     ld (hero_jump), a           ;; \ hero_jump = -1
+                            124 
+   409B C9            [10]  125     ret
+                            126 
+                            127 ;;===========================================================
+                            128 ;; move hero right
+                            129 ;; DESTROYS: AF
+                            130 ;;===========================================================
+   409C                     131 moveHeroRight:
+   409C 3A 4B 40      [13]  132     ld a, (hero_x)              ;; A = hero_x
+   409F FE 4E         [ 7]  133     cp #80-2                    ;; Check against screen right limit
+   40A1 28 04         [12]  134     jr z, do_not_move_r         ;; hero_x == limit. do not jump
+                            135 
+                            136         ;; Move right
+   40A3 3C            [ 4]  137         inc a                   ;; A++
+   40A4 32 4B 40      [13]  138         ld (hero_x), a          ; hero_x = A
+                            139 
+   40A7                     140     do_not_move_r:
+   40A7 C9            [10]  141     ret
+                            142 
+                            143 ;;===========================================================
+                            144 ;; move hero left
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 52.
 Hexadecimal [16-Bits]
 
 
 
-                             26 
-                             27  
-                             28 ;;
-                             29 ;; Start of _DATA area
-                             30 ;;  SDCC requires at least _DATA and _CODE areas to be declared, but you may use
-                             31 ;;  any one of them for any purpose. Usually, compiler puts _DATA area contents
-                             32 ;;  right after _CODE area contents.
-                             33 ;;
-                             34 .area _DATA
-                             35 .area _CODE
-                             36  
-                             37 ;;
-                             38 ;; MAIN function. This is the entry point of the application.
-                             39 ;;    _main:: global symbol is required for correctly compiling and linking
-                             40 ;;
-                     0000    41 entity_contador = 0
-                             42 
-   426A                      43 _main::
-                             44   ;; Disable firmware to prevent it from interfering with string drawing
-   426A CD E0 42      [17]   45   call cpct_disableFirmware_asm
-                             46  
-   426D 0E 00         [ 7]   47   ld    c, #0
-   426F CD D3 42      [17]   48   call cpct_setVideoMode_asm
-                             49 
-   4272 CD CF 41      [17]   50   call ent_new
-   4275 EB            [ 4]   51   ex	de, hl
-   4276 21 C3 41      [10]   52   ld    hl,#enemy_data
-   4279 CD E5 41      [17]   53   call ent_copy
-                             54  
-   427C                      55 loop:
-   427C DD 21 BA 41   [14]   56   ld    ix, #hero_data
-   4280 CD 1D 42      [17]   57   call ent_clear
-   4283 CD 2D 42      [17]   58   call ent_update
-   4286 CD 03 42      [17]   59   call ent_draw
-                             60  
-                             61  ;; ld    ix, #enemy_data
-                             62  ;; call ent_clear
-                             63  ;; call ent_update
-                             64  ;; call ent_draw
-                             65 
-   4289 21 1D 42      [10]   66   ld  hl, #ent_clear
-   428C CD EB 41      [17]   67   call ent_doForAll
-                             68 
-   428F 21 2D 42      [10]   69   ld  hl, #ent_update
-   4292 CD EB 41      [17]   70   call ent_doForAll
-                             71 
-   4295 21 03 42      [10]   72   ld hl, #ent_draw
-   4298 CD EB 41      [17]   73   call ent_doForAll
-                             74 
-                             75 
-   429B CD B9 43      [17]   76   call  cpct_scanKeyboard_asm
-                             77  
-   429E 21 08 20      [10]   78   ld    hl, #Key_A
-   42A1 CD B5 42      [17]   79  call  cpct_isKeyPressed_asm
-   42A4 28 0A         [12]   80   jr    z, a_no_pulsada
+                            145 ;; DESTROYS: AF
+                            146 ;;===========================================================
+   40A8                     147 moveHeroLeft:
+   40A8 3A 4B 40      [13]  148     ld a, (hero_x)                ;; A = hero_x
+   40AB FE 00         [ 7]  149     cp #0                         ;; Check against screen right limit
+   40AD 28 04         [12]  150     jr z, do_not_move_l           ;; hero_x == limit. do not move left
+                            151 
+                            152         ;; Move right
+   40AF 3D            [ 4]  153         dec a                     ;; A--
+   40B0 32 4B 40      [13]  154         ld (hero_x), a            ;; update hero_x = A
+                            155 
+   40B3                     156     do_not_move_l:
+   40B3 C9            [10]  157     ret
+                            158 
+                            159 ;;===========================================================
+                            160 ;; move hero jump
+                            161 ;; DESTROYS: AF
+                            162 ;;===========================================================
+   40B4                     163 startJump:
+   40B4 3A 4F 40      [13]  164     ld a, (hero_jump)             ;; A = hero_jump
+   40B7 FE FF         [ 7]  165     cp #-1                        ;; A == -1? 
+   40B9 C0            [11]  166     ret nz                        ;; A != 0. Jump is no activate, lest do
+                            167 
+                            168     ;; Jump is inactive, active it
+   40BA 3E 00         [ 7]  169     ld a, #0
+   40BC 32 4F 40      [13]  170     ld (hero_jump), a
+                            171     
+   40BF C9            [10]  172     ret
+                            173 
+                            174 ;;===========================================================
+                            175 ;; Check User Input
+                            176 ;; DESTROYS: AF, BC, DE, HL
+                            177 ;;===========================================================
+   40C0                     178 checkUserInput:
+                            179     ;; Scan the whole keyboard
+   40C0 CD B9 43      [17]  180     call cpct_scanKeyboard_asm
+                            181 
+                            182     ;; Check fpr Key 'D' being pressed
+   40C3 21 07 20      [10]  183     ld hl, #Key_D                   ;; HL = Key_D keycode
+   40C6 CD B5 42      [17]  184     call cpct_isKeyPressed_asm      ;; Check if Key_D is pressed
+   40C9 FE 00         [ 7]  185     cp #0                           ;; Check A == 0
+   40CB 28 03         [12]  186     jr z, d_not_pressed             ;; Jump if A == 0
+                            187 
+                            188         ;; key_D is pressed
+   40CD CD 9C 40      [17]  189         call moveHeroRight          ;; move hero right 
+                            190 
+   40D0                     191     d_not_pressed:
+                            192 
+                            193     ;; Check fpr Key 'A' being pressed
+   40D0 21 08 20      [10]  194     ld hl, #Key_A                   ;; HL = Key_A keycode
+   40D3 CD B5 42      [17]  195     call cpct_isKeyPressed_asm      ;; Check if Key_A is pressed
+   40D6 FE 00         [ 7]  196     cp #0                           ;; Check A == 0
+   40D8 28 03         [12]  197     jr z, a_not_pressed             ;; Jump if A == 0
+                            198 
+                            199         ;; Key_A is pressed
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 53.
 Hexadecimal [16-Bits]
 
 
 
-                             81 
-   42A6 CD CF 41      [17]   82     call ent_new
-   42A9 EB            [ 4]   83     ex	de, hl
-   42AA 21 C3 41      [10]   84     ld    hl,#enemy_data
-   42AD CD E5 41      [17]   85     call ent_copy
-                             86 
-   42B0                      87 a_no_pulsada:
-                             88 
-                             89 
-   42B0 CD CB 42      [17]   90   call cpct_waitVSYNC_asm
-                             91  
-                             92   ;; Loop forever
-   42B3 18 C7         [12]   93   jr    loop
+   40DA CD A8 40      [17]  200         call moveHeroLeft           ;; move hero right 
+                            201 
+   40DD                     202     a_not_pressed:
+                            203 
+                            204     ;; Check fpr Key 'A' being pressed
+   40DD 21 07 08      [10]  205     ld hl, #Key_W                   ;; HL = Key_A keycode
+   40E0 CD B5 42      [17]  206     call cpct_isKeyPressed_asm      ;; Check if Key_A is pressed
+   40E3 FE 00         [ 7]  207     cp #0                           ;; Check A == 0
+   40E5 28 03         [12]  208     jr z, w_not_pressed             ;; Jump if A == 0
+                            209 
+                            210         ;; Key_A is pressed
+   40E7 CD B4 40      [17]  211         call startJump              ;; move hero right 
+                            212 
+   40EA                     213     w_not_pressed:
+                            214 
+   40EA C9            [10]  215 ret
+                            216 ;;===========================================================
+                            217 ;; Draw the Hero
+                            218 ;; INPUTS:
+                            219 ;;      A => Colour Pattern
+                            220 ;; DESTROYS: AF, BC, DE, HL
+                            221 ;;===========================================================
+   40EB                     222 drawHero:
+   40EB F5            [11]  223     push af                         ;; Save A in the stack
+                            224 
+                            225     ;; Calculate Screen Position
+   40EC 11 00 C0      [10]  226     ld de, #0xC000                  ;; Video memory start position
+   40EF 3A 4B 40      [13]  227     ld a, (hero_x)                  ;; |
+   40F2 4F            [ 4]  228     ld c, a                         ;; \X Coordinate
+   40F3 3A 4C 40      [13]  229     ld a, (hero_y)                  ;; |
+   40F6 47            [ 4]  230     ld b, a                         ;; \Y Coordinate
+   40F7 CD 9D 43      [17]  231     call  cpct_getScreenPtr_asm
+                            232 
+                            233     ;; Draw A Box
+   40FA EB            [ 4]  234     ex de, hl                       ;; Location
+   40FB F1            [10]  235     pop af                          ;; A = User selected color
+   40FC 01 02 08      [10]  236     ld bc, #0x0802                  ;; 8x8 pixels WithdxHeight
+   40FF CD F0 42      [17]  237     call cpct_drawSolidBox_asm      ;; Draw a solid box
+                            238 
+   4102 C9            [10]  239     ret
