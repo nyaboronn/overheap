@@ -2618,10 +2618,10 @@ Hexadecimal [16-Bits]
                              42 
    4000                      43 _main::
                              44   ;; Disable firmware to prevent it from interfering with string drawing
-   4000 CD E0 42      [17]   45   call cpct_disableFirmware_asm
+   4000 CD B8 42      [17]   45   call cpct_disableFirmware_asm
                              46  
    4003 0E 00         [ 7]   47   ld    c, #0
-   4005 CD D3 42      [17]   48   call cpct_setVideoMode_asm
+   4005 CD AB 42      [17]   48   call cpct_setVideoMode_asm
                              49 
    4008 CD CF 41      [17]   50   call ent_new
    400B EB            [ 4]   51   ex	de, hl
@@ -2649,10 +2649,10 @@ Hexadecimal [16-Bits]
    402E CD EB 41      [17]   73   call ent_doForAll
                              74 
                              75 
-   4031 CD B9 43      [17]   76   call  cpct_scanKeyboard_asm
+   4031 CD 91 43      [17]   76   call  cpct_scanKeyboard_asm
                              77  
    4034 21 08 20      [10]   78   ld    hl, #Key_A
-   4037 CD B5 42      [17]   79  call  cpct_isKeyPressed_asm
+   4037 CD 8D 42      [17]   79  call  cpct_isKeyPressed_asm
    403A 28 0A         [12]   80   jr    z, a_no_pulsada
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 53.
 Hexadecimal [16-Bits]
@@ -2668,7 +2668,7 @@ Hexadecimal [16-Bits]
    4046                      87 a_no_pulsada:
                              88 
                              89 
-   4046 CD CB 42      [17]   90   call cpct_waitVSYNC_asm
+   4046 CD A3 42      [17]   90   call cpct_waitVSYNC_asm
                              91  
                              92   ;; Loop forever
    4049 18 C7         [12]   93   jr    loop

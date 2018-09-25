@@ -1,44 +1,26 @@
 XL2
-H 2 areas 11 global symbols
-M cpct_keyboard
-S cpct_isKeyPressed_asm Ref0000
-S ent_draw Ref0000
-S enemy_data Ref0000
+H 2 areas C global symbols
+S hero_update Ref0000
+S obstacle_checkCollision Ref0000
+S hero_getPtrHL Ref0000
+S obstacle_draw Ref0000
+S hero_erase Ref0000
 S .__.ABS. Def0000
-S ent_copy Ref0000
-S hero_data Ref0000
-S ent_update Ref0000
-S ent_clear Ref0000
-S ent_new Ref0000
-S cpct_setVideoMode_asm Ref0000
+S obstacle_update Ref0000
 S cpct_waitVSYNC_asm Ref0000
-S ent_doForAll Ref0000
 S cpct_disableFirmware_asm Ref0000
-S cpct_drawSolidBox_asm Ref0000
-S cpct_scanKeyboard_asm Ref0000
-S cpct_getScreenPtr_asm Ref0000
-A _CODE size 4B flags 0 addr 0
+S hero_draw Ref0000
+S obstacle_erase Ref0000
+A _CODE size 23 flags 0 addr 0
 S _main Def0000
 A _DATA size 0 flags 0 addr 0
 T 00 00
 R 00 00 00 00
-T 00 00 CD 00 00 0E 00 CD 00 00 CD 00 00 EB 21
-R 00 00 00 00 02 03 0C 00 02 08 09 00 02 0B 08 00
-T 0D 00 00 00 CD 00 00
-R 00 00 00 00 02 02 02 00 02 05 04 00
-T 12 00
-R 00 00 00 00
-T 12 00 DD 21 00 00 CD 00 00 CD 00 00 CD
-R 00 00 00 00 02 04 05 00 02 07 07 00 02 0A 06 00
-T 1D 00 00 00 21 00 00 CD 00 00 21
-R 00 00 00 00 02 02 01 00 02 05 07 00 02 08 0B 00
-T 26 00 00 00 CD 00 00 21 00 00 CD
-R 00 00 00 00 02 02 06 00 02 05 0B 00 02 08 01 00
-T 2F 00 00 00 CD 00 00 21 08 20 CD 00 00 28 0A CD
-R 00 00 00 00 02 02 0B 00 02 05 0E 00 02 0B 00 00
-T 3D 00 00 00 EB 21 00 00 CD 00 00
-R 00 00 00 00 02 02 08 00 02 06 02 00 02 09 04 00
-T 46 00
-R 00 00 00 00
-T 46 00 CD 00 00 18 C7
-R 00 00 00 00 02 03 0A 00
+T 00 00 CD 00 00 CD 00 00 CD 00 00 CD
+R 00 00 00 00 02 03 08 00 02 06 04 00 02 09 0A 00
+T 0A 00 00 00 CD 00 00 CD 00 00 CD
+R 00 00 00 00 02 02 00 00 02 05 06 00 02 08 02 00
+T 13 00 00 00 32 00 C0 CD 00 00 CD 00 00 CD
+R 00 00 00 00 02 02 01 00 02 08 09 00 02 0B 03 00
+T 1F 00 00 00 18 DD
+R 00 00 00 00 02 02 07 00

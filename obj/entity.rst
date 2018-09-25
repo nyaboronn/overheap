@@ -2779,14 +2779,14 @@ Hexadecimal [16-Bits]
    4203 11 00 C0      [10]   90   ld    de, #0xC000       ;;Comienzo memoria de video
    4206 DD 4E 00      [19]   91   ld     c, e_x(ix)         ;; C = Entity Y
    4209 DD 46 01      [19]   92   ld     b, e_y(ix)         ;; B = Entity X
-   420C CD 9D 43      [17]   93   call cpct_getScreenPtr_asm
+   420C CD 75 43      [17]   93   call cpct_getScreenPtr_asm
                              94  
    420F EB            [ 4]   95   ex    de, hl   ;; DE = Puntero a memoria
    4210 DD 7E 06      [19]   96   ld  a, e_col(ix)   ;; Color
    4213 DD 46 05      [19]   97   ld  b, e_h(ix)   ;; alto
    4216 DD 4E 04      [19]   98   ld  c, e_w(ix)   ;; Ancho
                              99  
-   4219 CD F0 42      [17]  100   call cpct_drawSolidBox_asm
+   4219 CD C8 42      [17]  100   call cpct_drawSolidBox_asm
                             101  
    421C C9            [10]  102   ret
                             103 
@@ -2829,16 +2829,16 @@ Hexadecimal [16-Bits]
                             135 ;; ENTRADA: IX -> Puntero a entidad
                             136 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    4234                     137 ent_moveKeyboard:
-   4234 CD B9 43      [17]  138   call  cpct_scanKeyboard_asm
+   4234 CD 91 43      [17]  138   call  cpct_scanKeyboard_asm
                             139  
    4237 21 04 04      [10]  140   ld    hl, #Key_O
-   423A CD B5 42      [17]  141   call  cpct_isKeyPressed_asm
+   423A CD 8D 42      [17]  141   call  cpct_isKeyPressed_asm
    423D 28 04         [12]  142   jr    z, o_no_pulsada
    423F DD 36 02 FF   [19]  143      ld e_vx(ix), #-1
    4243                     144 o_no_pulsada:
                             145  
    4243 21 03 08      [10]  146   ld    hl, #Key_P
-   4246 CD B5 42      [17]  147   call  cpct_isKeyPressed_asm
+   4246 CD 8D 42      [17]  147   call  cpct_isKeyPressed_asm
    4249 28 04         [12]  148   jr    z, p_no_pulsada
    424B DD 36 02 01   [19]  149      ld e_vx(ix), #1
                             150  
