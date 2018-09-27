@@ -1,1 +1,4 @@
-/obj
+obj/
+*.cdt
+*.dsk
+*.sna
