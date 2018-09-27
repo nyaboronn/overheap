@@ -1,4 +1,4 @@
-.clase2.cdt
-.clase2.dsk
-.clase2.sna
+*.cdt
+*.dsk
+*.sna
 obj/
