@@ -9,43 +9,43 @@ Area                                    Addr        Size        Decimal Bytes (A
       -----  --------------------------------   ------------------------
      00000000  .__.ABS.                           cpct_keyboard
      00000000  l__DATA                         
-     000002B3  l__CODE                         
+     000002BE  l__CODE                         
      00004000  s__CODE                         
-     000042B3  s__DATA                         
+     000042BE  s__DATA                         
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00004000    000002B3 =         691. bytes (REL,CON)
+_CODE                               00004000    000002BE =         702. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
      00004000  _main                              cpct_keyboard
-     0000407E  hero_data                          cpct_keyboard
-     00004087  enemy_data                         cpct_keyboard
-     000040A1  ent_new                            cpct_keyboard
-     000040B7  ent_copy                           cpct_keyboard
-     000040BD  ent_doForAll                       cpct_keyboard
-     000040D5  ent_draw                           cpct_keyboard
-     000040EF  ent_clear                          cpct_keyboard
-     000040FF  ent_update                         cpct_keyboard
-     0000417E  _cpct_isKeyPressed                 cpct_keyboard
-     0000417E  cpct_isKeyPressed_asm              cpct_keyboard
-     0000418A  _cpct_keyboardStatusBuffer         cpct_keyboard
-     00004194  cpct_setVideoMode_asm              cpct_video
-     000041A1  _cpct_waitVSYNC                    cpct_video
-     000041A1  cpct_waitVSYNC_asm                 cpct_video
-     000041A9  _cpct_disableFirmware              cpct_firmware
-     000041A9  _cpct_removeInterruptHandler       cpct_firmware
-     000041A9  cpct_disableFirmware_asm           cpct_firmware
-     000041A9  cpct_removeInterruptHandler_asm    cpct_firmware
-     000041B9  cpct_drawSolidBox_asm              cpct_sprites
-     00004265  _cpct_mode_rom_status              cpct_firmware
-     00004266  cpct_getScreenPtr_asm              cpct_video
-     00004282  _cpct_scanKeyboard                 cpct_keyboard
-     00004282  cpct_scanKeyboard_asm              cpct_keyboard
+     00004087  hero_data                          cpct_keyboard
+     00004091  enemy_data                         cpct_keyboard
+     000040AC  ent_new                            cpct_keyboard
+     000040C2  ent_copy                           cpct_keyboard
+     000040C8  ent_doForAll                       cpct_keyboard
+     000040E0  ent_draw                           cpct_keyboard
+     000040FA  ent_clear                          cpct_keyboard
+     0000410A  ent_update                         cpct_keyboard
+     00004189  _cpct_isKeyPressed                 cpct_keyboard
+     00004189  cpct_isKeyPressed_asm              cpct_keyboard
+     00004195  _cpct_keyboardStatusBuffer         cpct_keyboard
+     0000419F  cpct_setVideoMode_asm              cpct_video
+     000041AC  _cpct_waitVSYNC                    cpct_video
+     000041AC  cpct_waitVSYNC_asm                 cpct_video
+     000041B4  _cpct_disableFirmware              cpct_firmware
+     000041B4  _cpct_removeInterruptHandler       cpct_firmware
+     000041B4  cpct_disableFirmware_asm           cpct_firmware
+     000041B4  cpct_removeInterruptHandler_asm    cpct_firmware
+     000041C4  cpct_drawSolidBox_asm              cpct_sprites
+     00004270  _cpct_mode_rom_status              cpct_firmware
+     00004271  cpct_getScreenPtr_asm              cpct_video
+     0000428D  _cpct_scanKeyboard                 cpct_keyboard
+     0000428D  cpct_scanKeyboard_asm              cpct_keyboard
 ASxxxx Linker V03.00 + NoICE + sdld,  page 3.
 
 Files Linked                              [ module(s) ]

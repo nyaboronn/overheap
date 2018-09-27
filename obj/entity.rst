@@ -2507,52 +2507,55 @@ Hexadecimal [16-Bits]
                               1 ;###########################################################################
                               2 ;#### FICHERO: entity.h.s
                               3 ;###########################################################################
-                              4 .macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd
+                              4 .macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _jump
                               5 _name:
-                              6    .db    _x, _y     ;; X, Y
+                              6    .db    _x, _y      ;; X, Y
                               7    .db   _vx, _vy     ;; VX, VY
-                              8    .db    _w, _h     ;; W, H
+                              8    .db    _w, _h      ;; W, H
                               9    .db   _col           ;; Color
-                             10    .dw   _upd        ;; Update
-                             11 .endm
-                             12 .macro DefineEntityDefault _name, _suf
-                             13    DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-                             14 .endm
-                             15 
-                             16 .macro DefineNEntities _name, _n
-                             17   _c = 0
-                             18   .rept _n
-                             19      DefineEntityDefault _name, \_c
-                             20      _c = _c + 1
-                             21   .endm
-                             22 .endm
-                             23 
-                             24 
-                             25 ;;.macro ent_draw_default _pos, _y, _x, _de, _e_col, _e_h, _e_w
-                             26   ;  ent_draw #0xC000, 0x00,0x00, 0xC000, 0xFF, 0x02, 0x08
-                             27 ;;.endm
-                             28 
-                             29 
+                             10    .dw   _upd         ;; Update
+                             11    .db  _jump         ;; Jump State, -1 if not jumping
+                             12 .endm
+                             13 
+                             14 .macro DefineEntityDefault _name, _suf
+                             15    DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+                             16 .endm
+                             17 
+                             18 .macro DefineNEntities _name, _n
+                             19   _c = 0
+                             20   .rept _n
+                             21      DefineEntityDefault _name, \_c
+                             22      _c = _c + 1
+                             23   .endm
+                             24 .endm
+                             25 
+                             26 
+                             27 ;;.macro ent_draw_default _pos, _y, _x, _de, _e_col, _e_h, _e_w
+                             28   ;  ent_draw #0xC000, 0x00,0x00, 0xC000, 0xFF, 0x02, 0x08
+                             29 ;;.endm
                              30 
-                     0000    31 e_x = 0
-                     0001    32 e_y = 1
-                     0002    33 e_vx = 2
-                     0003    34 e_vy = 3
-                     0004    35 e_w = 4
-                     0005    36 e_h = 5
-                     0006    37 e_col = 6
-                     0007    38 e_up_l = 7
-                     0008    39 e_up_h = 8
-                             40  
-                             41  
-                             42 .globl ent_draw
-                             43 .globl ent_clear
-                             44 .globl ent_update
-                             45 .globl ent_copy
-                             46 .globl ent_new
-                             47 .globl hero_data
-                             48 .globl enemy_data
-                             49 .globl ent_doForAll
+                             31 
+                             32 
+                     0000    33 e_x = 0
+                     0001    34 e_y = 1
+                     0002    35 e_vx = 2
+                     0003    36 e_vy = 3
+                     0004    37 e_w = 4
+                     0005    38 e_h = 5
+                     0006    39 e_col = 6
+                     0007    40 e_up_l = 7
+                     0008    41 e_up_h = 8
+                     0009    42 e_jump = 9
+                             43  
+                             44  
+                             45 .globl ent_draw
+                             46 .globl ent_clear
+                             47 .globl ent_update
+                             48 .globl ent_copy
+                             49 .globl ent_new
+                             50 .globl hero_data
+                             51 .globl enemy_data
+                             52 .globl ent_doForAll
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 51.
 Hexadecimal [16-Bits]
 
@@ -2580,123 +2583,134 @@ Hexadecimal [16-Bits]
                               4      _c = _c + 1
                               5   .endm
    0000                       1      DefineEntityDefault entity_vector, \_c
-   0000                       1    DefineEntity entity_vector0, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
+   0000                       1    DefineEntity entity_vector0, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
    0000                       1 entity_vector0:
-   402D AA 00                 2    .db    0xAA, 0     ;; X, Y
+   402D AA 00                 2    .db    0xAA, 0      ;; X, Y
    402F 00 00                 3    .db   0, 0     ;; VX, VY
-   4031 00 00                 4    .db    0, 0     ;; W, H
+   4031 00 00                 4    .db    0, 0      ;; W, H
    4033 00                    5    .db   0           ;; Color
-   4034 FF FF                 6    .dw   0xFFFF        ;; Update
+   4034 FF FF                 6    .dw   0xFFFF         ;; Update
+   4036 FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0001     2      _c = _c + 1
-   4036                       1      DefineEntityDefault entity_vector, \_c
-   0009                       1    DefineEntity entity_vector1, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-   0009                       1 entity_vector1:
-   4036 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4038 00 00                 3    .db   0, 0     ;; VX, VY
-   403A 00 00                 4    .db    0, 0     ;; W, H
-   403C 00                    5    .db   0           ;; Color
-   403D FF FF                 6    .dw   0xFFFF        ;; Update
+   4037                       1      DefineEntityDefault entity_vector, \_c
+   000A                       1    DefineEntity entity_vector1, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   000A                       1 entity_vector1:
+   4037 AA 00                 2    .db    0xAA, 0      ;; X, Y
+   4039 00 00                 3    .db   0, 0     ;; VX, VY
+   403B 00 00                 4    .db    0, 0      ;; W, H
+   403D 00                    5    .db   0           ;; Color
+   403E FF FF                 6    .dw   0xFFFF         ;; Update
+   4040 FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0002     2      _c = _c + 1
-   403F                       1      DefineEntityDefault entity_vector, \_c
-   0012                       1    DefineEntity entity_vector2, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-   0012                       1 entity_vector2:
-   403F AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4041 00 00                 3    .db   0, 0     ;; VX, VY
-   4043 00 00                 4    .db    0, 0     ;; W, H
-   4045 00                    5    .db   0           ;; Color
-   4046 FF FF                 6    .dw   0xFFFF        ;; Update
+   4041                       1      DefineEntityDefault entity_vector, \_c
+   0014                       1    DefineEntity entity_vector2, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   0014                       1 entity_vector2:
+   4041 AA 00                 2    .db    0xAA, 0      ;; X, Y
+   4043 00 00                 3    .db   0, 0     ;; VX, VY
+   4045 00 00                 4    .db    0, 0      ;; W, H
+   4047 00                    5    .db   0           ;; Color
+   4048 FF FF                 6    .dw   0xFFFF         ;; Update
+   404A FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0003     2      _c = _c + 1
-   4048                       1      DefineEntityDefault entity_vector, \_c
-   001B                       1    DefineEntity entity_vector3, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-   001B                       1 entity_vector3:
-   4048 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   404A 00 00                 3    .db   0, 0     ;; VX, VY
-   404C 00 00                 4    .db    0, 0     ;; W, H
-   404E 00                    5    .db   0           ;; Color
-   404F FF FF                 6    .dw   0xFFFF        ;; Update
+   404B                       1      DefineEntityDefault entity_vector, \_c
+   001E                       1    DefineEntity entity_vector3, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   001E                       1 entity_vector3:
+   404B AA 00                 2    .db    0xAA, 0      ;; X, Y
+   404D 00 00                 3    .db   0, 0     ;; VX, VY
+   404F 00 00                 4    .db    0, 0      ;; W, H
+   4051 00                    5    .db   0           ;; Color
+   4052 FF FF                 6    .dw   0xFFFF         ;; Update
+   4054 FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0004     2      _c = _c + 1
-   4051                       1      DefineEntityDefault entity_vector, \_c
-   0024                       1    DefineEntity entity_vector4, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-   0024                       1 entity_vector4:
-   4051 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4053 00 00                 3    .db   0, 0     ;; VX, VY
-   4055 00 00                 4    .db    0, 0     ;; W, H
-   4057 00                    5    .db   0           ;; Color
-   4058 FF FF                 6    .dw   0xFFFF        ;; Update
-                     0005     2      _c = _c + 1
-   405A                       1      DefineEntityDefault entity_vector, \_c
-   002D                       1    DefineEntity entity_vector5, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
+   4055                       1      DefineEntityDefault entity_vector, \_c
+   0028                       1    DefineEntity entity_vector4, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   0028                       1 entity_vector4:
+   4055 AA 00                 2    .db    0xAA, 0      ;; X, Y
+   4057 00 00                 3    .db   0, 0     ;; VX, VY
+   4059 00 00                 4    .db    0, 0      ;; W, H
+   405B 00                    5    .db   0           ;; Color
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 53.
 Hexadecimal [16-Bits]
 
 
 
-   002D                       1 entity_vector5:
-   405A AA 00                 2    .db    0xAA, 0     ;; X, Y
-   405C 00 00                 3    .db   0, 0     ;; VX, VY
-   405E 00 00                 4    .db    0, 0     ;; W, H
-   4060 00                    5    .db   0           ;; Color
-   4061 FF FF                 6    .dw   0xFFFF        ;; Update
+   405C FF FF                 6    .dw   0xFFFF         ;; Update
+   405E FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
+                     0005     2      _c = _c + 1
+   405F                       1      DefineEntityDefault entity_vector, \_c
+   0032                       1    DefineEntity entity_vector5, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   0032                       1 entity_vector5:
+   405F AA 00                 2    .db    0xAA, 0      ;; X, Y
+   4061 00 00                 3    .db   0, 0     ;; VX, VY
+   4063 00 00                 4    .db    0, 0      ;; W, H
+   4065 00                    5    .db   0           ;; Color
+   4066 FF FF                 6    .dw   0xFFFF         ;; Update
+   4068 FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0006     2      _c = _c + 1
-   4063                       1      DefineEntityDefault entity_vector, \_c
-   0036                       1    DefineEntity entity_vector6, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-   0036                       1 entity_vector6:
-   4063 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4065 00 00                 3    .db   0, 0     ;; VX, VY
-   4067 00 00                 4    .db    0, 0     ;; W, H
-   4069 00                    5    .db   0           ;; Color
-   406A FF FF                 6    .dw   0xFFFF        ;; Update
+   4069                       1      DefineEntityDefault entity_vector, \_c
+   003C                       1    DefineEntity entity_vector6, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   003C                       1 entity_vector6:
+   4069 AA 00                 2    .db    0xAA, 0      ;; X, Y
+   406B 00 00                 3    .db   0, 0     ;; VX, VY
+   406D 00 00                 4    .db    0, 0      ;; W, H
+   406F 00                    5    .db   0           ;; Color
+   4070 FF FF                 6    .dw   0xFFFF         ;; Update
+   4072 FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0007     2      _c = _c + 1
-   406C                       1      DefineEntityDefault entity_vector, \_c
-   003F                       1    DefineEntity entity_vector7, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-   003F                       1 entity_vector7:
-   406C AA 00                 2    .db    0xAA, 0     ;; X, Y
-   406E 00 00                 3    .db   0, 0     ;; VX, VY
-   4070 00 00                 4    .db    0, 0     ;; W, H
-   4072 00                    5    .db   0           ;; Color
-   4073 FF FF                 6    .dw   0xFFFF        ;; Update
+   4073                       1      DefineEntityDefault entity_vector, \_c
+   0046                       1    DefineEntity entity_vector7, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   0046                       1 entity_vector7:
+   4073 AA 00                 2    .db    0xAA, 0      ;; X, Y
+   4075 00 00                 3    .db   0, 0     ;; VX, VY
+   4077 00 00                 4    .db    0, 0      ;; W, H
+   4079 00                    5    .db   0           ;; Color
+   407A FF FF                 6    .dw   0xFFFF         ;; Update
+   407C FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0008     2      _c = _c + 1
-   4075                       1      DefineEntityDefault entity_vector, \_c
-   0048                       1    DefineEntity entity_vector8, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
-   0048                       1 entity_vector8:
-   4075 AA 00                 2    .db    0xAA, 0     ;; X, Y
-   4077 00 00                 3    .db   0, 0     ;; VX, VY
-   4079 00 00                 4    .db    0, 0     ;; W, H
-   407B 00                    5    .db   0           ;; Color
-   407C FF FF                 6    .dw   0xFFFF        ;; Update
+   407D                       1      DefineEntityDefault entity_vector, \_c
+   0050                       1    DefineEntity entity_vector8, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   0050                       1 entity_vector8:
+   407D AA 00                 2    .db    0xAA, 0      ;; X, Y
+   407F 00 00                 3    .db   0, 0     ;; VX, VY
+   4081 00 00                 4    .db    0, 0      ;; W, H
+   4083 00                    5    .db   0           ;; Color
+   4084 FF FF                 6    .dw   0xFFFF         ;; Update
+   4086 FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
                      0009     2      _c = _c + 1
-   407E                      10 DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard
-   0051                       1 hero_data:
-   407E 14 21                 2    .db    0x14, 0x21     ;; X, Y
-   4080 00 00                 3    .db   0x00, 0x00     ;; VX, VY
-   4082 02 08                 4    .db    0x02, 0x08     ;; W, H
-   4084 0F                    5    .db   0x0F           ;; Color
-   4085 09 41                 6    .dw   ent_moveKeyboard        ;; Update
-   4087                      11 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
-   005A                       1 enemy_data:
-   4087 20 01                 2    .db    0x20, 0x01     ;; X, Y
-   4089 FF 00                 3    .db   0xFF, 0x00     ;; VX, VY
-   408B 02 08                 4    .db    0x02, 0x08     ;; W, H
-   408D FF                    5    .db   0xFF           ;; Color
-   408E 37 41                 6    .dw   ent_move        ;; Update
-                             12 
-                             13 ;;
-                             14 ;; Jump Table
-                             15 ;;
-   4090                      16 hero_jumptable:
-   4090 F4 F8 FC FC          17     .db #-12, #-8, #-4, #-4
-   4094 FC 00 00 04          18     .db #-4, #00, #00, #04
+   4087                      10 DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard, #-1
+   005A                       1 hero_data:
+   4087 14 21                 2    .db    0x14, 0x21      ;; X, Y
+   4089 00 00                 3    .db   0x00, 0x00     ;; VX, VY
+   408B 02 08                 4    .db    0x02, 0x08      ;; W, H
+   408D 0F                    5    .db   0x0F           ;; Color
+   408E 14 41                 6    .dw   ent_moveKeyboard         ;; Update
+   4090 FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
+   4091                      11 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, #-1
+   0064                       1 enemy_data:
+   4091 20 01                 2    .db    0x20, 0x01      ;; X, Y
+   4093 FF 00                 3    .db   0xFF, 0x00     ;; VX, VY
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 54.
 Hexadecimal [16-Bits]
 
 
 
-   4098 04 04 08 0C          19     .db #04, #04, #08, #012
-   409C 80                   20     .db #0x80                   ;; El último byte se marca con el #0x80
+   4095 02 08                 4    .db    0x02, 0x08      ;; W, H
+   4097 FF                    5    .db   0xFF           ;; Color
+   4098 42 41                 6    .dw   ent_move         ;; Update
+   409A FF                    7    .db  #-1         ;; Jump State, -1 if not jumping
+                             12 
+                             13 ;;
+                             14 ;; Jump Table
+                             15 ;;
+   409B                      16 hero_jumptable:
+   409B F4 F8 FC FC          17     .db #-12, #-8, #-4, #-4
+   409F FC 00 00 04          18     .db #-4, #00, #00, #04
+   40A3 04 04 08 0C          19     .db #04, #04, #08, #012
+   40A7 80                   20     .db #0x80                   ;; El último byte se marca con el #0x80
                              21 ;;
                              22 ;; Hero Jump Status (IF Not Jumping, hero_jumpstate = -1)
                              23 ;;
-   409D FF                   24 hero_jumpstate:  .db #-1             ;; (-1 is not jumping)
+   40A8 FF                   24 hero_jumpstate:  .db #-1             ;; (-1 is not jumping)
                              25 
                              26 
                              27 
@@ -2706,249 +2720,249 @@ Hexadecimal [16-Bits]
                              31 
                      0009    32  k_max_num_ent = 9
                      0009    33  k_entity_size = 9
-   409E 00                   34  m_num_ent: .db 00
-   409F 2D 40                35  m_next_entity: .dw entity_vector0
+   40A9 00                   34  m_num_ent: .db 00
+   40AA 2D 40                35  m_next_entity: .dw entity_vector0
                              36 
                              37  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              38  ;; REGISTRA UNA NUEVA ENTIDAD
                              39  ;; REGISTROS DESTRUIDOS
                              40  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              41 
-   40A1                      42  ent_new:
-   40A1 3A 9E 40      [13]   43     ld  a, (m_num_ent)
-   40A4 3C            [ 4]   44     inc    a
-   40A5 32 9E 40      [13]   45     ld (m_num_ent), a
+   40AC                      42  ent_new:
+   40AC 3A A9 40      [13]   43     ld  a, (m_num_ent)
+   40AF 3C            [ 4]   44     inc    a
+   40B0 32 A9 40      [13]   45     ld (m_num_ent), a
                              46     
-   40A8 2A 9F 40      [16]   47     ld hl, (m_next_entity)  ;; 0x10FF  +  9 = 0x1008
-   40AB 01 09 00      [10]   48     ld  bc, #k_entity_size
-   40AE 09            [11]   49     add  hl, bc
-   40AF 22 9F 40      [16]   50     ld (m_next_entity), hl
-   40B2 01 F7 FF      [10]   51     ld  bc, #-k_entity_size         ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
-   40B5 09            [11]   52     add  hl, bc                     ;;Se cambia por las 2                           sbc hl, bc
+   40B3 2A AA 40      [16]   47     ld hl, (m_next_entity)  ;; 0x10FF  +  9 = 0x1008
+   40B6 01 09 00      [10]   48     ld  bc, #k_entity_size
+   40B9 09            [11]   49     add  hl, bc
+   40BA 22 AA 40      [16]   50     ld (m_next_entity), hl
+   40BD 01 F7 FF      [10]   51     ld  bc, #-k_entity_size         ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
+   40C0 09            [11]   52     add  hl, bc                     ;;Se cambia por las 2                           sbc hl, bc
                              53     
                              54     
                              55     ;;add l
                              56     ;;ld	l, a
                              57     ;;ld	a, h
                              58     ;;adc #0 suma con acarreo
-   40B6 C9            [10]   59     ret
+   40C1 C9            [10]   59     ret
                              60 
                              61 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                              62 ;;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
-                             63 ;;; REGISTROS DESTRUIDOS:
-                             64 ;;; ENTRADA: 
-                             65 ;;;        HL -> ENTIDAD ORIGEN
-                             66 ;;;        DE -> EMTODAD DESTINO
-                             67  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40B7                      68 ent_copy:
-   40B7 01 09 00      [10]   69     ld bc, #k_entity_size
-   40BA ED B0         [21]   70     ldir
-                             71 
-   40BC C9            [10]   72     ret
-                             73 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 55.
 Hexadecimal [16-Bits]
 
 
 
-                             74 ;; DIBUJAR UNA ENTIDAD
-                             75 ;; ENTRADA HL -> PUNTERO AL MÉTODO A EJECUTAR
-                             76 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             77 
-   40BD                      78 ent_doForAll:
-   40BD 3A 9E 40      [13]   79     ld  a, (m_num_ent)
-   40C0 DD 21 2D 40   [14]   80     ld  ix, #entity_vector0
-   40C4 22 C9 40      [16]   81     ld  (metodo), hl
-   40C7                      82  buc:
-   40C7 F5            [11]   83         push af
-                     009C    84         metodo = . + 1      ;; . es la dir.mem en la que estoy si le sumo 1 es el call
-   40C8 CD D5 40      [17]   85         call ent_draw
-   40CB F1            [10]   86         pop af
-   40CC 01 09 00      [10]   87         ld bc, #k_entity_size
-   40CF DD 09         [15]   88         add ix, bc
-                             89         
-                             90 
-   40D1 3D            [ 4]   91         dec a
-   40D2 20 F3         [12]   92         jr nz, buc
-                             93 
-   40D4 C9            [10]   94     ret
-                             95 
+                             63 ;;; REGISTROS DESTRUIDOS:
+                             64 ;;; ENTRADA: 
+                             65 ;;;        HL -> ENTIDAD ORIGEN
+                             66 ;;;        DE -> EMTODAD DESTINO
+                             67  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   40C2                      68 ent_copy:
+   40C2 01 09 00      [10]   69     ld bc, #k_entity_size
+   40C5 ED B0         [21]   70     ldir
+                             71 
+   40C7 C9            [10]   72     ret
+                             73 
+                             74 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             75 ;; DIBUJAR UNA ENTIDAD
+                             76 ;; ENTRADA HL -> PUNTERO AL MÉTODO A EJECUTAR
+                             77 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             78 
+   40C8                      79 ent_doForAll:
+   40C8 3A A9 40      [13]   80     ld  a, (m_num_ent)
+   40CB DD 21 2D 40   [14]   81     ld  ix, #entity_vector0
+   40CF 22 D4 40      [16]   82     ld  (metodo), hl
+   40D2                      83  buc:
+   40D2 F5            [11]   84         push af
+                     00A7    85         metodo = . + 1      ;; . es la dir.mem en la que estoy si le sumo 1 es el call
+   40D3 CD E0 40      [17]   86         call ent_draw
+   40D6 F1            [10]   87         pop af
+   40D7 01 09 00      [10]   88         ld bc, #k_entity_size
+   40DA DD 09         [15]   89         add ix, bc
+                             90         
+                             91 
+   40DC 3D            [ 4]   92         dec a
+   40DD 20 F3         [12]   93         jr nz, buc
+                             94 
+   40DF C9            [10]   95     ret
                              96 
-                             97 
-                             98 
-                             99 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            100 ;; DIBUJAR UNA ENTIDAD
-                            101 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
-                            102 ;; ENTRADA: IX -> Puntero a entidad
-                            103 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40D5                     104 ent_draw:
-   40D5 11 00 C0      [10]  105   ld    de, #0xC000       ;;Comienzo memoria de video
-   40D8 DD 4E 00      [19]  106   ld     c, e_x(ix)         ;; C = Entity Y
-   40DB DD 46 01      [19]  107   ld     b, e_y(ix)         ;; B = Entity X
-   40DE CD 66 42      [17]  108   call cpct_getScreenPtr_asm
-                            109  
-   40E1 EB            [ 4]  110   ex    de, hl   ;; DE = Puntero a memoria
-   40E2 DD 7E 06      [19]  111   ld  a, e_col(ix)   ;; Color
-   40E5 DD 46 05      [19]  112   ld  b, e_h(ix)   ;; alto
-   40E8 DD 4E 04      [19]  113   ld  c, e_w(ix)   ;; Ancho
+                             97 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             98 ;; DIBUJAR UNA ENTIDAD
+                             99 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+                            100 ;; ENTRADA: IX -> Puntero a entidad
+                            101 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   40E0                     102 ent_draw:
+   40E0 11 00 C0      [10]  103   ld    de, #0xC000       ;;Comienzo memoria de video
+   40E3 DD 4E 00      [19]  104   ld     c, e_x(ix)         ;; C = Entity Y
+   40E6 DD 46 01      [19]  105   ld     b, e_y(ix)         ;; B = Entity X
+   40E9 CD 71 42      [17]  106   call cpct_getScreenPtr_asm
+                            107  
+   40EC EB            [ 4]  108   ex    de, hl   ;; DE = Puntero a memoria
+   40ED DD 7E 06      [19]  109   ld  a, e_col(ix)   ;; Color
+   40F0 DD 46 05      [19]  110   ld  b, e_h(ix)   ;; alto
+   40F3 DD 4E 04      [19]  111   ld  c, e_w(ix)   ;; Ancho
+                            112  
+   40F6 CD C4 41      [17]  113   call cpct_drawSolidBox_asm
                             114  
-   40EB CD B9 41      [17]  115   call cpct_drawSolidBox_asm
-                            116  
-   40EE C9            [10]  117   ret
-                            118 
-                            119  
-                            120 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            121 ;; BORRA UNA ENTIDAD
-                            122 ;; REGISTROS DESTRUIDOS: AF',AF, BC, DE, HL
-                            123 ;; ENTRADA: IX -> Puntero a entidad
-                            124 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40EF                     125 ent_clear:
-   40EF DD 7E 06      [19]  126   ld  a, e_col(ix)
-   40F2 08            [ 4]  127   ex af, af'
-                            128  
+   40F9 C9            [10]  115   ret
+                            116 
+                            117  
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 56.
 Hexadecimal [16-Bits]
 
 
 
-   40F3 DD 36 06 00   [19]  129    ld  e_col(ix), #0
-                            130  
-   40F7 CD D5 40      [17]  131    call ent_draw
-   40FA 08            [ 4]  132    ex af, af'
-   40FB DD 77 06      [19]  133   ld e_col(ix), a
+                            118 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            119 ;; BORRA UNA ENTIDAD
+                            120 ;; REGISTROS DESTRUIDOS: AF',AF, BC, DE, HL
+                            121 ;; ENTRADA: IX -> Puntero a entidad
+                            122 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   40FA                     123 ent_clear:
+   40FA DD 7E 06      [19]  124   ld  a, e_col(ix)
+   40FD 08            [ 4]  125   ex af, af'
+                            126  
+   40FE DD 36 06 00   [19]  127    ld  e_col(ix), #0
+                            128  
+   4102 CD E0 40      [17]  129    call ent_draw
+   4105 08            [ 4]  130    ex af, af'
+   4106 DD 77 06      [19]  131   ld e_col(ix), a
+                            132  
+   4109 C9            [10]  133   ret
                             134  
-   40FE C9            [10]  135   ret
-                            136  
-                            137 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            138 ;; ACTUALIZAR UNA ENTIDAD
-                            139 ;; REGISTROS DESTRUIDOS:
-                            140 ;; ENTRADA: IX -> Puntero a entidad
-                            141 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   40FF                     142 ent_update:
-                            143   ;; Controla el estado del salto
-   40FF CD 56 41      [17]  144   call jumpControl
-   4102 DD 66 08      [19]  145   ld     h, e_up_h(ix)
-   4105 DD 6E 07      [19]  146   ld     l, e_up_l(ix)
-   4108 E9            [ 4]  147   jp    (hl)
-                            148  
-                            149 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            150 ;; MOVER UNA ENTIDAD CON TECLADO
-                            151 ;; REGISTROS DESTRUIDOS:
-                            152 ;; ENTRADA: IX -> Puntero a entidad
-                            153 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   4109                     154 ent_moveKeyboard:
-   4109 CD 82 42      [17]  155   call  cpct_scanKeyboard_asm
-                            156  
-   410C 21 08 20      [10]  157   ld    hl, #Key_A
-   410F CD 7E 41      [17]  158   call  cpct_isKeyPressed_asm
-   4112 28 04         [12]  159   jr    z, a_no_pulsada
-   4114 DD 36 02 FF   [19]  160      ld e_vx(ix), #-1
-   4118                     161 a_no_pulsada:
-                            162  
-   4118 21 07 20      [10]  163   ld    hl, #Key_D
-   411B CD 7E 41      [17]  164   call  cpct_isKeyPressed_asm
-   411E 28 04         [12]  165   jr    z, d_no_pulsada
-   4120 DD 36 02 01   [19]  166      ld e_vx(ix), #1
-   4124                     167 d_no_pulsada:
-                            168 
-                            169 ;; COMPROBAR SI SE HA PULSADO 'W'
-   4124 21 07 08      [10]  170   ld    hl, #Key_W
-   4127 CD 7E 41      [17]  171   call  cpct_isKeyPressed_asm
-   412A 28 03         [12]  172   jr    z, w_no_pulsada         ;; IF KEY_W IS pressed: lest JUMP
-   412C CD 4A 41      [17]  173   call startJump               ;; Call Jump Function
-   412F                     174 w_no_pulsada:
-                            175  
-   412F CD 37 41      [17]  176   call  ent_move
-                            177  
-   4132 DD 36 02 00   [19]  178   ld e_vx(ix), #0
-                            179  
-   4136 C9            [10]  180   ret
-                            181  
-                            182  
-                            183 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            135 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            136 ;; ACTUALIZAR UNA ENTIDAD
+                            137 ;; REGISTROS DESTRUIDOS:
+                            138 ;; ENTRADA: IX -> Puntero a entidad
+                            139 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   410A                     140 ent_update:
+                            141   ;; Controla el estado del salto
+   410A CD 61 41      [17]  142   call jumpControl
+   410D DD 66 08      [19]  143   ld     h, e_up_h(ix)
+   4110 DD 6E 07      [19]  144   ld     l, e_up_l(ix)
+   4113 E9            [ 4]  145   jp    (hl)
+                            146  
+                            147 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            148 ;; MOVER UNA ENTIDAD CON TECLADO
+                            149 ;; REGISTROS DESTRUIDOS:
+                            150 ;; ENTRADA: IX -> Puntero a entidad
+                            151 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   4114                     152 ent_moveKeyboard:
+   4114 CD 8D 42      [17]  153   call  cpct_scanKeyboard_asm
+                            154  
+   4117 21 08 20      [10]  155   ld    hl, #Key_A
+   411A CD 89 41      [17]  156   call  cpct_isKeyPressed_asm
+   411D 28 04         [12]  157   jr    z, a_no_pulsada
+   411F DD 36 02 FF   [19]  158      ld e_vx(ix), #-1
+   4123                     159 a_no_pulsada:
+                            160  
+   4123 21 07 20      [10]  161   ld    hl, #Key_D
+   4126 CD 89 41      [17]  162   call  cpct_isKeyPressed_asm
+   4129 28 04         [12]  163   jr    z, d_no_pulsada
+   412B DD 36 02 01   [19]  164      ld e_vx(ix), #1
+   412F                     165 d_no_pulsada:
+                            166 
+                            167 ;; COMPROBAR SI SE HA PULSADO 'W'
+   412F 21 07 08      [10]  168   ld    hl, #Key_W
+   4132 CD 89 41      [17]  169   call  cpct_isKeyPressed_asm
+   4135 28 03         [12]  170   jr    z, w_no_pulsada         ;; IF KEY_W IS pressed: lest JUMP
+   4137 CD 55 41      [17]  171   call startJump               ;; Call Jump Function
+   413A                     172 w_no_pulsada:
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 57.
 Hexadecimal [16-Bits]
 
 
 
-                            184 ;; MOVER UNA ENTIDAD
-                            185 ;; REGISTROS DESTRUIDOS:
-                            186 ;; ENTRADA: IX -> Puntero a entidad
-                            187 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   4137                     188 ent_move:
-   4137 DD 7E 00      [19]  189   ld    a, e_x(ix)
-   413A DD 86 02      [19]  190   add   e_vx(ix)
-   413D DD 77 00      [19]  191   ld    e_x(ix), a
-                            192  
-   4140 DD 7E 01      [19]  193   ld    a, e_y(ix)
-   4143 DD 86 03      [19]  194   add   e_vy(ix)
-   4146 DD 77 01      [19]  195   ld    e_y(ix), a
-                            196  
-   4149 C9            [10]  197   ret
-                            198 
-                            199 
-                            200 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            201 ;; HACER EL SALTO
-                            202 ;; REGISTROS DESTRUIDOS:
+                            173  
+   413A CD 42 41      [17]  174   call  ent_move
+                            175  
+   413D DD 36 02 00   [19]  176   ld e_vx(ix), #0
+                            177  
+   4141 C9            [10]  178   ret
+                            179  
+                            180  
+                            181 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            182 ;; MOVER UNA ENTIDAD
+                            183 ;; REGISTROS DESTRUIDOS:
+                            184 ;; ENTRADA: IX -> Puntero a entidad
+                            185 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   4142                     186 ent_move:
+   4142 DD 7E 00      [19]  187   ld    a, e_x(ix)
+   4145 DD 86 02      [19]  188   add   e_vx(ix)
+   4148 DD 77 00      [19]  189   ld    e_x(ix), a
+                            190  
+   414B DD 7E 01      [19]  191   ld    a, e_y(ix)
+   414E DD 86 03      [19]  192   add   e_vy(ix)
+   4151 DD 77 01      [19]  193   ld    e_y(ix), a
+                            194  
+   4154 C9            [10]  195   ret
+                            196 
+                            197 
+                            198 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            199 ;; HACER EL SALTO
+                            200 ;; REGISTROS DESTRUIDOS: AF
+                            201 ;; ENTRADAS:
+                            202 ;;    IX -> Puntero a entidad
                             203 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   414A                     204   startJump:
-   414A 3A 9D 40      [13]  205     ld a, (hero_jumpstate)             ;; A = hero_jumpstate
-   414D FE FF         [ 7]  206     cp #-1                        ;; A == -1? 
-   414F C0            [11]  207     ret nz                        ;; A != 0. Jump is no activate, lest do
+   4155                     204   startJump:
+   4155 DD 7E 09      [19]  205     ld a, e_jump(ix)             ;; A = hero_jumpstate
+   4158 FE FF         [ 7]  206     cp #-1                        ;; A == -1? 
+   415A C0            [11]  207     ret nz                        ;; A != 0. Jump is no activate, lest do
                             208 
                             209     ;; Jump is inactive, active it
-   4150 3E 00         [ 7]  210     ld a, #0
-   4152 32 9D 40      [13]  211     ld (hero_jumpstate), a
+   415B 3E 00         [ 7]  210     ld a, #0
+   415D DD 77 09      [19]  211     ld e_jump(ix), a
                             212     
-   4155 C9            [10]  213     ret
+   4160 C9            [10]  213     ret
                             214 
                             215 
                             216 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            217 ;; CONTROLA EL SALTO
+                            217 ;; CONTROLA EL SALTO DE LA ENTIDAD
                             218 ;; REGISTROS DESTRUIDOS: AF, BC, HL
                             219 ;; ENTRADAS:
                             220 ;;          IX => Puntero a entidad
                             221 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   4156                     222 jumpControl:
+   4161                     222 jumpControl:
                             223 
                             224   ;; Check if we are jumping right now
-   4156 3A 9D 40      [13]  225   ld    a, (hero_jumpstate)           ;; A = hero_jumpstate status
-   4159 FE FF         [ 7]  226   cp    #-1                      ;; A == -1? (-1 is not jumping)
-   415B C8            [11]  227   ret z                       ;; If  A == -1, not jumping
-                            228 
-                            229   ;; Move Hero
-   415C 21 90 40      [10]  230   ld    hl, #hero_jumptable           ;; HL = Primer Valor de JumpTable
-   415F 4F            [ 4]  231   ld    c, a                     ;; | C = Índice a acceder
-   4160 06 00         [ 7]  232   ld    b, #0                    ;; | 
-   4162 09            [11]  233   add   hl, bc                  ;; \ HL += BC
-                            234 
-                            235   ;; Check End of jumping && Store in A jump value
-   4163 7E            [ 7]  236   ld    a, (hl)                  ;; A = jump movement
-   4164 FE 80         [ 7]  237   cp    #0x80                    ;; Jump value == 0
-   4166 28 10         [12]  238   jr    z, end_of_jump           ;; if 0x80, end of jump
+   4161 DD 7E 09      [19]  225   ld    a, e_jump(ix)           ;; A = hero_jumpstate status
+   4164 FE FF         [ 7]  226   cp    #-1                      ;; A == -1? (-1 is not jumping)
+   4166 C8            [11]  227   ret z                       ;; If  A == -1, not jumping
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 58.
 Hexadecimal [16-Bits]
 
 
 
+                            228 
+                            229   ;; Move Hero
+   4167 21 9B 40      [10]  230   ld    hl, #hero_jumptable           ;; HL = Primer Valor de JumpTable
+   416A 4F            [ 4]  231   ld    c, a                     ;; | C = Índice a acceder
+   416B 06 00         [ 7]  232   ld    b, #0                    ;; | 
+   416D 09            [11]  233   add   hl, bc                  ;; \ HL += BC
+                            234 
+                            235   ;; Check End of jumping && Store in A jump value
+   416E 7E            [ 7]  236   ld    a, (hl)                  ;; A = jump movement
+   416F FE 80         [ 7]  237   cp    #0x80                    ;; Jump value == 0
+   4171 28 10         [12]  238   jr    z, end_of_jump           ;; if 0x80, end of jump
                             239 
                             240   ;; Do jump movement (HL = Posición de memoria con el dato de jumpTable)
-   4168 47            [ 4]  241   ld    b, a                     ;; B = valor del salto
-   4169 DD 7E 01      [19]  242   ld    a, e_y(ix)               ;; A = Coordenada X de la entidad
-   416C 80            [ 4]  243   add   b                       ;; B += A (Sumar al valor del salto la X)
-   416D DD 77 01      [19]  244   ld    e_y(ix), a               ;; e_x = Calculo de la nueva X 
+   4173 47            [ 4]  241   ld    b, a                     ;; B = valor del salto
+   4174 DD 7E 01      [19]  242   ld    a, e_y(ix)               ;; A = Coordenada X de la entidad
+   4177 80            [ 4]  243   add   b                       ;; B += A (Sumar al valor del salto la X)
+   4178 DD 77 01      [19]  244   ld    e_y(ix), a               ;; e_x = Calculo de la nueva X 
                             245 
                             246   ;; Increment hero_jumpstate Index
-   4170 3A 9D 40      [13]  247   ld    a, (hero_jumpstate)           ;; A = hero_jumpstate
-   4173 3C            [ 4]  248   inc   a                       ;; | 
-   4174 32 9D 40      [13]  249   ld    (hero_jumpstate), a           ;; \ hero_jumpstate++
-   4177 C9            [10]  250   ret
+   417B DD 7E 09      [19]  247   ld    a, e_jump(ix)           ;; A = hero_jumpstate
+   417E 3C            [ 4]  248   inc   a                       ;; | 
+   417F DD 77 09      [19]  249   ld    e_jump(ix), a           ;; \ hero_jumpstate++
+   4182 C9            [10]  250   ret
                             251 
                             252   ;; Put -1 in the jump index when jump ends
-   4178                     253   end_of_jump:
-   4178 3E FF         [ 7]  254   ld    a, #-1                   ;; |
-   417A 32 9D 40      [13]  255   ld    (hero_jumpstate), a           ;; \ hero_jumpstate = -1
+   4183                     253   end_of_jump:
+   4183 3E FF         [ 7]  254   ld    a, #-1                   ;; |
+   4185 DD 77 09      [19]  255   ld    e_jump(ix), a           ;; \ hero_jumpstate = -1
                             256 
-   417D C9            [10]  257   ret
+   4188 C9            [10]  257   ret
                             258 
                             259 

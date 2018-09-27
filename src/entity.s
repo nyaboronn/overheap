@@ -7,8 +7,8 @@
  
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard
-DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
+DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard, #-1
+DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, #-1
 
 ;;
 ;; Jump Table
@@ -17,18 +17,12 @@ hero_jumptable:
     .db #-12, #-8, #-4, #-4
     .db #-4, #00, #00, #04
     .db #04, #04, #08, #012
-    .db #0x80                   ;; El último byte se marca con el #0x80
-;;
-;; Hero Jump Status (IF Not Jumping, hero_jumpstate = -1)
-;;
-hero_jumpstate:  .db #-1             ;; (-1 is not jumping)
-
+    .db #0x80                   ;; #0x80 marca el último byte
 
 
  ;;
  ;;Cosas para poder crear entidades
  ;;
-
  k_max_num_ent = 9
  k_entity_size = 9
  m_num_ent: .db 00
@@ -70,6 +64,7 @@ ent_copy:
     ldir
 
     ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
 ;; ENTRADA HL -> PUNTERO AL MÉTODO A EJECUTAR
@@ -92,9 +87,6 @@ ent_doForAll:
         jr nz, buc
 
     ret
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -199,22 +191,23 @@ ent_move:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HACER EL SALTO
-;; REGISTROS DESTRUIDOS:
+;; REGISTROS DESTRUIDOS: AF
+;; ENTRADAS:
+;;    IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   startJump:
-    ld a, (hero_jumpstate)             ;; A = hero_jumpstate
+    ld a, e_jump(ix)             ;; A = hero_jumpstate
     cp #-1                        ;; A == -1? 
     ret nz                        ;; A != 0. Jump is no activate, lest do
 
     ;; Jump is inactive, active it
     ld a, #0
-    ld (hero_jumpstate), a
+    ld e_jump(ix), a
     
     ret
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CONTROLA EL SALTO
+;; CONTROLA EL SALTO DE LA ENTIDAD
 ;; REGISTROS DESTRUIDOS: AF, BC, HL
 ;; ENTRADAS:
 ;;          IX => Puntero a entidad
@@ -222,7 +215,7 @@ ent_move:
 jumpControl:
 
   ;; Check if we are jumping right now
-  ld    a, (hero_jumpstate)           ;; A = hero_jumpstate status
+  ld    a, e_jump(ix)           ;; A = hero_jumpstate status
   cp    #-1                      ;; A == -1? (-1 is not jumping)
   ret z                       ;; If  A == -1, not jumping
 
@@ -244,15 +237,15 @@ jumpControl:
   ld    e_y(ix), a               ;; e_x = Calculo de la nueva X 
 
   ;; Increment hero_jumpstate Index
-  ld    a, (hero_jumpstate)           ;; A = hero_jumpstate
+  ld    a, e_jump(ix)           ;; A = hero_jumpstate
   inc   a                       ;; | 
-  ld    (hero_jumpstate), a           ;; \ hero_jumpstate++
+  ld    e_jump(ix), a           ;; \ hero_jumpstate++
   ret
 
   ;; Put -1 in the jump index when jump ends
   end_of_jump:
   ld    a, #-1                   ;; |
-  ld    (hero_jumpstate), a           ;; \ hero_jumpstate = -1
+  ld    e_jump(ix), a           ;; \ hero_jumpstate = -1
 
   ret
 

@@ -1,16 +1,18 @@
 ;###########################################################################
 ;#### FICHERO: entity.h.s
 ;###########################################################################
-.macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd
+.macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _jump
 _name:
-   .db    _x, _y     ;; X, Y
+   .db    _x, _y      ;; X, Y
    .db   _vx, _vy     ;; VX, VY
-   .db    _w, _h     ;; W, H
+   .db    _w, _h      ;; W, H
    .db   _col           ;; Color
-   .dw   _upd        ;; Update
+   .dw   _upd         ;; Update
+   .db  _jump         ;; Jump State, -1 if not jumping
 .endm
+
 .macro DefineEntityDefault _name, _suf
-   DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF
+   DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
 .endm
 
 .macro DefineNEntities _name, _n
@@ -37,6 +39,7 @@ e_h = 5
 e_col = 6
 e_up_l = 7
 e_up_h = 8
+e_jump = 9
  
  
 .globl ent_draw

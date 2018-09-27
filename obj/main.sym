@@ -63,14 +63,14 @@ Hexadecimal [16-Bits]
 
 Symbol Table
 
-    e_col   =  0006     |     e_h     =  0005     |     e_up_h  =  0008 
-    e_up_l  =  0007     |     e_vx    =  0002     |     e_vy    =  0003 
-    e_w     =  0004     |     e_x     =  0000     |     e_y     =  0001 
-    enemy_da   **** GX  |     ent_clea   **** GX  |     ent_copy   **** GX
-    ent_doFo   **** GX  |     ent_draw   **** GX  |     ent_new    **** GX
-    ent_upda   **** GX  |     entity_c=  0000     |     hero_dat   **** GX
-  0 loop       0012 R   |     opc_DI  =  00F3     |     opc_EI  =  00FB 
-    opc_JR  =  0018     |     opc_LD_D=  0016 
+    e_col   =  0006     |     e_h     =  0005     |     e_jump  =  0009 
+    e_up_h  =  0008     |     e_up_l  =  0007     |     e_vx    =  0002 
+    e_vy    =  0003     |     e_w     =  0004     |     e_x     =  0000 
+    e_y     =  0001     |     enemy_da   **** GX  |     ent_clea   **** GX
+    ent_copy   **** GX  |     ent_doFo   **** GX  |     ent_draw   **** GX
+    ent_new    **** GX  |     ent_upda   **** GX  |     entity_c=  0000 
+    hero_dat   **** GX  |   0 loop       0012 R   |     opc_DI  =  00F3 
+    opc_EI  =  00FB     |     opc_JR  =  0018     |     opc_LD_D=  0016 
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
 Hexadecimal [16-Bits]
