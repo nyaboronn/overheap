@@ -14,7 +14,6 @@ DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1
  ;;
  ;;Cosas para poder crear entidades
  ;;
-
  k_max_num_ent = 9
  k_entity_size = 9
  m_num_ent: .db 00
@@ -67,6 +66,7 @@ ent_copy:
     ldir
 
     ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
 ;; ENTRADA HL -> PUNTERO AL MÉTODO A EJECUTAR
@@ -89,9 +89,6 @@ ent_doForAll:
         jr nz, buc
 
     ret
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
