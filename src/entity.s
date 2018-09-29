@@ -3,23 +3,14 @@
 ;###########################################################################
 .include "cpctelera.h.s"
 .include "entity.h.s"
+.include "tileManager.h.s"
 .include "main.h.s"
  
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard, #-1
-DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, #-1
-
-;;
-;; Jump Table
-;;
-hero_jumptable:
-    .db #-12, #-8, #-4, #-4
-    .db #-4, #00, #00, #04
-    .db #04, #04, #08, #012
-    .db #0x80                   ;; #0x80 marca el último byte
-
-
+DefineEntity hero_data, 10, 40, 0x00, 0x00, 0x02, 0x04, 0x0F, ent_moveKeyboard, -1
+DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1
+ 
  ;;
  ;;Cosas para poder crear entidades
  ;;
@@ -28,6 +19,17 @@ hero_jumptable:
  m_num_ent: .db 00
  m_next_entity: .dw entity_vector0
 
+
+;;
+;; Jump Table
+;;
+hero_jumptable:
+    .db #-3, #-2, #-1, #-1
+    .db #-2, #00, #00, #02
+    .db #1, #1, #2, #3
+    .db #0x80                   ;; #0x80 marca el último byte
+
+    
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; REGISTRA UNA NUEVA ENTIDAD
  ;; REGISTROS DESTRUIDOS
@@ -94,16 +96,37 @@ ent_doForAll:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_draw:
-  ld    de, #0xC000       ;;Comienzo memoria de video
-  ld     c, e_x(ix)         ;; C = Entity Y
-  ld     b, e_y(ix)         ;; B = Entity X
+    ld de, #0xC000       ;;Comienzo memoria de video
+
+    ;; Convert de X tile in X in bytes
+    ld C, e_x(ix)    ;; X
+    ld A, e_x(ix)    ;; X
+    add a,c
+    ld c, a
+;; Convert de y tile in y in bytes
+    ld b, e_y(ix)    ;; y
+    ld A, e_y(ix)    ;; y
+    add a,b
+    add a,a
+    ld b, a
+
+ ;; ld     b, e_y(ix)         ;; B = Entity Y
   call cpct_getScreenPtr_asm
  
   ex    de, hl   ;; DE = Puntero a memoria
-  ld  a, e_col(ix)   ;; Color
+
   ld  b, e_h(ix)   ;; alto
+  ld A, e_h(ix)    ;; y
+  add a,b
+  add a,a
+  ld b, a
+
   ld  c, e_w(ix)   ;; Ancho
- 
+  ld A, e_w(ix)    ;; X
+  add a,c
+  ld c, a
+   ld  a, e_col(ix)   ;; Color
+  
   call cpct_drawSolidBox_asm
  
   ret
@@ -115,14 +138,26 @@ ent_draw:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear:
-  ld  a, e_col(ix)
-  ex af, af'
- 
-   ld  e_col(ix), #0
- 
-   call ent_draw
-   ex af, af'
-  ld e_col(ix), a
+
+
+    ;; Repintamos una columna, izquierda o derecha
+    ld C, e_x(ix)    ;; X
+    ld B, e_y(ix)  ;; Y
+    ld E, e_w(ix)  ;; W
+    ld D, e_h(ix)  ;; H
+    ld A, #MAP_WIDTH ;; map_width
+
+    ld iy, #TScreenTilemap
+    
+    ld h, pTilemap+1(iy)
+    ld l, pTilemap(iy)
+    push hl
+
+    ld h, pVideo+1(iy)
+    ld l, pVideo(iy)
+    push hl
+
+    call cpct_etm_drawTileBox2x4_asm
  
   ret
  
@@ -171,7 +206,6 @@ w_no_pulsada:
  
   ret
  
- 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS:
@@ -187,6 +221,8 @@ ent_move:
   ld    e_y(ix), a
  
   ret
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
