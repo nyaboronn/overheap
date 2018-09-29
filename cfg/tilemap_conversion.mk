@@ -91,3 +91,5 @@
 ##  * You can omit parameters by leaving them empty.                      ##
 ##  * Parameters (4) and (5) are optional and generally not required.     ##
 ############################################################################
+
+$(eval $(call TMX2C,img/tilemap.tmx,g_tilemap,src/))

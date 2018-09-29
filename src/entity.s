@@ -3,12 +3,13 @@
 ;###########################################################################
 .include "cpctelera.h.s"
 .include "entity.h.s"
+.include "tileManager.h.s"
 .include "main.h.s"
  
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 0x14, 0x21, 0x00, 0x00, 0x02, 0x08, 0x0F, ent_moveKeyboard
-DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
+DefineEntity hero_data, 10, 40, 0x00, 0x00, 0x02, 0x04, 0x0F, ent_moveKeyboard, -1
+DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1
  
  ;;
  ;;Cosas para poder crear entidades
@@ -19,6 +20,17 @@ DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move
  m_num_ent: .db 00
  m_next_entity: .dw entity_vector0
 
+
+;;
+;; Jump Table
+;;
+hero_jumptable:
+    .db #-3, #-2, #-1, #-1
+    .db #-2, #00, #00, #02
+    .db #1, #1, #2, #3
+    .db #0x80                   ;; #0x80 marca el último byte
+
+    
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; REGISTRA UNA NUEVA ENTIDAD
  ;; REGISTROS DESTRUIDOS
@@ -87,16 +99,37 @@ ent_doForAll:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_draw:
-  ld    de, #0xC000       ;;Comienzo memoria de video
-  ld     c, e_x(ix)         ;; C = Entity Y
-  ld     b, e_y(ix)         ;; B = Entity X
+    ld de, #0xC000       ;;Comienzo memoria de video
+
+    ;; Convert de X tile in X in bytes
+    ld C, e_x(ix)    ;; X
+    ld A, e_x(ix)    ;; X
+    add a,c
+    ld c, a
+;; Convert de y tile in y in bytes
+    ld b, e_y(ix)    ;; y
+    ld A, e_y(ix)    ;; y
+    add a,b
+    add a,a
+    ld b, a
+
+ ;; ld     b, e_y(ix)         ;; B = Entity Y
   call cpct_getScreenPtr_asm
  
   ex    de, hl   ;; DE = Puntero a memoria
-  ld  a, e_col(ix)   ;; Color
+
   ld  b, e_h(ix)   ;; alto
+  ld A, e_h(ix)    ;; y
+  add a,b
+  add a,a
+  ld b, a
+
   ld  c, e_w(ix)   ;; Ancho
- 
+  ld A, e_w(ix)    ;; X
+  add a,c
+  ld c, a
+   ld  a, e_col(ix)   ;; Color
+  
   call cpct_drawSolidBox_asm
  
   ret
@@ -108,14 +141,26 @@ ent_draw:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear:
-  ld  a, e_col(ix)
-  ex af, af'
- 
-   ld  e_col(ix), #0
- 
-   call ent_draw
-   ex af, af'
-  ld e_col(ix), a
+
+
+    ;; Repintamos una columna, izquierda o derecha
+    ld C, e_x(ix)    ;; X
+    ld B, e_y(ix)  ;; Y
+    ld E, e_w(ix)  ;; W
+    ld D, e_h(ix)  ;; H
+    ld A, #MAP_WIDTH ;; map_width
+
+    ld iy, #TScreenTilemap
+    
+    ld h, pTilemap+1(iy)
+    ld l, pTilemap(iy)
+    push hl
+
+    ld h, pVideo+1(iy)
+    ld l, pVideo(iy)
+    push hl
+
+    call cpct_etm_drawTileBox2x4_asm
  
   ret
  
@@ -125,6 +170,8 @@ ent_clear:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_update:
+  ;; Controla el estado del salto
+  call jumpControl
   ld     h, e_up_h(ix)
   ld     l, e_up_l(ix)
   jp    (hl)
@@ -137,25 +184,30 @@ ent_update:
 ent_moveKeyboard:
   call  cpct_scanKeyboard_asm
  
-  ld    hl, #Key_O
+  ld    hl, #Key_A
   call  cpct_isKeyPressed_asm
-  jr    z, o_no_pulsada
+  jr    z, a_no_pulsada
      ld e_vx(ix), #-1
-o_no_pulsada:
+a_no_pulsada:
  
-  ld    hl, #Key_P
+  ld    hl, #Key_D
   call  cpct_isKeyPressed_asm
-  jr    z, p_no_pulsada
+  jr    z, d_no_pulsada
      ld e_vx(ix), #1
- 
-p_no_pulsada:
+d_no_pulsada:
+
+;; COMPROBAR SI SE HA PULSADO 'W'
+  ld    hl, #Key_W
+  call  cpct_isKeyPressed_asm
+  jr    z, w_no_pulsada         ;; IF KEY_W IS pressed: lest JUMP
+  call startJump               ;; Call Jump Function
+w_no_pulsada:
  
   call  ent_move
  
   ld e_vx(ix), #0
  
   ret
- 
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD
@@ -172,3 +224,68 @@ ent_move:
   ld    e_y(ix), a
  
   ret
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HACER EL SALTO
+;; REGISTROS DESTRUIDOS: AF
+;; ENTRADAS:
+;;    IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  startJump:
+    ld a, e_jump(ix)             ;; A = hero_jumpstate
+    cp #-1                        ;; A == -1? 
+    ret nz                        ;; A != 0. Jump is no activate, lest do
+
+    ;; Jump is inactive, active it
+    ld a, #0
+    ld e_jump(ix), a
+    
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CONTROLA EL SALTO DE LA ENTIDAD
+;; REGISTROS DESTRUIDOS: AF, BC, HL
+;; ENTRADAS:
+;;          IX => Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+jumpControl:
+
+  ;; Check if we are jumping right now
+  ld    a, e_jump(ix)           ;; A = hero_jumpstate status
+  cp    #-1                      ;; A == -1? (-1 is not jumping)
+  ret z                       ;; If  A == -1, not jumping
+
+  ;; Move Hero
+  ld    hl, #hero_jumptable           ;; HL = Primer Valor de JumpTable
+  ld    c, a                     ;; | C = Índice a acceder
+  ld    b, #0                    ;; | 
+  add   hl, bc                  ;; \ HL += BC
+
+  ;; Check End of jumping && Store in A jump value
+  ld    a, (hl)                  ;; A = jump movement
+  cp    #0x80                    ;; Jump value == 0
+  jr    z, end_of_jump           ;; if 0x80, end of jump
+
+  ;; Do jump movement (HL = Posición de memoria con el dato de jumpTable)
+  ld    b, a                     ;; B = valor del salto
+  ld    a, e_y(ix)               ;; A = Coordenada X de la entidad
+  add   b                       ;; B += A (Sumar al valor del salto la X)
+  ld    e_y(ix), a               ;; e_x = Calculo de la nueva X 
+
+  ;; Increment hero_jumpstate Index
+  ld    a, e_jump(ix)           ;; A = hero_jumpstate
+  inc   a                       ;; | 
+  ld    e_jump(ix), a           ;; \ hero_jumpstate++
+  ret
+
+  ;; Put -1 in the jump index when jump ends
+  end_of_jump:
+  ld    a, #-1                   ;; |
+  ld    e_jump(ix), a           ;; \ hero_jumpstate = -1
+
+  ret
+
+
