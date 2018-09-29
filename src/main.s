@@ -81,14 +81,14 @@ loop:
 
   ld    ix, #hero_data
 
- ;; ld  hl, #ent_clear
- ;; call ent_doForAll
+ld  hl, #ent_clear
+ call ent_doForAll
 
- ;; ld  hl, #ent_update
-  ;;call ent_doForAll
+ ld  hl, #ent_update
+call ent_doForAll
 
-  ;;ld hl, #ent_draw
-  ;;call ent_doForAll
+ld hl, #ent_draw
+call ent_doForAll
 
   call cpct_waitVSYNC_asm
  
