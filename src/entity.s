@@ -9,7 +9,7 @@
  
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 0, 10, 0x00, 0x00, 0x02, 0x04, 0x0F, ent_moveKeyboard, -1
+DefineEntity hero_data, 0, 40, 0x00, 0x00, 0x02, 0x04, 0x0F, ent_moveKeyboard, -1
 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1
  
  ;;
@@ -295,9 +295,18 @@ jumpControl:
 
   ;; Do jump movement (HL = Posición de memoria con el dato de jumpTable)
   ld    b, a                     ;; B = valor del salto
-  ld    a, e_y(ix)               ;; A = Coordenada X de la entidad
+  ld    a, e_vy(ix)               ;; A = Coordenada X de la entidad
   add   b                       ;; B += A (Sumar al valor del salto la X)
-  ld    e_y(ix), a               ;; e_x = Calculo de la nueva X 
+  ld    e_vy(ix), a               ;; e_x = Calculo de la nueva X 
+
+  call ent_move
+
+  ld e_vy(ix), #0
+
+
+  ;; Poner una velocidad
+  ;; llamar a move
+  ;;quitar velocidad
 
   ;; Increment hero_jumpstate Index
   ld    a, e_jump(ix)           ;; A = hero_jumpstate

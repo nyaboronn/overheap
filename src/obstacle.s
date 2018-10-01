@@ -8,7 +8,7 @@
 
 
 
-DefineObstacle obstacle1,10,10,0x02,0x04,0x20
+DefineObstacle obstacle1,17,38,0x06,0x08,0x20
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -114,11 +114,13 @@ ent_clear_obs:
         ;;  if(hero_x + hero_w - obs_x <= 0 )
               ;;ld iy, #hero_data   ;;NUEVO Tengo que volver a cargarle el valor de hero_data porque si no en A se queda una posición desfasada
         ld  a,e_x(iy) ;;Meto el valor de iy en a ;Meto en A hero_x
-        inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
-        inc iy
-        inc iy
-        inc iy
-        add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
+        ld  c,e_w(iy)
+        add c
+        ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
+        ;;inc iy
+        ;;inc iy
+        ;;inc iy
+        ;;add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
         ld	c, a    ;;Paso el valor de la suma a C
         ld  a, o_x(ix)  ;;Paso a A el valor de obs_x
         ld  b, a    ;;Paso el valor de obs_x que tengo en a B
@@ -127,15 +129,17 @@ ent_clear_obs:
         jr z, no_collision  ;; if(<=0)
         jp m, no_collision
 
-        ld iy, #hero_data ;;Vuelvo a cargar hero_data , porque los inc de antes me han cambiado la dir que apuntaba iy
+        ;ld iy, #hero_data ;;Vuelvo a cargar hero_data , porque los inc de antes me han cambiado la dir que apuntaba iy
 
        ld  a,e_y(iy) ;;Meto el valor de iy en a ;Meto en A hero_x
-       inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
-       inc iy
-       inc iy
-       inc iy
-       inc iy
-       add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
+       ld  c,e_h(iy)
+       add c
+       ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
+       ;;inc iy
+       ;;inc iy
+       ;;inc iy
+       ;;inc iy
+       ;;add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
        ld	c, a    ;;Paso el valor de la suma a C
        ld  a, o_y(ix)  ;;Paso a A el valor de obs_y
        ld  b, a    ;;Paso el valor de obs_x que tengo en a B
