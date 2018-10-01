@@ -3,12 +3,13 @@
 ;###########################################################################
 .include "cpctelera.h.s"
 .include "entity.h.s"
+.include "obstacle.h.s"
 .include "tileManager.h.s"
 .include "main.h.s"
  
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 10, 10, 0x00, 0x00, 0x02, 0x04, 0x0F, ent_moveKeyboard, -1
+DefineEntity hero_data, 0, 10, 0x00, 0x00, 0x02, 0x04, 0x0F, ent_moveKeyboard, -1
 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1
  
  ;;
@@ -200,6 +201,7 @@ d_no_pulsada:
   call startJump               ;; Call Jump Function
 w_no_pulsada:
  
+
   call  ent_move
  
   ld e_vx(ix), #0
@@ -220,6 +222,31 @@ ent_move:
   add   e_vy(ix)
   ld    e_y(ix), a
  
+  push ix
+  ld    ix, #obstacle1
+  pop iy
+  push iy
+  ;;ld iy, #hero_data
+  call	obstacle_checkCollision
+  cp #0
+  jr z, exit
+  pop ix
+  push ix
+
+  ld    a, e_x(ix)
+  sub   e_vx(ix)
+  ld    e_x(ix), a
+ 
+  ld    a, e_y(ix)
+  sub   e_vy(ix)
+  ld    e_y(ix), a
+
+
+
+exit:
+
+  pop ix
+
   ret
 
 

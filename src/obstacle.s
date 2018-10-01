@@ -4,11 +4,11 @@
 .include "cpctelera.h.s"
 .include "main.h.s"
 .include "obstacle.h.s"
+.include "entity.h.s"
 
 
 
-
-DefineObstacle obstacle1,10,10,0x02,0x02,0x20
+DefineObstacle obstacle1,10,10,0x02,0x04,0x20
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -19,13 +19,13 @@ ent_draw_obs:
 ld de, #0xC000       ;;Comienzo memoria de video
 
     ;; Convert de X tile in X in bytes
-    ld C, e_x(ix)    ;; X
-    ld A, e_x(ix)    ;; X
+    ld C, o_x(ix)    ;; X
+    ld A, o_x(ix)    ;; X
     add a,c
     ld c, a
 ;; Convert de y tile in y in bytes
-    ld b, e_y(ix)    ;; y
-    ld A, e_y(ix)    ;; y
+    ld b, o_y(ix)    ;; y
+    ld A, o_y(ix)    ;; y
     add a,b
     add a,a
     ld b, a
@@ -35,17 +35,17 @@ ld de, #0xC000       ;;Comienzo memoria de video
  
   ex    de, hl   ;; DE = Puntero a memoria
 
-  ld  b, e_h(ix)   ;; alto
-  ld A, e_h(ix)    ;; y
+  ld  b, o_h(ix)   ;; alto
+  ld A, o_h(ix)    ;; y
   add a,b
   add a,a
   ld b, a
 
-  ld  c, e_w(ix)   ;; Ancho
-  ld A, e_w(ix)    ;; X
+  ld  c, o_w(ix)   ;; Ancho
+  ld A, o_w(ix)    ;; X
   add a,c
   ld c, a
-   ld  a, e_col(ix)   ;; Color
+   ld  a, o_col(ix)   ;; Color
   
   call cpct_drawSolidBox_asm
  
@@ -88,9 +88,9 @@ ent_clear_obs:
     ;;  obs_x + obx_w - hero_x <= 0
  
 
-        ld  a,e_x(ix)       ;;  obs_x
+        ld  a,o_x(ix)       ;;  obs_x
         ld	c, a            ;;  obs_x -> c
-        ld  a, e_w(ix)      ;;  obs_w
+        ld  a, o_w(ix)      ;;  obs_w
         add c               ;;  obs_x + obs_w
         sub	e_x(iy)            ;;Entiendo que hero_x tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
         jr z, no_collision      ;;Menor o igual if (<= 0)
@@ -99,9 +99,9 @@ ent_clear_obs:
 
         ;;Other possibility
        ;; Y axis
-        ld  a,e_y(ix)       ;;  obs_y
+        ld  a,o_y(ix)       ;;  obs_y
         ld	c, a            ;;  obs_y -> c
-        ld  a, e_h(ix)      ;;  obs_h
+        ld  a, o_h(ix)      ;;  obs_h
         add c               ;;  obs_y + obs_h
         sub	e_y(iy)            ;;Entiendo que hero_y tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
         jr z, no_collision      ;;Menor o igual if (<= 0)
@@ -120,7 +120,7 @@ ent_clear_obs:
         inc iy
         add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
         ld	c, a    ;;Paso el valor de la suma a C
-        ld  a, e_x(ix)  ;;Paso a A el valor de obs_x
+        ld  a, o_x(ix)  ;;Paso a A el valor de obs_x
         ld  b, a    ;;Paso el valor de obs_x que tengo en a B
         ld  a, c    ;;Paso el valor de hero_x + hero_w de C a A para restar
         sub b       ;;Resto el valor de (hero_x + hero_w) - obs_x
@@ -137,19 +137,21 @@ ent_clear_obs:
        inc iy
        add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
        ld	c, a    ;;Paso el valor de la suma a C
-       ld  a, e_y(ix)  ;;Paso a A el valor de obs_y
+       ld  a, o_y(ix)  ;;Paso a A el valor de obs_y
        ld  b, a    ;;Paso el valor de obs_x que tengo en a B
        ld  a, c    ;;Paso el valor de hero_x + hero_w de C a A para restar
        sub b       ;;Resto el valor de (hero_x + hero_w) - obs_x
        jr z, no_collision  ;; if(<=0)
        jp m, no_collision
 ;        ;;Collision
-        ld	a, #0x20 ;;#1
+        ld	a, #0x01 ;;#1
+       
+
         ret
 
         ;;No collision
         no_collision:
-            ld	a, #0x1A
+            ld	a, #0x00
         ret	
 
         

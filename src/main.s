@@ -121,9 +121,7 @@ ld    ix, #hero_data
 
 
 
-  ld    ix, #obstacle1
-  ld iy, #hero_data
-  call	obstacle_checkCollision
+
   
 
   ld	(0xC027), a ;;Draw coliision level
