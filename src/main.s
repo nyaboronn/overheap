@@ -2,6 +2,7 @@
 .include "entity.h.s"
 .include "tileManager.h.s"
 .include "main.h.s"
+.include "obstacle.h.s"
 
  
 .area _DATA
@@ -58,6 +59,40 @@ ret
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Comprueba telcado
+;;  NO Parameters
+;;  destroy: hl - Return in HL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+wait4KeyboardInput:
+  call  cpct_scanKeyboard_asm
+ 
+  ld    hl, #Key_A
+  call  cpct_isKeyPressed_asm
+  jr    z, a_no_pulsada
+        ;;A is pressed
+        ld h, #-1
+        ld l, #0
+        ret
+a_no_pulsada:
+
+  ld    hl, #Key_D
+  call  cpct_isKeyPressed_asm
+  jr    z, d_no_pulsada
+        ;; D is pressed
+        ld h, #+1
+        ld l, #SCR_TILE_WIDTH-1
+        ret
+d_no_pulsada:
+
+ld h,#0
+ret
+
+
+
+
 
 _main::
   ;; Disable firmware to prevent it from interfering with string drawing
@@ -66,31 +101,45 @@ _main::
   ;;ld    c, #0
   ;;call cpct_setVideoMode_asm
 
-
+    ld ix, #TScreenTilemap
   call initialize_CPC
   
-  call ent_new
-  ex	de, hl
-  ld    hl,#hero_data
-  call ent_copy
 
   
  
 loop:
 
 
-  ld    ix, #hero_data
+ ld	  ix, #obstacle1
+  call ent_draw_obs
 
-ld  hl, #ent_clear
- call ent_doForAll
 
- ld  hl, #ent_update
-call ent_doForAll
+ld    ix, #hero_data
+  call ent_clear
+  call ent_update
+  call ent_draw
 
-ld hl, #ent_draw
-call ent_doForAll
 
-  call cpct_waitVSYNC_asm
- 
-  ;; Loop forever
-  jr    loop
+
+  ld    ix, #obstacle1
+  ld iy, #hero_data
+  call	obstacle_checkCollision
+  
+
+  ld	(0xC027), a ;;Draw coliision level
+  ld	(0xC028), a ;;Draw coliision level
+  ld	(0xC029), a ;;Draw coliision level
+
+
+
+
+   
+
+
+    call cpct_waitVSYNC_asm
+
+    ;; Loop forever
+    jr    loop
+
+
+

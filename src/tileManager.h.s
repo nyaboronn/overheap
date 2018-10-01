@@ -19,4 +19,6 @@ TScreenTilemap: .dw #CPCT_VMEM_START
 .globl _g_palette
 .globl _g_tileset
 
+.globl scrollScreenTilemap
+
 
