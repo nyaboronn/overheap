@@ -1,6 +1,3 @@
-;###########################################################################
-;#### FICHERO: entity.h.s
-;###########################################################################
 .macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _jump
 _name:
    .db    _x, _y      ;; X, Y
@@ -8,7 +5,8 @@ _name:
    .db    _w, _h      ;; W, H
    .db   _col           ;; Color
    .dw   _upd         ;; Update
-   .db  _jump         ;; Jump State, -1 if not jumping
+   .db  _jump         ;; Jump State,    -1 if not jumping (can jump)
+                        ;;              -2 if is falling  (cant jump)
 .endm
 
 .macro DefineEntityDefault _name, _suf

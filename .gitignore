@@ -1,13 +1,4 @@
-<<<<<<< HEAD
-*.cdt
-*.dsk
-*.sna
-obj/
-clase2.cdt
-clase2.sna
-=======
 obj/
 *.cdt
 *.dsk
 *.sna
->>>>>>> master
