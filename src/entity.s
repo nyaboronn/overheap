@@ -286,7 +286,7 @@ ent_move:
   ;;    Offset = y * map_width + x
   ;;    HL = ptilemap + Offset
   ;;
-  ld  hl, #_g_tilemap         ;; [3] HL=ptilemap (recovered from the stack)
+  ld  hl, #_g_tilemap         ;; [3] HL=ptilemap 
   ld    a, e_x(ix)      ;; [1]   | HL = ptilemap + x
   add__hl_a       ;; [5]   |  
 
