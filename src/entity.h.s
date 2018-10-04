@@ -8,8 +8,10 @@ _name:
    .db    _w, _h      ;; W, H
    .db   _col           ;; Color
    .dw   _upd         ;; Update
-   .db  _jump         ;; Jump State, -1 if not jumping
+   .db  _jump         ;; Jump State,    -1 if not jumping (can jump)
+                        ;;              -2 if is falling  (cant jump)
    .dw _tile
+
 .endm
 
 .macro DefineEntityDefault _name, _suf

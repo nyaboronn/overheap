@@ -11,8 +11,6 @@
 
 entity_contador = 0
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Inicializamos todas las funciones y configuraciones
 ;;  NO Parameters
@@ -20,26 +18,24 @@ entity_contador = 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 initialize_CPC:
 
-call cpct_disableFirmware_asm
+    call cpct_disableFirmware_asm
 
     ld C, #0x00 ;; Modo de video
-call cpct_setVideoMode_asm
+    call cpct_setVideoMode_asm
 
     ld hl, #_g_palette   ;; Paleta de colores
     ld de, #13          ;;numero de colores a cambiar
-call cpct_setPalette_asm
+    call cpct_setPalette_asm
 
     ld l, #16       ;;Constante
     ld h, #HW_BLACK
-call cpct_setPALColour_asm   ;;Cambiar fondo negro
+    call cpct_setPALColour_asm   ;;Cambiar fondo negro
 
-;;Tenemos que inicilizar EasyTileMap
-
+    ;;Tenemos que inicilizar EasyTileMap
     ld hl, #_g_tileset      ;;Punteor al tilesetW
-call cpct_etm_setTileset2x4_asm
+    call cpct_etm_setTileset2x4_asm
 
-
-;;Ahora pintamos el mapa entero 
+    ;;Ahora pintamos el mapa entero     
     ld C, #0x00    ;; X
     ld B, #0x00  ;; Y
     ld E, #SCR_TILE_WIDTH  ;; W
@@ -114,6 +110,11 @@ _main::
   
 
   
+    ;; Crear una nueva entidad
+    call ent_new
+    ex	de, hl
+    ld    hl,#hero_data
+    call ent_copy
  
 loop:
 

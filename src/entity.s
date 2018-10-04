@@ -75,10 +75,13 @@ ld h, e_tile_h(ix)
 ld l, e_tile_l(ix)
 ld A, (hl)
 
-
-
 ret
     
+;;
+;; Coordenada X del suelo
+;;
+map_Height = 40
+
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; REGISTRA UNA NUEVA ENTIDAD
  ;; REGISTROS DESTRUIDOS
@@ -187,8 +190,6 @@ ent_draw:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear:
-
-
     ;; Repintamos una columna, izquierda o derecha
     ld C, e_x(ix)    ;; X
     ld B, e_y(ix)  ;; Y
@@ -212,16 +213,35 @@ ent_clear:
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
-;; REGISTROS DESTRUIDOS:
+;; REGISTROS DESTRUIDOS: TODOS
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Cambios: jump_state = temporal_collision
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_update:
-  ;; Controla el estado del salto
-  call jumpControl
-  ld     h, e_up_h(ix)
-  ld     l, e_up_l(ix)
-  jp    (hl)
- 
+    ;; Obtener la colisión
+    call temporal_collision     ;; A = temporal_collision
+    ;; Cuando colisiona en X, no cae por talto puede saltar
+    cp #-1
+    jr z, no_cae                ;; A == -1? THEN no_cae     
+
+        ;; NO ==> caer, y bloquer el salto
+        ld e_jump(ix), a    ;; | e_jump(ix) = A
+        ld b, e_y(ix)       ;; | B = e_y(ix)
+        inc b               ;; \ B++
+        ld e_y(ix), b       ;; Incrementar e_y (simula la caida de momento)
+
+    ;; Entity is not fallig, can jump :O
+    no_cae:
+    call jumpControl      ;; Llamada a la función que controla el salto
+
+    ;; Puntero a la función que actualiza la entidad
+    ld     h, e_up_h(ix)
+    ld     l, e_up_l(ix)
+    jp    (hl)
+
+    ret
+    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD CON TECLADO
 ;; REGISTROS DESTRUIDOS:
@@ -258,7 +278,7 @@ w_no_pulsada:
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD
-;; REGISTROS DESTRUIDOS: af, hl
+;; REGISTROS DESTRUIDOS: af, hl,de
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_move:
@@ -350,8 +370,21 @@ exit:
   pop hl
   ret
 
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; AUXILIAR: como no tengo la colisión la uso con
+;; un valor fijo. Devuelve el estado del salto.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DESTRUIDOS: AF   
+;;  SALIDAS:
+;;      A =>  IF -2 SI no colisiona (is falling cant jump)
+;;            ELSE -1               (can jump)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+temporal_collision:
+    ;; A = -2. Esta cayendo.
+    ;; A = -1. Colisiona con algo, puede saltar
+    ld a, #-2
+    
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HACER EL SALTO
@@ -359,8 +392,12 @@ exit:
 ;; ENTRADAS:
 ;;    IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Cambios: Si el estado es -2 no puede saltar
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   startJump:
-    ld a, e_jump(ix)             ;; A = hero_jumpstate
+    ld a, e_jump(ix)              ;; A = hero_jumpstate
+    cp #-2                        ;; A == -2?
+    ret z                         ;; A == 0. Cant activate. Entity is falling
     cp #-1                        ;; A == -1? 
     ret nz                        ;; A != 0. Jump is no activate, lest do
 
@@ -376,10 +413,14 @@ exit:
 ;; ENTRADAS:
 ;;          IX => Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CAMBIOS: cuando el -2 no hace nada
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 jumpControl:
 
   ;; Check if we are jumping right now
   ld    a, e_jump(ix)           ;; A = hero_jumpstate status
+    cp #-2                        ;; A == -2?
+    ret z                         ;; A == 0. Cant activate. Entity is falling
   cp    #-1                      ;; A == -1? (-1 is not jumping)
   ret z                       ;; If  A == -1, not jumping
 
