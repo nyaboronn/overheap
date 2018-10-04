@@ -10,7 +10,7 @@
 
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 0, 38, 0x00, 0x00, 0x01, 0x01, 0x77, ent_moveKeyboard, -1,0x0000
+DefineEntity hero_data, 10, 20, 0x00, 0x00, 0x02, 0x04, 0x77, ent_moveKeyboard, -1,0x0000
 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1,0x0000
  
  ;;
@@ -26,9 +26,9 @@ DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1,
 ;; Jump Table
 ;;
 hero_jumptable:
-    .db #-3, #-2, #-1, #-1
-    .db #-2, #00, #00, #02
-    .db #1, #1, #2, #3
+    .db #-6, #-4, #-3, #-3
+    .db #-3, #01, #01, #01
+    .db #0, #0, #0, #0
     .db #0x80                   ;; #0x80 marca el último byte
 
 
@@ -36,7 +36,7 @@ hero_jumptable:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve 0 si la tile donde esta la entidad en solida
-;;  1 en caso contrario
+;;  Distinto de cero en caso contrario
 ;;  
 ;; REGISTROS DESTRUIDOS: 
 ;;  Entrada: IX -> Entity
@@ -48,7 +48,7 @@ ent_is_solidTile:
   bit #7, a
   ld a,#0
   ret z
-  ld a,#1
+  ld a,#-2
 ret
 
 
@@ -219,18 +219,18 @@ ent_clear:
 ;; Cambios: jump_state = temporal_collision
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_update:
-    ;; Obtener la colisión
-    call temporal_collision     ;; A = temporal_collision
-    ;; Cuando colisiona en X, no cae por talto puede saltar
-    cp #-1
-    jr z, no_cae                ;; A == -1? THEN no_cae     
-
-        ;; NO ==> caer, y bloquer el salto
-        ld e_jump(ix), a    ;; | e_jump(ix) = A
-        ld b, e_y(ix)       ;; | B = e_y(ix)
-        inc b               ;; \ B++
-        ld e_y(ix), b       ;; Incrementar e_y (simula la caida de momento)
-
+ ;;   ;; Obtener la colisión
+ ;;   call ent_is_solidTile     ;; A = temporal_collision
+ ;;   ;; Cuando colisiona en X, no cae por talto puede saltar
+ ;;   cp #0
+ ;;   jr z, no_cae                ;; A == 0? THEN no_cae     
+;;
+ ;;       ;; NO ==> caer, y bloquer el salto
+ ;;       ld e_jump(ix), a    ;; | e_jump(ix) = A
+ ;;       ;;ld b, e_vy(ix)       ;; | B = e_y(ix)
+ ;;       ;;inc b               ;; \ B++
+ ;;       ld e_vy(ix), #1       ;; Incrementar e_y (simula la caida de momento)
+;;
     ;; Entity is not fallig, can jump :O
     no_cae:
     call jumpControl      ;; Llamada a la función que controla el salto
@@ -276,29 +276,8 @@ w_no_pulsada:
  
   ret
  
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MOVER UNA ENTIDAD
-;; REGISTROS DESTRUIDOS: af, hl,de
-;; ENTRADA: IX -> Puntero a entidad
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ent_move:
-  ;;Sumamos velocidad X a posicion X
-  ld    a, e_x(ix)
-  add   e_vx(ix)
 
-  ld    e_x(ix), a
-    ;;Sumamos velocidad Y a posicion Y
 
- ld    a, e_y(ix)
-  add   e_vy(ix)
-  ld    e_y(ix), a
- 
-
-  ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
-  ld h, e_tile_h(ix)
-  ld l, e_tile_l(ix)
-
-  push hl
 
 
   ;; Calculate the offset of the first tile of the box inside the tilemap and add it
@@ -306,6 +285,8 @@ ent_move:
   ;;    Offset = y * map_width + x
   ;;    HL = ptilemap + Offset
   ;;
+  
+ CalcualteOFFSET: 
   ld  hl, #_g_tilemap         ;; [3] HL=ptilemap 
   ld    a, e_x(ix)      ;; [1]   | HL = ptilemap + x
   add__hl_a       ;; [5]   |  
@@ -315,6 +296,92 @@ ent_move:
   cp    a         ;; [1] Reset Carry Flag (Required for multiplying)
   mult_de_a       ;; [11-83] HL += DE * A (HL = y * map_width + x) ;; A * C + 
   ;; HL now points to the next tile to draw from the tilemap!
+
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MOVER UNA ENTIDAD
+;; REGISTROS DESTRUIDOS: af, hl,de
+;; ENTRADA: IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ent_move:
+  ;;Sumamos velocidad X a posicion X
+  ld    a, e_x(ix)
+  add   e_vx(ix)
+  ld    e_x(ix), a
+
+
+  ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+  ld h, e_tile_h(ix)
+  ld l, e_tile_l(ix)
+  push hl
+
+
+ call CalcualteOFFSET
+
+   ;;Sumamos velocidad al tile,para cambiar
+  ld  e_tile_h(ix) , h
+  ld  e_tile_l(ix), l
+
+
+
+
+
+  ;;check if entity is in a solid tile
+  ;;Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
+  call ent_is_solidTile ;; Devuelve en B true o false
+  jr z, checkY
+
+
+  ;; Check if entity has a collision with an obstacle
+
+
+
+  ;;ld    iy, #obstacle1
+
+  ;; Call to function
+  ;;call	obstacle_checkCollision
+
+  ;;If collide dont move (A == 0) exit function
+  ;;Else revet changes in e_x and e_y
+  ;;cp #0
+  ;;jr z, exit
+
+
+
+
+  pop hl ;;para restaurar el puntero a la tile actual
+  push hl
+
+  ld    a, e_x(ix)
+  sub   e_vx(ix)
+  ld    e_x(ix), a
+
+
+    ;;restauramos puntero
+  ld  e_tile_h(ix) , h
+  ld  e_tile_l(ix), l
+
+
+
+checkY:
+
+pop hl
+  ;;Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
+  ld    a, e_y(ix)
+  add   e_vy(ix)
+  inc a
+  ld    e_y(ix), a
+
+
+  ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+  ld h, e_tile_h(ix)
+  ld l, e_tile_l(ix)
+
+  push hl
+
+
+ call CalcualteOFFSET
 
    ;;Sumamos velocidad al tile,para cambiar
   ld  e_tile_h(ix) , h
@@ -345,24 +412,19 @@ ent_move:
   ;;jr z, exit
 
 
-restartposition:
 
-pop hl
-push hl
-  ld    a, e_x(ix)
-  sub   e_vx(ix)
-  ld    e_x(ix), a
- 
-
-   ;;Sumamos velocidad al tile,para cambiar
-  ld  e_tile_h(ix) , h
-  ld  e_tile_l(ix), l
-
-
+resetY:
+  pop hl ;; para restaurar el puntero a la tile actual
+  push hl
 
   ld    a, e_y(ix)
   sub   e_vy(ix)
+  dec a
   ld    e_y(ix), a
+
+    ;;restauramos puntero
+  ld  e_tile_h(ix) , h
+  ld  e_tile_l(ix), l
 
 exit:
 
