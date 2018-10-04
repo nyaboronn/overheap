@@ -1,18 +1,29 @@
 .include "cpctelera.h.s"
 .include "tileManager.h.s"
+.include "utils.h.s"
 .include "main.h.s"
  
 
 
-;a to bc (extend sign)
-;inputs:  a  - 8-bit signed number
-;outputs: bc - same 16-bit signed number
-AtoBCextendendsign:
-	ld c,a
-	rlca		; or rla
-	sbc a,a
-	ld b,a
-	ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DEVUELVE EL VALOR DE UN TILE, DADO UNA  COLUMNA Y FILA
+;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; ENTRADA: A -> COLUMNA (X)
+;;          F -> FILA    (Y)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+getTileByte:
+    ld iy, #TScreenTilemap ;; TODO, inecesario posible parametro
+
+
+
+ret
+
+
+
+
+
  
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Desplaza el tilemap, modifica los punteros y dibuja una columa a la derecha o izquierda 

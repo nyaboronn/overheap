@@ -8,7 +8,7 @@
 
 
 
-DefineObstacle obstacle1,17,38,0x06,0x08,0x20
+DefineObstacle obstacle1,0,0,0x06,0x08,0x20
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -74,8 +74,8 @@ ent_clear_obs:
 
   ;;=====================================================================
   ;;   CHECKS COLLISIONS BETWEEN OBSTACLE AND OBJ
-  ;;    Input:
-  ;;         IY: Points to the Hero
+  ;;    Input: Iy and IX swaped
+  ;;         IY: Points to the Hero 
   ;;         IX: Points to the Obtacle
   ;;        Delete Registers: IX, IY, A, C, B
   ;;=====================================================================
@@ -88,22 +88,22 @@ ent_clear_obs:
     ;;  obs_x + obx_w - hero_x <= 0
  
 
-        ld  a,o_x(ix)       ;;  obs_x
+        ld  a,o_x(iy)       ;;  obs_x
         ld	c, a            ;;  obs_x -> c
-        ld  a, o_w(ix)      ;;  obs_w
+        ld  a, o_w(iy)      ;;  obs_w
         add c               ;;  obs_x + obs_w
-        sub	e_x(iy)            ;;Entiendo que hero_x tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
+        sub	e_x(ix)            ;;Entiendo que hero_x tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
         jr z, no_collision      ;;Menor o igual if (<= 0)
         jp m, no_collision      ;;Es válido poner doble salto, ya que no modifican los flags entonces sigue siendo válido
         
 
         ;;Other possibility
        ;; Y axis
-        ld  a,o_y(ix)       ;;  obs_y
+        ld  a,o_y(iy)       ;;  obs_y
         ld	c, a            ;;  obs_y -> c
-        ld  a, o_h(ix)      ;;  obs_h
+        ld  a, o_h(iy)      ;;  obs_h
         add c               ;;  obs_y + obs_h
-        sub	e_y(iy)            ;;Entiendo que hero_y tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
+        sub	e_y(ix)            ;;Entiendo que hero_y tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
         jr z, no_collision      ;;Menor o igual if (<= 0)
         jp m, no_collision      ;;Es válido poner doble salto, ya que no modifican los flags entonces sigue siendo válido
 
@@ -113,8 +113,8 @@ ent_clear_obs:
         ;;  if(hero_x + hero_w <= obs_x)
         ;;  if(hero_x + hero_w - obs_x <= 0 )
               ;;ld iy, #hero_data   ;;NUEVO Tengo que volver a cargarle el valor de hero_data porque si no en A se queda una posición desfasada
-        ld  a,e_x(iy) ;;Meto el valor de iy en a ;Meto en A hero_x
-        ld  c,e_w(iy)
+        ld  a,e_x(ix) ;;Meto el valor de iy en a ;Meto en A hero_x
+        ld  c,e_w(ix)
         add c
         ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
         ;;inc iy
@@ -122,7 +122,7 @@ ent_clear_obs:
         ;;inc iy
         ;;add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
         ld	c, a    ;;Paso el valor de la suma a C
-        ld  a, o_x(ix)  ;;Paso a A el valor de obs_x
+        ld  a, o_x(iy)  ;;Paso a A el valor de obs_x
         ld  b, a    ;;Paso el valor de obs_x que tengo en a B
         ld  a, c    ;;Paso el valor de hero_x + hero_w de C a A para restar
         sub b       ;;Resto el valor de (hero_x + hero_w) - obs_x
@@ -131,8 +131,8 @@ ent_clear_obs:
 
         ;ld iy, #hero_data ;;Vuelvo a cargar hero_data , porque los inc de antes me han cambiado la dir que apuntaba iy
 
-       ld  a,e_y(iy) ;;Meto el valor de iy en a ;Meto en A hero_x
-       ld  c,e_h(iy)
+       ld  a,e_y(ix) ;;Meto el valor de iy en a ;Meto en A hero_x
+       ld  c,e_h(ix)
        add c
        ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
        ;;inc iy
@@ -141,7 +141,7 @@ ent_clear_obs:
        ;;inc iy
        ;;add (iy)    ;;Sumo a hero_x que lo tengo en A el valor de hero_w
        ld	c, a    ;;Paso el valor de la suma a C
-       ld  a, o_y(ix)  ;;Paso a A el valor de obs_y
+       ld  a, o_y(iy)  ;;Paso a A el valor de obs_y
        ld  b, a    ;;Paso el valor de obs_x que tengo en a B
        ld  a, c    ;;Paso el valor de hero_x + hero_w de C a A para restar
        sub b       ;;Resto el valor de (hero_x + hero_w) - obs_x

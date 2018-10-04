@@ -54,6 +54,14 @@ call cpct_etm_setTileset2x4_asm
 
 call cpct_etm_drawTileBox2x4_asm
 
+call ent_initialTile
+ld    ix, #hero_data
+ld    e_tile_l(ix),l
+ld    e_tile_h(ix),h
+call ent_getActualTile
+
+
+
 
 ret
 

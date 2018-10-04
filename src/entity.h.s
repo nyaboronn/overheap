@@ -1,7 +1,7 @@
 ;###########################################################################
 ;#### FICHERO: entity.h.s
 ;###########################################################################
-.macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _jump
+.macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _jump, _tile
 _name:
    .db    _x, _y      ;; X, Y
    .db   _vx, _vy     ;; VX, VY
@@ -9,10 +9,11 @@ _name:
    .db   _col           ;; Color
    .dw   _upd         ;; Update
    .db  _jump         ;; Jump State, -1 if not jumping
+   .dw _tile
 .endm
 
 .macro DefineEntityDefault _name, _suf
-   DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1
+   DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, #-1,0x0000
 .endm
 
 .macro DefineNEntities _name, _n
@@ -40,8 +41,10 @@ e_col = 6
 e_up_l = 7
 e_up_h = 8
 e_jump = 9
+e_tile_l = 10
+e_tile_h = 11
  
- 
+.globl ent_move
 .globl ent_draw
 .globl ent_clear
 .globl ent_update
@@ -50,3 +53,5 @@ e_jump = 9
 .globl hero_data
 .globl enemy_data
 .globl ent_doForAll
+.globl ent_initialTile
+.globl ent_getActualTile

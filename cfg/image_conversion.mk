@@ -56,4 +56,4 @@ PALETTE={ 0 6 13 10 12 3 9 18 26 15 25 1 14 }
 ## called g_tiles{0-15} (g is prefix for _tiles) without interlaced mask. 
 ## Palette will also be converted to hardware values and outputed as a C-array
 ## named g_palette.
-$(eval $(call IMG2SPRITES,img/tiles.png,0,g,4,4,$(PALETTE),tileset,src/,hwpalette))
+$(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE),tileset,src/,hwpalette))

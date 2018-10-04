@@ -38,6 +38,7 @@
 # Conversion 
 #$(eval $(call TMX2DATA, CONVERT, tmxfile, array )) 
 
+$(eval $(call TMX2DATA, CONVERT, img/tilemap.tmx, g_tilemap )) 
 
 ##
 ## OLD MACROS (For compatibility)
@@ -92,4 +93,4 @@
 ##  * Parameters (4) and (5) are optional and generally not required.     ##
 ############################################################################
 
-$(eval $(call TMX2C,img/tilemap.tmx,g_tilemap,src/))
+#$(eval $(call TMX2C,img/tilemap.tmx,g_tilemap,src/))

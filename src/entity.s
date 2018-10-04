@@ -6,11 +6,12 @@
 .include "obstacle.h.s"
 .include "tileManager.h.s"
 .include "main.h.s"
- 
+.include "utils.h.s"
+
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 0, 40, 0x00, 0x00, 0x02, 0x04, 0x0F, ent_moveKeyboard, -1
-DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1
+DefineEntity hero_data, 0, 38, 0x00, 0x00, 0x01, 0x01, 0x77, ent_moveKeyboard, -1,0x0000
+DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1,0x0000
  
  ;;
  ;;Cosas para poder crear entidades
@@ -30,6 +31,53 @@ hero_jumptable:
     .db #1, #1, #2, #3
     .db #0x80                   ;; #0x80 marca el último byte
 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve 0 si la tile donde esta la entidad en solida
+;;  1 en caso contrario
+;;  
+;; REGISTROS DESTRUIDOS: 
+;;  Entrada: IX -> Entity
+;; Return in A
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ent_is_solidTile:
+  call ent_getActualTile
+
+  bit #7, a
+  ld a,#0
+  ret z
+  ld a,#1
+ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve ptr a tile donde estas inicial
+;; REGISTROS DESTRUIDOS: DE, HL
+;; Return in HL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ent_initialTile:
+ld hl, #_g_tilemap
+ld de, #0x1338
+add hl,de
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve ptr a tile donde estas inicial
+;; REGISTROS DESTRUIDOS: DE, HL, A
+;; ENTRADA: IX -> Puntero a entidad
+;; Return in A
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ent_getActualTile:
+
+ld h, e_tile_h(ix)
+ld l, e_tile_l(ix)
+ld A, (hl)
+
+
+
+ret
     
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; REGISTRA UNA NUEVA ENTIDAD
@@ -210,43 +258,96 @@ w_no_pulsada:
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD
-;; REGISTROS DESTRUIDOS:
+;; REGISTROS DESTRUIDOS: af, hl
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_move:
+  ;;Sumamos velocidad X a posicion X
   ld    a, e_x(ix)
   add   e_vx(ix)
+
   ld    e_x(ix), a
- 
-  ld    a, e_y(ix)
+    ;;Sumamos velocidad Y a posicion Y
+
+ ld    a, e_y(ix)
   add   e_vy(ix)
   ld    e_y(ix), a
  
-  push ix
-  ld    ix, #obstacle1
-  pop iy
-  push iy
-  ;;ld iy, #hero_data
-  call	obstacle_checkCollision
-  cp #0
-  jr z, exit
-  pop ix
-  push ix
 
+  ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+  ld h, e_tile_h(ix)
+  ld l, e_tile_l(ix)
+
+  push hl
+
+
+  ;; Calculate the offset of the first tile of the box inside the tilemap and add it
+  ;; to the main tilemap pointer (ptilemap)
+  ;;    Offset = y * map_width + x
+  ;;    HL = ptilemap + Offset
+  ;;
+  ld  hl, #_g_tilemap         ;; [3] HL=ptilemap (recovered from the stack)
+  ld    a, e_x(ix)      ;; [1]   | HL = ptilemap + x
+  add__hl_a       ;; [5]   |  
+
+  ld   de, #120  ;; [3] DE = map_width
+  ld    a, e_y(ix)      ;; [1] A = y 
+  cp    a         ;; [1] Reset Carry Flag (Required for multiplying)
+  mult_de_a       ;; [11-83] HL += DE * A (HL = y * map_width + x) ;; A * C + 
+  ;; HL now points to the next tile to draw from the tilemap!
+
+   ;;Sumamos velocidad al tile,para cambiar
+  ld  e_tile_h(ix) , h
+  ld  e_tile_l(ix), l
+
+
+
+
+
+  ;;check if entity is in a solid tile
+  ;;Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
+  call ent_is_solidTile ;; Devuelve en B true o false
+  jr z, exit
+
+
+  ;; Check if entity has a collision with an obstacle
+
+
+
+  ;;ld    iy, #obstacle1
+
+  ;; Call to function
+  ;;call	obstacle_checkCollision
+
+  ;;If collide dont move (A == 0) exit function
+  ;;Else revet changes in e_x and e_y
+  ;;cp #0
+  ;;jr z, exit
+
+
+restartposition:
+
+pop hl
+push hl
   ld    a, e_x(ix)
   sub   e_vx(ix)
   ld    e_x(ix), a
  
+
+   ;;Sumamos velocidad al tile,para cambiar
+  ld  e_tile_h(ix) , h
+  ld  e_tile_l(ix), l
+
+
+
   ld    a, e_y(ix)
   sub   e_vy(ix)
   ld    e_y(ix), a
 
-
-
 exit:
 
-  pop ix
-
+  ;;pop ix
+  pop hl
   ret
 
 
