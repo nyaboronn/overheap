@@ -42,19 +42,26 @@ initialize_CPC:
     ld D, #MAP_HEIGHT  ;; H
     ld A, #MAP_WIDTH ;; map_width
 
-    ld hl, #_g_tilemap
+    ld h, pTilemap+1(iy)
+    ld l, pTilemap(iy)
     push hl
 
-    ld hl, #CPCT_VMEM_START
+    ld h, pVideo+1(iy)
+    ld l, pVideo(iy)
     push hl
+
 
 call cpct_etm_drawTileBox2x4_asm
+
+
 
 call ent_initialTile
 ld    ix, #hero_data
 ld    e_tile_l(ix),l
 ld    e_tile_h(ix),h
 call ent_getActualTile
+
+
 
 
 
@@ -105,9 +112,10 @@ _main::
   ;;ld    c, #0
   ;;call cpct_setVideoMode_asm
 
-    ld ix, #TScreenTilemap
+    ld iy, #TScreenTilemap
   call initialize_CPC
-  
+    push iy
+
 
   
     ;; Crear una nueva entidad
@@ -119,34 +127,32 @@ _main::
 loop:
 
 
- ld	  ix, #obstacle1
+  ld	  ix, #obstacle1
   call ent_draw_obs
 
 
-ld    ix, #hero_data
+  ld    ix, #hero_data
   call ent_clear
+  pop iy
   call ent_update
   call ent_draw
 
 
-
-
-  
-
+;;Una marca al
   ld	(0xC027), a ;;Draw coliision level
   ld	(0xC028), a ;;Draw coliision level
   ld	(0xC029), a ;;Draw coliision level
 
 
-
-
-   
-
-
     call cpct_waitVSYNC_asm
 
-    ;; Loop forever
-    jr    loop
+
+  push iy
+
+
+
+
+    jp loop
 
 
 

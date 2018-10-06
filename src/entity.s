@@ -10,7 +10,7 @@
 
 
 DefineNEntities entity_vector, 9
-DefineEntity hero_data, 10, 20, 0x00, 0x00, 0x02, 0x04, 0x77, ent_moveKeyboard, -1,0x0000
+DefineEntity hero_data, 20, 20, 0x00, 0x00, 0x02, 0x04, 0x77, ent_moveKeyboard, -1,0x0000
 DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1,0x0000
  
  ;;
@@ -65,7 +65,7 @@ ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve ptr a tile donde estas inicial
-;; REGISTROS DESTRUIDOS: DE, HL, A
+;; REGISTROS DESTRUIDOS:  HL, A
 ;; ENTRADA: IX -> Puntero a entidad
 ;; Return in A
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -77,10 +77,7 @@ ld A, (hl)
 
 ret
     
-;;
-;; Coordenada X del suelo
-;;
-map_Height = 40
+
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; REGISTRA UNA NUEVA ENTIDAD
@@ -219,20 +216,6 @@ ent_clear:
 ;; Cambios: jump_state = temporal_collision
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_update:
- ;;   ;; Obtener la colisión
- ;;   call ent_is_solidTile     ;; A = temporal_collision
- ;;   ;; Cuando colisiona en X, no cae por talto puede saltar
- ;;   cp #0
- ;;   jr z, no_cae                ;; A == 0? THEN no_cae     
-;;
- ;;       ;; NO ==> caer, y bloquer el salto
- ;;       ld e_jump(ix), a    ;; | e_jump(ix) = A
- ;;       ;;ld b, e_vy(ix)       ;; | B = e_y(ix)
- ;;       ;;inc b               ;; \ B++
- ;;       ld e_vy(ix), #1       ;; Incrementar e_y (simula la caida de momento)
-;;
-    ;; Entity is not fallig, can jump :O
-    no_cae:
     call jumpControl      ;; Llamada a la función que controla el salto
 
     ;; Puntero a la función que actualiza la entidad
@@ -242,36 +225,128 @@ ent_update:
 
     ret
     
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve el estado segun una entidad
+;; REGISTROS DESTRUIDOS: HL, 
+;; ENTRADA: 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+wait4KeyboardInput:
+
+;;Escaneamos la matriz del tecaldo
+  call  cpct_scanKeyboard_asm
+
+
+
+;; COMPROBAR SI SE HA PULSADO 'W'
+  ld    hl, #Key_W
+  call  cpct_isKeyPressed_asm
+  jr    z, w_no_pulsada         ;; IF KEY_W IS pressed: lest JUMP
+    call startJump               ;; Call Jump Function
+    ld h,#0
+
+w_no_pulsada:
+
+ ;;Comprobamos si la tecla A, ha sido pulsada 
+  ld    hl, #Key_A
+  call  cpct_isKeyPressed_asm
+  jr    z, a_no_pulsada       ;;A is pressed
+     ld e_vx(ix), #-1
+      ld h, #-1
+      ld l, #0
+      ret
+a_no_pulsada:
+ 
+
+ ;;Comprobamos si la tecla D ha sido pulsada
+  ld    hl, #Key_D
+  call  cpct_isKeyPressed_asm
+  jr    z, d_no_pulsada      ;;D is pressed
+    ld e_vx(ix), #1
+    ld h, #+1
+    ld l, #SCR_TILE_WIDTH-1
+    ret
+d_no_pulsada:
+
+
+ld h,#0
+ret
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD CON TECLADO
 ;; REGISTROS DESTRUIDOS:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_moveKeyboard:
-  call  cpct_scanKeyboard_asm
- 
-  ld    hl, #Key_A
-  call  cpct_isKeyPressed_asm
-  jr    z, a_no_pulsada
-     ld e_vx(ix), #-1
-a_no_pulsada:
- 
-  ld    hl, #Key_D
-  call  cpct_isKeyPressed_asm
-  jr    z, d_no_pulsada
-     ld e_vx(ix), #1
-d_no_pulsada:
 
-;; COMPROBAR SI SE HA PULSADO 'W'
-  ld    hl, #Key_W
-  call  cpct_isKeyPressed_asm
-  jr    z, w_no_pulsada         ;; IF KEY_W IS pressed: lest JUMP
-  call startJump               ;; Call Jump Function
-w_no_pulsada:
- 
+
+  call wait4KeyboardInput
+
+  ;;al comrpobar si hemos pulsado A o D
+  ;;Si es A, comprobamos si estamos en la columna izquierda limite, 
+    ;; Si hemo sllegado al borde, movemos al player y el mapa.
+
+    ld a, #0
+    cp h
+
+    JP z, funcRet;carry flag
+    ld a, #1
+    cp h
+    JP z, morethanZero;carry flag
+
+    ;;If A >= N, then C flag is reset.
+        ld a, scroll(iy)
+        add a, #10
+        ld d,e_x(ix)
+        cp d
+        jr c, funcRet
+
+
+        ld a, #0 ;; 0
+        ld d, scroll(iy)
+        cp d
+        jr z, funcRet
+        jr calltoFunc
+
+    morethanZero:
+
+        ;;If A < N, then C flag is set.|| CP REGister N
+        ld a, scroll(iy)
+        add a, #30
+        ld d,e_x(ix)
+        cp d
+        jr nc, funcRet
+
+        ;; h == MAXSCROLL NEXT ITERATION
+        ld a, #MAXSCROLL  ;; #MAXSCROLL
+        ld d, scroll(iy)
+        cp d
+        jr z, funcRet
+
+    calltoFunc:
+
+    call scrollScreenTilemap
+
+    funcRet:
+
+
+  ;;En caso contrario solo movemos el player
+  ;; Realizamos lo mismo con la tecla D y el margen derecho
+
+
+  ;;Ademas de la comprobacion se debe mirar si llegamos a los bordes
+  ;;
+  ;;
+
 
   call  ent_move
  
+
   ld e_vx(ix), #0
  
   ret

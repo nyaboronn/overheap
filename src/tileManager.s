@@ -38,7 +38,7 @@ ret
 scrollScreenTilemap::
 
 
-    ld ix, #TScreenTilemap ;; TODO, inecesario posible parametro
+    ld iy, #TScreenTilemap ;; TODO, inecesario posible parametro
     push hl                ;; Usamos la pila para
 
 
@@ -54,15 +54,15 @@ scrollScreenTilemap::
     pop hl
 
 
-    ld d, pVideo+1(ix)
-    ld e, pVideo(ix)
+    ld d, pVideo+1(iy)
+    ld e, pVideo(iy)
 
     ex de,hl
     add hl,de
     
 
-    ld pVideo+1(ix), h
-    ld pVideo(ix), l
+    ld pVideo+1(iy), h
+    ld pVideo(iy), l
 
         pop hl
         push hl
@@ -75,15 +75,15 @@ scrollScreenTilemap::
     push bc
     pop hl
 
-    ld d, pTilemap+1(ix)
-    ld e, pTilemap(ix)
+    ld d, pTilemap+1(iy)
+    ld e, pTilemap(iy)
 
     ex de,hl
     add hl,de
     
 
-    ld pTilemap+1(ix), h
-    ld pTilemap(ix), l
+    ld pTilemap+1(iy), h
+    ld pTilemap(iy), l
 
         pop hl
         push hl
@@ -98,12 +98,12 @@ scrollScreenTilemap::
     pop hl
 
 
-    ld e, scroll(ix)
+    ld e, scroll(iy)
 
     ex de,hl
     add hl,de
     
-    ld scroll(ix), l
+    ld scroll(iy), l
 
 
 
@@ -111,7 +111,7 @@ scrollScreenTilemap::
     call cpct_waitVSYNC_asm
 
     ;; La clave del hardware scrolling es moficiar el puntero a memoria
-    ld l, scroll(ix)
+    ld l, scroll(iy)
     call cpct_setVideoMemoryOffset_asm
 
 
@@ -126,16 +126,17 @@ scrollScreenTilemap::
     ld D, #MAP_HEIGHT  ;; H
     ld A, #MAP_WIDTH ;; map_width
 
-    ld h, pTilemap+1(ix)
-    ld l, pTilemap(ix)
+    ld h, pTilemap+1(iy)
+    ld l, pTilemap(iy)
     push hl
 
-    ld h, pVideo+1(ix)
-    ld l, pVideo(ix)
+    ld h, pVideo+1(iy)
+    ld l, pVideo(iy)
     push hl
 
     call cpct_etm_drawTileBox2x4_asm
 
+  call cpct_waitVSYNC_asm
 
     pop hl
 
@@ -151,27 +152,27 @@ scrollScreenTilemap::
 
 
   ;; pointer to screen
-    ld d, pVideo+1(ix) ;; memory pointer
-    ld e, pVideo(ix)
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
 
     ld c,#0  ;x
     ld b,#4*MAP_HEIGHT  ;y
     call cpct_getScreenPtr_asm ;; return in hl
 
-    ex de, hl
-    ld a,#0
-    ld c, #2
-    ld b, #8
+    ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+    ld a,#0 ;;(1B A ) colour_pattern	1-byte colour pattern (in screen pixel format) to fill the box with
+    ld c, #2  ;;(1B C ) width	Box width in bytes [1-64] (Beware!  not in pixels!)
+    ld b, #8 ;;(1B B ) height	Box height in bytes (>0)
 
     call cpct_drawSolidBox_asm
 
 
     deleteFragment:
 
-    ld d, pVideo+1(ix) ;; memory pointer
-    ld e, pVideo(ix)
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
 
-    dec de
+    dec de 
     dec de
     ld a,#0
     ld c, #2
