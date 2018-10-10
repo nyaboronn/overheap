@@ -110,7 +110,6 @@ loop:
   call enm_update
   call enm_draw
 
-
 ;;Una marca al
   ld	(0xC027), a ;;Draw coliision level
   ld	(0xC028), a ;;Draw coliision level

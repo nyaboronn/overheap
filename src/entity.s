@@ -388,11 +388,11 @@ ent_move:
 
     checkY:
         pop hl
-        ;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
-        ld      a, e_y(ix)
-        add     e_vy(ix)
-        inc a
-        ld      e_y(ix), a
+        ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
+        ;ld      a, e_y(ix)
+        ;add     e_vy(ix)
+        ;inc a
+        ;ld      e_y(ix), a
         ;; Recogemos la coordenados y la cuerdamos en la pila,(variable local)
         ld h, e_tile_h(ix)
         ld l, e_tile_l(ix)
