@@ -3,6 +3,7 @@
 .include "tileManager.h.s"
 .include "main.h.s"
 .include "obstacle.h.s"
+.include "enemy.h.s"
 
  
 .area _DATA
@@ -53,53 +54,20 @@ initialize_CPC:
 
 call cpct_etm_drawTileBox2x4_asm
 
-
+;;call ent_initialTile
+;;ld    ix, #hero_data
+;;ld    e_tile_l(ix),l
+;;ld    e_tile_h(ix),h
+;;call ent_getActualTile
 
 call ent_initialTile
-ld    ix, #hero_data
+ld    ix, #enemy_data
 ld    e_tile_l(ix),l
 ld    e_tile_h(ix),h
 call ent_getActualTile
 
-
-
-
-
-
 ret
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  Comprueba telcado
-;;  NO Parameters
-;;  destroy: hl - Return in HL
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-wait4KeyboardInput:
-  call  cpct_scanKeyboard_asm
- 
-  ld    hl, #Key_A
-  call  cpct_isKeyPressed_asm
-  jr    z, a_no_pulsada
-        ;;A is pressed
-        ld h, #-1
-        ld l, #0
-        ret
-a_no_pulsada:
-
-  ld    hl, #Key_D
-  call  cpct_isKeyPressed_asm
-  jr    z, d_no_pulsada
-        ;; D is pressed
-        ld h, #+1
-        ld l, #SCR_TILE_WIDTH-1
-        ret
-d_no_pulsada:
-
-ld h,#0
-ret
 
 
 
@@ -118,10 +86,16 @@ _main::
 
 
   
+    ;;; Crear una nueva entidad
+    ;call ent_new
+    ;ex	de, hl
+    ;ld    hl,#hero_data
+    ;call ent_copy
+
     ;; Crear una nueva entidad
     call ent_new
     ex	de, hl
-    ld    hl,#hero_data
+    ld    hl,#enemy_data
     call ent_copy
  
 loop:
@@ -131,11 +105,10 @@ loop:
   call ent_draw_obs
 
 
-  ld    ix, #hero_data
-  call ent_clear
-  pop iy
-  call ent_update
-  call ent_draw
+  ld    ix, #enemy_data
+  call enm_clear
+  call enm_update
+  call enm_draw
 
 
 ;;Una marca al

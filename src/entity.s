@@ -4,6 +4,7 @@
 .include "tileManager.h.s"
 .include "main.h.s"
 .include "utils.h.s"
+.include "enemy.h.s"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;CONSTANTES
@@ -18,7 +19,8 @@ m_next_entity:  .dw entity_vector0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DefineNEntities entity_vector, 9
 DefineHero      hero_data, 20, 20, 0x00, 0x00, 0x02, 0x04, 0x77, ent_moveKeyboard, 0x0000, -1
-DefineEntity    enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, 0x0000
+;DefineEntity    enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, 0x0000
+DefineEntity    enemy_data, 10, 20, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move, 0x0000
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Jump Table
