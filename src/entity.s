@@ -170,7 +170,7 @@ ent_clear:
     ;; Repintamos una columna, izquierda o derecha
     ld  C,  e_x(ix)    ;; X
     ld  B,  e_y(ix)  ;; Y
-    ld  E,  e_w(ix)  ;; W
+    ld  E,  e_w(ix)  ;; 
     ld  D,  e_h(ix)  ;; H
     ld  A,  #MAP_WIDTH ;; map_width
 

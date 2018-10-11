@@ -9,3 +9,6 @@
 .globl hero_jumpControl
 .globl hero_startJump
 .globl hero_update
+.globl hero_clear
+.globl hero_draw
+.globl hero_move

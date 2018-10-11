@@ -19,6 +19,13 @@ sentido: .db #1
 lim_der = #34   ;; Limite Derecho del movimiento
 lim_izq = #4    ;; Limite Izquierda del movimiento
 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HORIZONTAL
+;; Ida y Vuelta Sin Parar de un punto A a otro B
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move:
     ;; Posicion
     ld a, (sentido)     ;; | A = Sentido value
@@ -61,6 +68,7 @@ enm_move:
     ld e_x(ix), a                   ;; e_y = A
     ld hl, #sentido                 ;; HL = sentido dic memory
     ld (hl), b                      ;; (HL) = B
+    
     call ent_move                   ;; Call func ent_move for applay new x value
 
     ret

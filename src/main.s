@@ -2,9 +2,10 @@
 .include "entity.h.s"
 .include "tileManager.h.s"
 .include "main.h.s"
+
 .include "obstacle.h.s"
 .include "enemy.h.s"
-
+.include "hero.h.s"
  
 .area _DATA
 .area _CODE
@@ -54,11 +55,11 @@ initialize_CPC:
 
 call cpct_etm_drawTileBox2x4_asm
 
-;call ent_initialTile
-;ld    ix, #hero_data
-;ld    e_tile_l(ix),l
-;ld    e_tile_h(ix),h
-;call ent_getActualTile
+call ent_initialTile
+ld    ix, #hero_data
+ld    e_tile_l(ix),l
+ld    e_tile_h(ix),h
+call ent_getActualTile
 
 call ent_initialTile
 ld    ix, #enemy_data
@@ -86,16 +87,16 @@ _main::
 
 
   
-    ;;;; Crear una nueva entidad
-    ;call ent_new
-    ;ex	de, hl
-    ;ld    hl,#hero_data
-    ;call ent_copy
-
+    ;;; Crear una nueva entidad
+    call ent_new
+    ex	de, hl
+    ld    hl,#hero_data
+    call ent_copy
+ 
     ; Crear una nueva entidad
     call ent_new
     ex	de, hl
-    ld    hl,#enemy_data
+    ld    hl, #enemy_data
     call ent_copy
  
 loop:
@@ -109,6 +110,11 @@ loop:
   call enm_clear
   call enm_update
   call enm_draw
+
+  ld    ix, #hero_data
+  call hero_clear
+  call hero_update
+  call hero_draw
 
 ;;Una marca al
   ld	(0xC027), a ;;Draw coliision level

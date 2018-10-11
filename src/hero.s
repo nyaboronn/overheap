@@ -18,8 +18,7 @@ hero_jumptable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 20, 20, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
-
+DefineHero hero_data, 20, 40, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
@@ -33,6 +32,28 @@ hero_update:
     ;; Llamada a la función que actualiza una entidad
     call ent_update
 
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BORRA UNA ENTIDAD
+;; REGISTROS DESTRUIDOS: AF',AF, BC, DE, HL
+;; ENTRADA: 
+;;          IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_clear:
+    ;; Llamda a la función que borra una entidad
+    call ent_clear
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIBUJAR UNA ENTIDAD
+;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; ENTRADA: 
+;;          IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_draw:
+    ;; LLamada a al función que dibuja una entidad
+    call ent_draw
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,7 +113,7 @@ hero_moveKeyboard:
         
         ;;Ademas de la comprobacion se debe mirar si llegamos a los bordes
 
-        call  ent_move
+        call  hero_move
         ld e_vx(ix), #0
         
         ret
@@ -195,7 +216,7 @@ hero_jumpControl:
     add b                   ;; B += A (Sumar al valor del salto la X)
     ld  e_vy(ix), a         ;; e_x = Calculo de la nueva X 
 
-    call ent_move
+    call hero_move
 
     ld  e_vy(ix), #0
 
@@ -214,3 +235,103 @@ hero_jumpControl:
         ld  a, #-1           ;; |
         ld  e_jump(ix), a    ;; \ hero_jumpstate = -1
     ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MOVER UNA ENTIDAD
+;; REGISTROS DESTRUIDOS: af, hl,de
+;; ENTRADA: 
+;;          IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_move:
+    ;;Sumamos velocidad X a posicion X
+    ld      a, e_x(ix)
+    add     e_vx(ix)
+    ld      e_x(ix), a
+
+    ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+    ld      h, e_tile_h(ix)
+    ld      l, e_tile_l(ix)
+    push hl
+
+    call CalcualteOFFSET
+
+    ;;Sumamos velocidad al tile,para cambiar
+    ld      e_tile_h(ix) , h
+    ld      e_tile_l(ix), l
+
+    ;;check if entity is in a solid tile
+    ;;Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
+    call    ent_is_solidTile ;; Devuelve en B true o false
+    jr z, checkY
+
+    ;; Check if entity has a collision with an obstacle
+    ;ld    iy, #obstacle1
+    ; Call to function
+    ;call	obstacle_checkCollision
+    ;If collide dont move (A == 0) exit function
+    ;Else revet changes in e_x and e_y
+    ;cp #0
+    ;jr z, exit
+
+    pop hl ;;para restaurar el puntero a la tile actual
+    push hl
+
+    ld      a, e_x(ix)
+    sub     e_vx(ix)
+    ld      e_x(ix), a
+
+    ;;restauramos puntero
+    ld      e_tile_h(ix) , h
+    ld      e_tile_l(ix), l
+
+    checkY:
+        pop hl
+        ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
+        ld      a, e_y(ix)
+        add     e_vy(ix)
+        inc a
+        ld      e_y(ix), a
+        ;; Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+        ld h, e_tile_h(ix)
+        ld l, e_tile_l(ix)
+
+        push hl
+
+        call CalcualteOFFSET
+
+        ;; Sumamos velocidad al tile,para cambiar
+        ld  e_tile_h(ix) , h
+        ld  e_tile_l(ix), l
+
+        ;; check if entity is in a solid tile
+        ;; Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
+        call    ent_is_solidTile ;; Devuelve en B true o false
+        jr z,   exit
+
+        ;; Check if entity has a collision with an obstacle
+        ;ld    iy, #obstacle1
+        ; Call to function
+        ;call	obstacle_checkCollision
+        ;If collide dont move (A == 0) exit function
+        ;Else revet changes in e_x and e_y
+        ;cp #0
+        ;jr z, exit
+
+    resetY:
+        pop     hl ;; para restaurar el puntero a la tile actual
+        push    hl
+
+        ld       a, e_y(ix)
+        sub     e_vy(ix)
+        dec a
+        ld      e_y(ix), a
+
+        ;;restauramos puntero
+        ld      e_tile_h(ix) , h
+        ld      e_tile_l(ix), l
+
+    exit:
+        ;;pop ix
+        pop hl
+        ret
