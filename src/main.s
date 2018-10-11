@@ -119,19 +119,6 @@ loop:
   call hero_update
   call hero_draw
 
-  halt
-  halt
-  halt
-  halt
-  halt
-  halt
-  halt
-  halt
-  halt
-  halt
-  halt
-  halt
-
 ;;Una marca al
   ld	(0xC027), a ;;Draw coliision level
   ld	(0xC028), a ;;Draw coliision level

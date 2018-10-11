@@ -1,9 +1,5 @@
-
-
-
 .include "enemy.h.s"
 .include "entity.h.s"
-
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
@@ -11,15 +7,10 @@
 DefineEnemy enm_data, 30, 40, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
 
 
-puede_ver: .db #5
-
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HORIZONTAL
 ;; Detecta al hero a una distancia N Por el lado que
-;; marco el Byte de la Direccion
+;; marca el Byte de la direccion
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DESTRUIDOS:
 ;; ENTRADAS:
@@ -30,39 +21,39 @@ puede_ver: .db #5
 ;;                    1 en caso contrario
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move1:
+    ;;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
+    ;; h_y == e_y ?? => CALCULAR si lo detecta
 
-    ;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia
-    ;; h_y == e_x ?? => CALCULAR si lo detecta
-
-        ;;;; En que dirección hay que comprobar???
+    ;;;; En que dirección hay que comprobar???
+    ld a, e_direct(ix)          ;; A = enemy_direction
+    cp a, #0                    
+    jr z, busca_en_la_izquierda ;; IF enm_dict == 0 THEN detect left
         
-        ;; Si es por la derecha
-            ; call busca_derecha
-
-        ;; Si es por la izquierda
-            ; call busca_izquierda
+        ;; ELSE buscar en la derecha
+        jp busca_en_la_derecha
 
 
-        ;; SI encontrarlo==true 
-            ; Disparar
-        ;; ELSE 
-            ; Seguir esperando
+    busca_en_la_izquierda:
+        call buscar_izquierda   ;; H = buscar_izquierda
+        jp aplicar
 
-    ;;En caso contrario nos ahorramos el resto de cálculos.
-
-
-    call buscar_izquierda   ;; h = buscar_izquierda
-    ld a, h                 ;; A = H
-    cp #0
-    jr z, no_encontrado     ;; IF A == 0 THEN ret
-
-        ;; ELSE Encontrado
-        ld a, e_col(ix)
-        dec a
-        ld e_col(ix), a
+    busca_en_la_derecha:
+        call buscar_derecha     ;; H = busca_derecha
 
 
-    no_encontrado:
+    aplicar:
+        ld a, h                 ;; A = H
+        cp #0
+        jr z, no_aplica         ;; IF A == 0 THEN ret
+
+            ;; TEMPORAL => FALTA DISPARAR AL DETECTAR EL HERO
+            ;; ELSE Encontrado hero
+            ld a, e_direct(ix)  ;; A = enemy_direction
+            ld a, e_col(ix)     ;; TEMPORAL A = color enemigo
+            inc a               ;; A++
+            ld e_col(ix), a     ; enemy_color = A
+
+        no_aplica:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -86,7 +77,6 @@ buscar_izquierda:
     sub a, e_x(iy)  ;; A -= hero_x
 
     ;; IF (e_x - h_x) <= 5 THEN detected
-    ;; e_x - h_x - 5 <= 0
     cp  a, #15
     jr  nc,  no_detectado
 
@@ -101,7 +91,22 @@ buscar_izquierda:
 ;; Busca al Hero por la derecha
 ;;;;;
 buscar_derecha:
+    ;; Por defecto no lo detecta
+    ld h, #0
 
+    ;; A = (hero_x - enm_x)
+    ld  a, e_x(iy)  ;; A =  hero_x
+    sub a, e_x(ix)  ;; A -= enm_x
+
+    ;; IF (h_x - e_x) <= 5 THEN detected
+    cp  a, #15
+    jr  nc,  no_detecta
+
+        ;; Detectado
+        inc h
+
+    ;; ELSE no hay nada que hacer
+    no_detecta:
     ret
 
 
