@@ -75,5 +75,5 @@ e_jump  = 11
 .globl ent_doForAll
 .globl ent_initialTile
 .globl ent_getActualTile
-.globl hero_data
+;.globl hero_data
 .globl enemy_data

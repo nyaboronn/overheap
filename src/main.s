@@ -54,11 +54,11 @@ initialize_CPC:
 
 call cpct_etm_drawTileBox2x4_asm
 
-;;call ent_initialTile
-;;ld    ix, #hero_data
-;;ld    e_tile_l(ix),l
-;;ld    e_tile_h(ix),h
-;;call ent_getActualTile
+;call ent_initialTile
+;ld    ix, #hero_data
+;ld    e_tile_l(ix),l
+;ld    e_tile_h(ix),h
+;call ent_getActualTile
 
 call ent_initialTile
 ld    ix, #enemy_data
@@ -80,19 +80,19 @@ _main::
   ;;ld    c, #0
   ;;call cpct_setVideoMode_asm
 
-    ld iy, #TScreenTilemap
+  ld iy, #TScreenTilemap
   call initialize_CPC
-    push iy
+  push iy
 
 
   
-    ;;; Crear una nueva entidad
+    ;;;; Crear una nueva entidad
     ;call ent_new
     ;ex	de, hl
     ;ld    hl,#hero_data
     ;call ent_copy
 
-    ;; Crear una nueva entidad
+    ; Crear una nueva entidad
     call ent_new
     ex	de, hl
     ld    hl,#enemy_data
