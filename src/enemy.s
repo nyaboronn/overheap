@@ -4,12 +4,108 @@
 .include "enemy.h.s"
 .include "entity.h.s"
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Movimiento Del Bicho Verde Estático
-;; REGISTROS DESTRUIDOS: af, hl, de, b
-;; ENTRADA: 
-;;          IX -> Puntero a entidad
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;
+;; Enemy Data
+;;;;;;;;;;;;;;;;;;;;
+DefineEnemy enm_data, 30, 40, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
+
+
+puede_ver: .db #5
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HORIZONTAL
+;; Detecta al hero a una distancia N Por el lado que
+;; marco el Byte de la Direccion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DESTRUIDOS:
+;; ENTRADAS:
+;;              IX => puntero al enemigo
+;;              IY => puntero al hero
+;; SALIDAS: 
+;;              HL => 0 no lo detecta, 
+;;                    1 en caso contrario
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enm_move1:
+
+    ;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia
+    ;; h_y == e_x ?? => CALCULAR si lo detecta
+
+        ;;;; En que dirección hay que comprobar???
+        
+        ;; Si es por la derecha
+            ; call busca_derecha
+
+        ;; Si es por la izquierda
+            ; call busca_izquierda
+
+
+        ;; SI encontrarlo==true 
+            ; Disparar
+        ;; ELSE 
+            ; Seguir esperando
+
+    ;;En caso contrario nos ahorramos el resto de cálculos.
+
+
+    call buscar_izquierda   ;; h = buscar_izquierda
+    ld a, h                 ;; A = H
+    cp #0
+    jr z, no_encontrado     ;; IF A == 0 THEN ret
+
+        ;; ELSE Encontrado
+        ld a, e_col(ix)
+        dec a
+        ld e_col(ix), a
+
+
+    no_encontrado:
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Busca al hero por la izquierda
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DESTRUIDOS: HL, AF, BC
+;; ENTRADAS:
+;;              IX => puntero al enemigo
+;;              IY => puntero al hero
+;; SALIDAS: 
+;;              H  => 0 no lo detecta, 
+;;                    1 en caso contrario
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+buscar_izquierda:
+
+    ;; Por defecto no lo detecta
+    ld h, #0
+
+    ;; A = (enm_x - hero_x)
+    ld  a, e_x(ix)  ;; A =  enm_x
+    sub a, e_x(iy)  ;; A -= hero_x
+
+    ;; IF (e_x - h_x) <= 5 THEN detected
+    ;; e_x - h_x - 5 <= 0
+    cp  a, #15
+    jr  nc,  no_detectado
+
+        ;; Detectado
+        inc h
+
+    ;; ELSE no hay nada que hacer
+    no_detectado:
+    ret
+
+;;;;;
+;; Busca al Hero por la derecha
+;;;;;
+buscar_derecha:
+
+    ret
+
+
+
 
 ;; Sentido por defecto = 0
 ;; 0 => Izquierda
@@ -19,12 +115,12 @@ sentido: .db #1
 lim_der = #34   ;; Limite Derecho del movimiento
 lim_izq = #4    ;; Limite Izquierda del movimiento
 
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HORIZONTAL
 ;; Ida y Vuelta Sin Parar de un punto A a otro B
+;; DESTRUIDOS: todos
+;; INPUT:
+;;          IX => puntero a la entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move:
     ;; Posicion
@@ -63,7 +159,7 @@ enm_move:
 
     mover_izq:
     dec a                           ;; A--
-    
+
     update_x:
     ld e_x(ix), a                   ;; e_y = A
     ld hl, #sentido                 ;; HL = sentido dic memory
@@ -78,6 +174,7 @@ enm_move:
 ;; REGISTROS DESTRUIDOS: TODOS
 ;; ENTRADA: 
 ;;          IX -> Puntero a entidad
+;;          IY -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_update:
     ;; Puntero a la función que actualiza la entidad

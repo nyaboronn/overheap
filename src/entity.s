@@ -20,8 +20,6 @@ m_next_entity:  .dw entity_vector0
 ;; Entidades
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 DefineNEntities entity_vector, 9
-DefineEntity    enemy_data, 10, 20, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move, 0x0000
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

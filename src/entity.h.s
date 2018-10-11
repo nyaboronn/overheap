@@ -36,16 +36,6 @@
 
 .endm
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Heroe
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineHero _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile, _jump  
-
-    DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile
-    .db  _jump          ;; Jump State,    -1 if not jumping (can jump)
-                        ;;                -2 if is falling  (cant jump)
-
-.endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Basta
@@ -61,7 +51,6 @@ e_up_l  = 7
 e_up_h  = 8
 e_tile_l = 9
 e_tile_h = 10
-e_jump  = 11
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL
@@ -75,7 +64,6 @@ e_jump  = 11
 .globl ent_doForAll
 .globl ent_initialTile
 .globl ent_getActualTile
-.globl enemy_data
 ;; m.......
 .globl CalcualteOFFSET
 .globl ent_is_solidTile

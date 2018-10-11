@@ -18,7 +18,7 @@ hero_jumptable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 20, 40, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
+DefineHero hero_data, 10, 40, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD

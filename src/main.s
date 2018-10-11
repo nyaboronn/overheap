@@ -62,7 +62,7 @@ ld    e_tile_h(ix),h
 call ent_getActualTile
 
 call ent_initialTile
-ld    ix, #enemy_data
+ld    ix, #enm_data
 ld    e_tile_l(ix),l
 ld    e_tile_h(ix),h
 call ent_getActualTile
@@ -96,25 +96,41 @@ _main::
     ; Crear una nueva entidad
     call ent_new
     ex	de, hl
-    ld    hl, #enemy_data
+    ld    hl, #enm_data
     call ent_copy
  
 loop:
 
 
-  ld	  ix, #obstacle1
-  call ent_draw_obs
+  ;ld	  ix, #obstacle1
+  ;call ent_draw_obs
 
 
-  ld    ix, #enemy_data
+  ld    ix, #enm_data
+  ld	  iy, #hero_data
   call enm_clear
+  ld	  iy, #hero_data
   call enm_update
+  ld	  iy, #hero_data
   call enm_draw
 
   ld    ix, #hero_data
   call hero_clear
   call hero_update
   call hero_draw
+
+  halt
+  halt
+  halt
+  halt
+  halt
+  halt
+  halt
+  halt
+  halt
+  halt
+  halt
+  halt
 
 ;;Una marca al
   ld	(0xC027), a ;;Draw coliision level
