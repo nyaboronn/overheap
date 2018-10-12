@@ -9,16 +9,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Jump Table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;hero_jumptable:
+;    .db #-6, #-4, #-3, #-3
+;    .db #-3, #01, #01, #01
+;    .db #0, #0, #0, #0
+;    .db #0x80                   ;; #0x80 marca el último byte
+
 hero_jumptable:
     .db #-6, #-4, #-3, #-3
-    .db #-3, #01, #01, #01
-    .db #0, #0, #0, #0
+    .db #-3, #02, #01, #02
+    .db #01, #01, #01, #01
     .db #0x80                   ;; #0x80 marca el último byte
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 10, 40, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
+DefineHero hero_data, 10, 30, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
@@ -219,10 +225,6 @@ hero_jumpControl:
     call hero_move
 
     ld  e_vy(ix), #0
-
-    ;; Poner una velocidad
-    ;; llamar a move
-    ;;quitar velocidad
 
     ;; Increment hero_jumpstate Index
     ld  a,  e_jump(ix)      ;; A = hero_jumpstate

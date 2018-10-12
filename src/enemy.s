@@ -4,7 +4,36 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
-DefineEnemy enm_data, 30, 40, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
+DefineEnemy enm_data, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move2, 0x0000, 1
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIAGONAL
+;; A la vez que avanza, sube y baja una distancia N
+;; en forma de diagonal.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DESTRUIDOS:
+;; ENTRADAS:
+;;              IX => puntero al enemigo
+;;                 => N es el ancho que baja/sube
+;; SALIDAS: 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enm_move2:
+
+    ;bucle:
+
+        ;; bajar diagonal (x++y++)
+
+        ;; parar cuando y = N
+
+        ;; subir diagonal (x++y--)
+
+        ;; Parar cuando y = Y
+
+    ;jump bucle
+
+
+    ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -17,12 +46,19 @@ DefineEnemy enm_data, 30, 40, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
 ;;              IX => puntero al enemigo
 ;;              IY => puntero al hero
 ;; SALIDAS: 
-;;              HL => 0 no lo detecta, 
-;;                    1 en caso contrario
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move1:
     ;;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
-    ;; h_y == e_y ?? => CALCULAR si lo detecta
+    ;;; h_y == e_y ?? => CALCULAR si lo detecta
+    ld  a, e_y(iy)  ;; A = hero_x
+    ld  h, e_y(ix)  ;; H = enm_x
+    cp  a, h        ;; A - H
+    jr  z, misma_y  ;; IF h_y == e_y THEN detectar al hero
+
+        ;; ELSE h_y != e_y. No detectarlo
+        ret
+
+    misma_y:
 
     ;;;; En que dirección hay que comprobar???
     ld a, e_direct(ix)          ;; A = enemy_direction
@@ -87,9 +123,17 @@ buscar_izquierda:
     no_detectado:
     ret
 
-;;;;;
-;; Busca al Hero por la derecha
-;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Busca al hero por la derecha
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DESTRUIDOS: HL, AF, BC
+;; ENTRADAS:
+;;              IX => puntero al enemigo
+;;              IY => puntero al hero
+;; SALIDAS: 
+;;              H  => 0 no lo detecta, 
+;;                    1 en caso contrario
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 buscar_derecha:
     ;; Por defecto no lo detecta
     ld h, #0
@@ -108,8 +152,6 @@ buscar_derecha:
     ;; ELSE no hay nada que hacer
     no_detecta:
     ret
-
-
 
 
 ;; Sentido por defecto = 0
