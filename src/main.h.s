@@ -13,3 +13,4 @@
 .globl cpct_setVideoMode_asm
 .globl cpct_waitVSYNC_asm
 .globl cpct_getBit_asm
+.globl cpct_setVideoMemoryPage_asm

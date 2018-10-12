@@ -35,6 +35,43 @@ initialize_CPC:
     ld hl, #_g_tileset      ;;Punteor al tilesetW
     call cpct_etm_setTileset2x4_asm
 
+
+call ren_initBuffers
+
+
+  ld bc, (#m_back_tileMap)
+  push bc
+  pop iy
+
+
+
+    ;;Ahora pintamos el mapa entero     
+    ld C, #0x00    ;; X
+    ld B, #0x00  ;; Y
+    ld E, #SCR_TILE_WIDTH  ;; W
+    ld D, #MAP_HEIGHT  ;; H
+    ld A, #MAP_WIDTH ;; map_width
+
+    ld h, pTilemap+1(iy)
+    ld l, pTilemap(iy)
+    push hl
+
+    ld h, pVideo+1(iy)
+    ld l, pVideo(iy)
+    push hl
+
+
+call cpct_etm_drawTileBox2x4_asm
+
+
+  call ren_switchBuffers
+
+  ;; LOAD in IY the new tileMAP
+  ld bc, (#m_back_tileMap)
+  push bc
+  pop iy
+
+
     ;;Ahora pintamos el mapa entero     
     ld C, #0x00    ;; X
     ld B, #0x00  ;; Y
@@ -55,12 +92,13 @@ call cpct_etm_drawTileBox2x4_asm
 
 
 
+
+
 call ent_initialTile
 ld    ix, #hero_data
 ld    e_tile_l(ix),l
 ld    e_tile_h(ix),h
 call ent_getActualTile
-
 
 
 
@@ -106,18 +144,13 @@ ret
 
 
 _main::
-  ;; Disable firmware to prevent it from interfering with string drawing
-  ;;call cpct_disableFirmware_asm
- 
-  ;;ld    c, #0
-  ;;call cpct_setVideoMode_asm
+;;Cambiamos la pila de sitio:
+ld sp, #0x800 ;;STackPointer
 
-    ld iy, #TScreenTilemap
+
   call initialize_CPC
-    push iy
+   ;; push iy
 
-
-  
     ;; Crear una nueva entidad
     call ent_new
     ex	de, hl
@@ -126,14 +159,13 @@ _main::
  
 loop:
 
-
   ld	  ix, #obstacle1
   call ent_draw_obs
 
 
   ld    ix, #hero_data
+
   call ent_clear
-  pop iy
   call ent_update
   call ent_draw
 
@@ -143,13 +175,14 @@ loop:
   ld	(0xC028), a ;;Draw coliision level
   ld	(0xC029), a ;;Draw coliision level
 
-
-    call cpct_waitVSYNC_asm
-
-
-  push iy
+  ld	(0x8027), a ;;Draw coliision level
+  ld	(0x8028), a ;;Draw coliision level
+  ld	(0x8029), a ;;Draw coliision level
 
 
+  
+  call ren_switchBuffers
+  call cpct_waitVSYNC_asm
 
 
     jp loop

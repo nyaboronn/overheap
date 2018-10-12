@@ -22,6 +22,8 @@ DefineEntity enemy_data, 0x20, 0x01, 0xFF, 0x00, 0x02, 0x08, 0xFF, ent_move, -1,
  m_next_entity: .dw entity_vector0
 
 
+
+
 ;;
 ;; Jump Table
 ;;
@@ -145,39 +147,7 @@ ent_doForAll:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_draw:
-    ld de, #0xC000       ;;Comienzo memoria de video
-
-    ;; Convert de X tile in X in bytes
-    ld C, e_x(ix)    ;; X
-    ld A, e_x(ix)    ;; X
-    add a,c
-    ld c, a
-;; Convert de y tile in y in bytes
-    ld b, e_y(ix)    ;; y
-    ld A, e_y(ix)    ;; y
-    add a,b
-    add a,a
-    ld b, a
-
- ;; ld     b, e_y(ix)         ;; B = Entity Y
-  call cpct_getScreenPtr_asm
- 
-  ex    de, hl   ;; DE = Puntero a memoria
-
-  ld  b, e_h(ix)   ;; alto
-  ld A, e_h(ix)    ;; y
-  add a,b
-  add a,a
-  ld b, a
-
-  ld  c, e_w(ix)   ;; Ancho
-  ld A, e_w(ix)    ;; X
-  add a,c
-  ld c, a
-   ld  a, e_col(ix)   ;; Color
-  
-  call cpct_drawSolidBox_asm
- 
+    call ren_drawEntity
   ret
 
  
@@ -187,24 +157,7 @@ ent_draw:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear:
-    ;; Repintamos una columna, izquierda o derecha
-    ld C, e_x(ix)    ;; X
-    ld B, e_y(ix)  ;; Y
-    ld E, e_w(ix)  ;; W
-    ld D, e_h(ix)  ;; H
-    ld A, #MAP_WIDTH ;; map_width
-
-    ld iy, #TScreenTilemap
-    
-    ld h, pTilemap+1(iy)
-    ld l, pTilemap(iy)
-    push hl
-
-    ld h, pVideo+1(iy)
-    ld l, pVideo(iy)
-    push hl
-
-    call cpct_etm_drawTileBox2x4_asm
+call ren_clearEntity
  
   ret
  
@@ -276,13 +229,36 @@ ret
 
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD CON TECLADO
 ;; REGISTROS DESTRUIDOS:
 ;; ENTRADA: IX -> Puntero a entidad
+;;           IY -> Puntero a TileMAp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ent_moveKeyboard:
+ent_moveKeyboard::
+
+ 
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+;;Si en la iteracion anterior hemos renderizado algunas columnas, debemos renderizarlas otra vez
+;;en el otro buffer
+  ld bc, #RepeatRender
+  ld a, (bc)
+  push af
+      ;;INPUT -> scroll= h
+      ;;         column = l
+
+      ld hl,(InputHL)
+
+
+
+    ld a,#0
+    ld (bc), a
+  pop af
+  cp #0
+
+  JP NZ, #calltoFuncOtherBuffer
 
 
   call wait4KeyboardInput
@@ -293,8 +269,9 @@ ent_moveKeyboard:
 
     ld a, #0
     cp h
+    JP z, funcRet ;;
 
-    JP z, funcRet;carry flag
+
     ld a, #1
     cp h
     JP z, morethanZero;carry flag
@@ -302,7 +279,7 @@ ent_moveKeyboard:
     ;;If A >= N, then C flag is reset.
         ld a, scroll(iy)
         add a, #10
-        ld d,e_x(ix)
+        ld d,de_x(ix)
         cp d
         jr c, funcRet
 
@@ -318,7 +295,7 @@ ent_moveKeyboard:
         ;;If A < N, then C flag is set.|| CP REGister N
         ld a, scroll(iy)
         add a, #30
-        ld d,e_x(ix)
+        ld d,de_x(ix)
         cp d
         jr nc, funcRet
 
@@ -329,19 +306,20 @@ ent_moveKeyboard:
         jr z, funcRet
 
     calltoFunc:
+    ld a,#1
+    ld bc, #RepeatRender
+    ld (bc), a
+
+    ld (InputHL), hl
+
+
+    calltoFuncOtherBuffer:
+
+
 
     call scrollScreenTilemap
 
     funcRet:
-
-
-  ;;En caso contrario solo movemos el player
-  ;; Realizamos lo mismo con la tecla D y el margen derecho
-
-
-  ;;Ademas de la comprobacion se debe mirar si llegamos a los bordes
-  ;;
-  ;;
 
 
   call  ent_move
@@ -363,11 +341,11 @@ ent_moveKeyboard:
   
  CalcualteOFFSET: 
   ld  hl, #_g_tilemap         ;; [3] HL=ptilemap 
-  ld    a, e_x(ix)      ;; [1]   | HL = ptilemap + x
+  ld    a, de_x(ix)      ;; [1]   | HL = ptilemap + x
   add__hl_a       ;; [5]   |  
 
-  ld   de, #120  ;; [3] DE = map_width
-  ld    a, e_y(ix)      ;; [1] A = y 
+  ld   de, #MAP_WIDTH;; #120  ;; [3] DE = map_width
+  ld    a, de_y(ix)      ;; [1] A = y 
   cp    a         ;; [1] Reset Carry Flag (Required for multiplying)
   mult_de_a       ;; [11-83] HL += DE * A (HL = y * map_width + x) ;; A * C + 
   ;; HL now points to the next tile to draw from the tilemap!
@@ -381,9 +359,9 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_move:
   ;;Sumamos velocidad X a posicion X
-  ld    a, e_x(ix)
+  ld    a, de_x(ix)
   add   e_vx(ix)
-  ld    e_x(ix), a
+  ld    de_x(ix), a
 
 
   ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
@@ -418,7 +396,7 @@ ent_move:
   ;;call	obstacle_checkCollision
 
   ;;If collide dont move (A == 0) exit function
-  ;;Else revet changes in e_x and e_y
+  ;;Else revet changes in de_x and de_y
   ;;cp #0
   ;;jr z, exit
 
@@ -428,9 +406,9 @@ ent_move:
   pop hl ;;para restaurar el puntero a la tile actual
   push hl
 
-  ld    a, e_x(ix)
+  ld    a, de_x(ix)
   sub   e_vx(ix)
-  ld    e_x(ix), a
+  ld    de_x(ix), a
 
 
     ;;restauramos puntero
@@ -443,10 +421,10 @@ checkY:
 
 pop hl
   ;;Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
-  ld    a, e_y(ix)
+  ld    a, de_y(ix)
   add   e_vy(ix)
   inc a
-  ld    e_y(ix), a
+  ld    de_y(ix), a
 
 
   ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
@@ -482,7 +460,7 @@ pop hl
   ;;call	obstacle_checkCollision
 
   ;;If collide dont move (A == 0) exit function
-  ;;Else revet changes in e_x and e_y
+  ;;Else revet changes in de_x and de_y
   ;;cp #0
   ;;jr z, exit
 
@@ -492,10 +470,10 @@ resetY:
   pop hl ;; para restaurar el puntero a la tile actual
   push hl
 
-  ld    a, e_y(ix)
+  ld    a, de_y(ix)
   sub   e_vy(ix)
   dec a
-  ld    e_y(ix), a
+  ld    de_y(ix), a
 
     ;;restauramos puntero
   ld  e_tile_h(ix) , h
@@ -576,7 +554,7 @@ jumpControl:
   ld    b, a                     ;; B = valor del salto
   ld    a, e_vy(ix)               ;; A = Coordenada X de la entidad
   add   b                       ;; B += A (Sumar al valor del salto la X)
-  ld    e_vy(ix), a               ;; e_x = Calculo de la nueva X 
+  ld    e_vy(ix), a               ;; de_x = Calculo de la nueva X 
 
   call ent_move
 
