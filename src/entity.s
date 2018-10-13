@@ -7,7 +7,6 @@
 .include "entity.h.s"
 .include "enemy.h.s"
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;CONSTANTES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,39 +122,7 @@ ent_doForAll:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_draw:
-    ld  de, #0xC000       ;;Comienzo memoria de video
-
-    ;; Convert de X tile in X in bytes
-    ld  C,  e_x(ix)    ;; X
-    ld  A,  e_x(ix)    ;; X
-    add a,  c
-    ld  c,  a
-    ;; Convert de y tile in y in bytes
-    ld  b,  e_y(ix)    ;; y
-    ld  A,  e_y(ix)    ;; y
-    add a,  b
-    add a,  a
-    ld  b,  a
-
-    ;; ld     b, e_y(ix)         ;; B = Entity Y
-    call  cpct_getScreenPtr_asm
-
-    ex    de, hl   ;; DE = Puntero a memoria
-
-    ld    b,  e_h(ix)   ;; alto
-    ld    A,  e_h(ix)    ;; y
-    add   a,  b
-    add   a,  a
-    ld    b,  a
-
-    ld    c,  e_w(ix)   ;; Ancho
-    ld    A,  e_w(ix)    ;; X
-    add   a,  c
-    ld    c,  a
-    ld    a, e_col(ix)   ;; Color
-
-    call cpct_drawSolidBox_asm
- 
+    call ren_drawEntity
   ret
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -165,24 +132,7 @@ ent_draw:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear:
-    ;; Repintamos una columna, izquierda o derecha
-    ld  C,  e_x(ix)    ;; X
-    ld  B,  e_y(ix)  ;; Y
-    ld  E,  e_w(ix)  ;; 
-    ld  D,  e_h(ix)  ;; H
-    ld  A,  #MAP_WIDTH ;; map_width
-
-    ld  iy, #TScreenTilemap
-    
-    ld  h,  pTilemap+1(iy)
-    ld  l,  pTilemap(iy)
-    push hl
-
-    ld  h,  pVideo+1(iy)
-    ld  l,  pVideo(iy)
-    push hl
-
-    call    cpct_etm_drawTileBox2x4_asm
+call ren_clearEntity
  
     ret
  
@@ -208,9 +158,9 @@ ent_update:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_move:
     ;;Sumamos velocidad X a posicion X
-    ld      a, e_x(ix)
+    ld      a, de_x(ix)
     add     e_vx(ix)
-    ld      e_x(ix), a
+    ld      de_x(ix), a
 
     ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
     ld      h, e_tile_h(ix)
@@ -240,9 +190,9 @@ ent_move:
     pop hl ;;para restaurar el puntero a la tile actual
     push hl
 
-    ld      a, e_x(ix)
+    ld      a, de_x(ix)
     sub     e_vx(ix)
-    ld      e_x(ix), a
+    ld      de_x(ix), a
 
     ;;restauramos puntero
     ld      e_tile_h(ix) , h
@@ -285,10 +235,10 @@ ent_move:
         pop     hl ;; para restaurar el puntero a la tile actual
         push    hl
 
-        ld       a, e_y(ix)
+        ld       a, de_y(ix)
         sub     e_vy(ix)
         dec a
-        ld      e_y(ix), a
+        ld      de_y(ix), a
 
         ;;restauramos puntero
         ld      e_tile_h(ix) , h
@@ -307,11 +257,11 @@ ent_move:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 CalcualteOFFSET: 
     ld  hl, #_g_tilemap             ;; [3] HL=ptilemap 
-    ld  a,  e_x(ix)                 ;; [1]   | HL = ptilemap + x
+    ld  a,  de_x(ix)                 ;; [1]   | HL = ptilemap + x
 
     add__hl_a                       ;; [5]   |  
     ld  de, #120                    ;; [3] DE = map_width
-    ld  a,  e_y(ix)                 ;; [1] A = y 
+    ld  a,  de_y(ix)                 ;; [1] A = y 
     cp  a                           ;; [1] Reset Carry Flag (Required for multiplying)
     
     mult_de_a                       ;; [11-83] HL += DE * A (HL = y * map_width + x) ;; A * C + 

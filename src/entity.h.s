@@ -1,21 +1,28 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Entidad
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile
+.include "renderer.h.s"
 
-    _name:
-        .db _x,     _y      ;; X,   Y
-        .db _vx,    _vy     ;; VX,  VY
-        .db _w,     _h      ;; W,   H
-        .db _col            ;; Color
-        .dw _upd            ;; Update
-        .dw _tile
+
+;###########################################################################
+;#### FICHERO: entity.h.s
+;###########################################################################
+.macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile
+_name:
+DefineDrawableEntity _name'_dw, _x, _y, _w, _h, _col
+   .db   _vx, _vy     ;; VX, VY
+   .dw   _upd         ;; Update
+   .dw _tile
 
 .endm
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Entidad por defecto
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+e_de = 0
+e_de_size = 5
+e_vx = 0 + e_de_size  
+e_vy = 1 + e_de_size
+e_up_l = 2 + e_de_size
+e_up_h = 3 + e_de_size
+e_tile_l = 4 + e_de_size
+e_tile_h = 5 + e_de_size
+
+
 .macro DefineEntityDefault _name, _suf
 
     DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, 0x0000
@@ -35,22 +42,6 @@
     .endm
 
 .endm
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Basta
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-e_x     = 0
-e_y     = 1
-e_vx    = 2
-e_vy    = 3
-e_w     = 4
-e_h     = 5
-e_col   = 6
-e_up_l  = 7
-e_up_h  = 8
-e_tile_l = 9
-e_tile_h = 10
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL

@@ -2,9 +2,18 @@
 .include "tileManager.h.s"
 .include "utils.h.s"
 .include "main.h.s"
- 
 
+ .include "renderer.h.s"
 
+;;Structure 
+
+TScreenTilemapFront: .dw #0x8000
+                .dw #_g_tilemap
+                .db 0x00
+
+TScreenTilemapBack: .dw #0xC000
+                .dw #_g_tilemap
+                .db 0x00
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -14,12 +23,9 @@
 ;;          F -> FILA    (Y)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 getTileByte:
-    ld iy, #TScreenTilemap ;; TODO, inecesario posible parametro
-
-
+    ld iy, #TScreenTilemapBack ;; TODO, inecesario posible parametro
 
 ret
-
 
 
 
@@ -30,16 +36,18 @@ ret
 ;;
 ;;INPUT -> scroll= h
 ;;         column = l
-;;
+;;            BC = M_back_front_tileMAp
 ;;  scroll solo opero con un byte
 ;;  posible overflow
-;;
+;;    ld bc, (#m_back_tileMap)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 scrollScreenTilemap::
 
 
-    ld iy, #TScreenTilemap ;; TODO, inecesario posible parametro
-    push hl                ;; Usamos la pila para
+
+
+
+    push hl                ;; Usamos la pila para guardar los dos parametros
 
 
     ;; Ahoramodificamos los valores de la structura
@@ -64,8 +72,8 @@ scrollScreenTilemap::
     ld pVideo+1(iy), h
     ld pVideo(iy), l
 
-        pop hl
-        push hl
+    pop hl
+    push hl ;;Recuperamos los dos paremetos
 
 ;;   scr->pTilemap += scroll;
     ld a, h
@@ -86,7 +94,7 @@ scrollScreenTilemap::
     ld pTilemap(iy), l
 
         pop hl
-        push hl
+        push hl  ;;Recuperamos los dos paremtos
 
 
     ;;scr->scroll   += scroll;
@@ -108,15 +116,14 @@ scrollScreenTilemap::
 
 
     ;; Esperamos al raster
-    call cpct_waitVSYNC_asm
 
     ;; La clave del hardware scrolling es moficiar el puntero a memoria
-    ld l, scroll(iy)
-    call cpct_setVideoMemoryOffset_asm
+  ;;ld l, scroll(iy)
+  ;;call cpct_setVideoMemoryOffset_asm
 
 
     pop hl
-    push hl
+    push hl ;; Recuperamos dos parametros, la L
 
 
     ;; Repintamos una columna, izquierda o derecha
@@ -136,7 +143,10 @@ scrollScreenTilemap::
 
     call cpct_etm_drawTileBox2x4_asm
 
-  call cpct_waitVSYNC_asm
+
+
+
+
 
     pop hl
 

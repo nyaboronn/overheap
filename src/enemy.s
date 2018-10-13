@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
-DefineEnemy enm_data, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move2, 0x0000, 1
+DefineEnemy enm_data, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -50,8 +50,8 @@ enm_move2:
 enm_move1:
     ;;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
     ;;; h_y == e_y ?? => CALCULAR si lo detecta
-    ld  a, e_y(iy)  ;; A = hero_x
-    ld  h, e_y(ix)  ;; H = enm_x
+    ld  a, de_y(iy)  ;; A = hero_x
+    ld  h, de_y(ix)  ;; H = enm_x
     cp  a, h        ;; A - H
     jr  z, misma_y  ;; IF h_y == e_y THEN detectar al hero
 
@@ -85,9 +85,9 @@ enm_move1:
             ;; TEMPORAL => FALTA DISPARAR AL DETECTAR EL HERO
             ;; ELSE Encontrado hero
             ld a, e_direct(ix)  ;; A = enemy_direction
-            ld a, e_col(ix)     ;; TEMPORAL A = color enemigo
+            ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
             inc a               ;; A++
-            ld e_col(ix), a     ; enemy_color = A
+            ld de_col(ix), a     ; enemy_color = A
 
         no_aplica:
     ret
@@ -109,8 +109,8 @@ buscar_izquierda:
     ld h, #0
 
     ;; A = (enm_x - hero_x)
-    ld  a, e_x(ix)  ;; A =  enm_x
-    sub a, e_x(iy)  ;; A -= hero_x
+    ld  a, de_x(ix)  ;; A =  enm_x
+    sub a, de_x(iy)  ;; A -= hero_x
 
     ;; IF (e_x - h_x) <= 5 THEN detected
     cp  a, #15
@@ -139,8 +139,8 @@ buscar_derecha:
     ld h, #0
 
     ;; A = (hero_x - enm_x)
-    ld  a, e_x(iy)  ;; A =  hero_x
-    sub a, e_x(ix)  ;; A -= enm_x
+    ld  a, de_x(iy)  ;; A =  hero_x
+    sub a, de_x(ix)  ;; A -= enm_x
 
     ;; IF (h_x - e_x) <= 5 THEN detected
     cp  a, #15
@@ -173,7 +173,7 @@ enm_move:
     ;; Posicion
     ld a, (sentido)     ;; | A = Sentido value
     ld b, a             ;; | B = A 
-    ld a, e_x(ix)       ;; \ A = e_x(IX)
+    ld a, de_x(ix)       ;; \ A = e_x(IX)
                     
 
     ;; Actualizar El Valor del Sentido
@@ -197,7 +197,7 @@ enm_move:
     aplicar_sentido:
     ld a, b                         ;; A = B
     cp a, #0                        ;; A == #0 ??
-    ld a, e_x(ix)                   ;; A = e_x(IX)
+    ld a, de_x(ix)                   ;; A = e_x(IX)
     jr z, mover_izq                 ;; IF A == 0 THEN move lef side
 
             ;; mover_der
@@ -208,7 +208,7 @@ enm_move:
     dec a                           ;; A--
 
     update_x:
-    ld e_x(ix), a                   ;; e_y = A
+    ld de_x(ix), a                   ;; e_y = A
     ld hl, #sentido                 ;; HL = sentido dic memory
     ld (hl), b                      ;; (HL) = B
     

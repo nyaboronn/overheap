@@ -65,64 +65,103 @@ hero_draw:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD CON TECLADO
 ;; REGISTROS DESTRUIDOS:
-;; ENTRADA: 
-;;          IX -> Puntero a entidad
+;; ENTRADA: IX -> Puntero a entidad
+;;           IY -> Puntero a TileMAp
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_moveKeyboard:
-    call hero_wait4KeyboardInput
+hero_moveKeyboard::
 
-    ;;al comrpobar si hemos pulsado A o D
-    ;;Si es A, comprobamos si estamos en la columna izquierda limite, 
+ 
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+;;Si en la iteracion anterior hemos renderizado algunas columnas, debemos renderizarlas otra vez
+;;en el otro buffer
+  ld bc, #RepeatRender
+  ld a, (bc)
+  push af
+      ;;INPUT -> scroll= h
+      ;;         column = l
+
+      ld hl,(InputHL)
+
+
+
+    ld a,#0
+    ld (bc), a
+  pop af
+  cp #0
+
+  JP NZ, #calltoFuncOtherBuffer
+
+
+  call hero_wait4KeyboardInput
+
+  ;;al comrpobar si hemos pulsado A o D
+  ;;Si es A, comprobamos si estamos en la columna izquierda limite, 
     ;; Si hemo sllegado al borde, movemos al player y el mapa.
-    ld  a, #0
-    cp  h
 
-    JP  z,  funcRet;carry flag
-    ld  a, #1
-    cp  h
-    JP  z, morethanZero;carry flag
-
-        ;;If A >= N, then C flag is reset.
-        ld  a,  scroll(iy)
-        add a,  #10
-        ld  d,  e_x(ix)
-        cp  d
-        jr  c,  funcRet
+    ld a, #0
+    cp h
+    JP z, funcRet ;;
 
 
-        ld  a,  #0 ;; 0
-        ld  d,  scroll(iy)
-        cp  d
-        jr  z,  funcRet
-        jr  calltoFunc
+    ld a, #1
+    cp h
+    JP z, morethanZero;carry flag
+
+    ;;If A >= N, then C flag is reset.
+        ld a, scroll(iy)
+        add a, #10
+        ld d,de_x(ix)
+        cp d
+        jr c, funcRet
+
+
+        ld a, #0 ;; 0
+        ld d, scroll(iy)
+        cp d
+        jr z, funcRet
+        jr calltoFunc
 
     morethanZero:
+
         ;;If A < N, then C flag is set.|| CP REGister N
-        ld  a,  scroll(iy)
-        add a,  #30
-        ld  d,  e_x(ix)
-        cp  d
-        jr  nc, funcRet
+        ld a, scroll(iy)
+        add a, #30
+        ld d,de_x(ix)
+        cp d
+        jr nc, funcRet
 
         ;; h == MAXSCROLL NEXT ITERATION
-        ld  a,  #MAXSCROLL  ;; #MAXSCROLL
-        ld  d,  scroll(iy)
-        cp  d
-        jr  z,  funcRet
+        ld a, #MAXSCROLL  ;; #MAXSCROLL
+        ld d, scroll(iy)
+        cp d
+        jr z, funcRet
 
     calltoFunc:
-        call scrollScreenTilemap
+    ld a,#1
+    ld bc, #RepeatRender
+    ld (bc), a
+
+    ld (InputHL), hl
+
+
+    calltoFuncOtherBuffer:
+
+
+
+    call scrollScreenTilemap
 
     funcRet:
-        ;;En caso contrario solo movemos el player
-        ;; Realizamos lo mismo con la tecla D y el margen derecho
-        
-        ;;Ademas de la comprobacion se debe mirar si llegamos a los bordes
 
-        call  hero_move
-        ld e_vx(ix), #0
-        
-        ret
+
+  call  hero_move
+ 
+
+  ld e_vx(ix), #0
+ 
+  ret
+ 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve el estado segun una entidad
@@ -247,9 +286,9 @@ hero_jumpControl:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_move:
     ;;Sumamos velocidad X a posicion X
-    ld      a, e_x(ix)
+    ld      a, de_x(ix)
     add     e_vx(ix)
-    ld      e_x(ix), a
+    ld      de_x(ix), a
 
     ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
     ld      h, e_tile_h(ix)
@@ -279,9 +318,9 @@ hero_move:
     pop hl ;;para restaurar el puntero a la tile actual
     push hl
 
-    ld      a, e_x(ix)
+    ld      a, de_x(ix)
     sub     e_vx(ix)
-    ld      e_x(ix), a
+    ld      de_x(ix), a
 
     ;;restauramos puntero
     ld      e_tile_h(ix) , h
@@ -290,10 +329,10 @@ hero_move:
     checkY:
         pop hl
         ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
-        ld      a, e_y(ix)
+        ld      a, de_y(ix)
         add     e_vy(ix)
         inc a
-        ld      e_y(ix), a
+        ld      de_y(ix), a
         ;; Recogemos la coordenados y la cuerdamos en la pila,(variable local)
         ld h, e_tile_h(ix)
         ld l, e_tile_l(ix)
@@ -324,10 +363,10 @@ hero_move:
         pop     hl ;; para restaurar el puntero a la tile actual
         push    hl
 
-        ld       a, e_y(ix)
+        ld       a, de_y(ix)
         sub     e_vy(ix)
         dec a
-        ld      e_y(ix), a
+        ld      de_y(ix), a
 
         ;;restauramos puntero
         ld      e_tile_h(ix) , h
