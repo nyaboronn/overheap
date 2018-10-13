@@ -4,9 +4,9 @@
 ;###########################################################################
 ;#### FICHERO: entity.h.s
 ;###########################################################################
-.macro DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile
+.macro DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
 _name:
-DefineDrawableEntity _name'_dw, _x, _y, _w, _h, _col
+DefineDrawableEntity _name'_dw, _x, _y,_oldx, _oldy, _w, _h, _col
    .db   _vx, _vy     ;; VX, VY
    .dw   _upd         ;; Update
    .dw _tile
@@ -14,7 +14,7 @@ DefineDrawableEntity _name'_dw, _x, _y, _w, _h, _col
 .endm
 
 e_de = 0
-e_de_size = 5
+e_de_size = 7
 e_vx = 0 + e_de_size  
 e_vy = 1 + e_de_size
 e_up_l = 2 + e_de_size
@@ -25,7 +25,7 @@ e_tile_h = 5 + e_de_size
 
 .macro DefineEntityDefault _name, _suf
 
-    DefineEntity _name'_suf, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, 0x0000
+    DefineEntity _name'_suf, 0xAA, 0, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, 0x0000
 
 .endm
 

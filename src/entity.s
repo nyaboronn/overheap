@@ -158,6 +158,7 @@ ent_update:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_move:
     ;;Sumamos velocidad X a posicion X
+    ;;Guardamos la X actual en oldX, para poder borrar desde el buffer sin problema
     ld      a, de_x(ix)
     add     e_vx(ix)
     ld      de_x(ix), a

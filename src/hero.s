@@ -16,15 +16,15 @@
 ;    .db #0x80                   ;; #0x80 marca el último byte
 
 hero_jumptable:
-    .db #-6, #-4, #-3, #-3
-    .db #-3, #02, #01, #02
+    .db #-6, #-4, #-4, #-3
+    .db #-1, #02, #01, #02
     .db #01, #01, #01, #01
     .db #0x80                   ;; #0x80 marca el último byte
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 10, 30, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
+DefineHero hero_data, 10, 30, 10, 30, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
@@ -70,26 +70,26 @@ hero_draw:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_moveKeyboard::
 
- 
+
     ld hl, (#m_back_tileMap)
     push hl
     pop iy
-;;Si en la iteracion anterior hemos renderizado algunas columnas, debemos renderizarlas otra vez
-;;en el otro buffer
-  ld bc, #RepeatRender
-  ld a, (bc)
-  push af
-      ;;INPUT -> scroll= h
-      ;;         column = l
+    ;;Si en la iteracion anterior hemos renderizado algunas columnas, debemos renderizarlas otra vez
+    ;;en el otro buffer
+    ld bc, #RepeatRender
+    ld a, (bc)
+    push af
+    ;;INPUT -> scroll= h
+    ;;         column = l
 
-      ld hl,(InputHL)
+    ld hl,(InputHL)
 
 
 
     ld a,#0
     ld (bc), a
-  pop af
-  cp #0
+    pop af
+    cp #0
 
   JP NZ, #calltoFuncOtherBuffer
 
@@ -159,6 +159,7 @@ hero_moveKeyboard::
  
 
   ld e_vx(ix), #0
+  ld  e_vy(ix), #0
  
   ret
  
@@ -261,9 +262,9 @@ hero_jumpControl:
     add b                   ;; B += A (Sumar al valor del salto la X)
     ld  e_vy(ix), a         ;; e_x = Calculo de la nueva X 
 
-    call hero_move
-
-    ld  e_vy(ix), #0
+    ;;call hero_move
+;;
+    ;;
 
     ;; Increment hero_jumpstate Index
     ld  a,  e_jump(ix)      ;; A = hero_jumpstate
@@ -287,6 +288,8 @@ hero_jumpControl:
 hero_move:
     ;;Sumamos velocidad X a posicion X
     ld      a, de_x(ix)
+    ld       de_oldx(ix), a
+
     add     e_vx(ix)
     ld      de_x(ix), a
 
@@ -330,6 +333,7 @@ hero_move:
         pop hl
         ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
         ld      a, de_y(ix)
+        ld       de_oldy(ix), a
         add     e_vy(ix)
         inc a
         ld      de_y(ix), a

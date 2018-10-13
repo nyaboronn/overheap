@@ -1,9 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Enemy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEnemy _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile, _direct  
+.macro DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _col, _upd, _tile, _direct  
 
-    DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile
+    DefineEntity _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _col, _upd, _tile
     .db  _direct        ;; Sentido, 0 => left
                         ;;          1 => right
                         

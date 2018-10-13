@@ -2,9 +2,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Heroe
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineHero _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile, _jump  
+.macro DefineHero _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile, _jump  
 
-    DefineEntity _name, _x, _y, _vx, _vy, _w, _h, _col, _upd, _tile
+    DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
     .db  _jump          ;; Jump State,    -1 if not jumping (can jump)
                         ;;                -2 if is falling  (cant jump)
 
@@ -13,7 +13,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;;;;;;;;;;;;;;;;;;;;
-e_jump  = 11
+
+e_jump  = 11+2
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;
