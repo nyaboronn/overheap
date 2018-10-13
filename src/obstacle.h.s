@@ -3,9 +3,9 @@
 ;###########################################################################
 
 
-.macro DefineObstacle _name, _x, _y, _w, _h, _col
+.macro DefineObstacle _name, _x, _y,_oldx, _oldy, _w, _h, _col
 _name:
-DefineDrawableEntity _name'_dw, _x, _y, _w, _h, _col
+DefineDrawableEntity _name'_dw, _x, _y,_oldx, _oldy, _w, _h, _col
 .endm
 
 .globl ent_draw_obs

@@ -8,7 +8,7 @@
 
 
 
-DefineObstacle obstacle1,0,0,0x06,0x08,0x20
+DefineObstacle obstacle1,0,0,0,0,0x06,0x08,0x20
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD

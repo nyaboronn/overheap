@@ -127,27 +127,18 @@ ren_clearEntity:
     ;; Repintamos una columna, izquierda o derecha
 
     ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
-    ld a, de_x(ix)    ;; X
+    ld a, de_oldx(ix)    ;; X
     ld c, scroll(iy)
     sub c
     ld c, a
-    dec c  ;; Restamos uno para borrar el posible anterior dibujo
 
-    ld B, de_y(ix)  ;; Y
-    dec b
-    dec b
-     dec b
-    ;; Duplicamos el ancho para borrar
-    ld A, de_w(ix)  ;; W
-    add A
-    ld E, A
+    ld B, de_oldy(ix)  ;; Y
 
-    ;;Duplicamos el alto para borrar
-    ld A, de_h(ix)  ;; W
-    add A
-    ld D, A
 
-    
+    ld E, de_w(ix)  ;; W
+    ld D, de_h(ix)  ;; W
+
+
     ld A, #MAP_WIDTH ;; map_width
 
     
