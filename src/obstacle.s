@@ -1,130 +1,193 @@
-;###########################################################################
-;#### FICHERO:obstacle.s
-;###########################################################################
+
+
 .include "cpctelera.h.s"
 .include "main.h.s"
 .include "obstacle.h.s"
 .include "entity.h.s"
 
+;;;;;;;;;;;;;;;;;;;;;
+;; Shoots Data
+;;;;;;;;;;;;;;;;;;;;;
+k_max_num_obs = 3               ;; Maximo de objetos
+k_obs_size    = 11              ;; Obstacle size (in Bytes)
+m_num_obs :   .db 0            ;; Número de obs creados
+m_next_obs:   .dw shot_array0   ;; Posicion actual en el array
+
+;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+DefineNObstacles shot_array, #k_max_num_obs
+DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xF0F0, obs_move, 0x0000
+DefineObstacle obstacle2, 5, 20, 5, 20, 1, 0, 1, 1, 0x0F0F, obs_move, 0x0000
 
 
-DefineObstacle obstacle1,0,0,0,0,0x06,0x08,0x20
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIBUJAR UNA ENTIDAD
+;; EXPLOTA: TODOS
+;; ENTRADA:
+;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_doForAll:
+  ld    a,  (m_num_obs) ;; A = m_num_obs
+  cp    #0              ;; A - 0
+  ret   z               ;; IF A == 0 THEN ret
+  
+  ;; ELSE Apply Function
+  ld  ix, #shot_array0  ;; IX = Shot_array0
+  ld  (metodo), hl      ;; (meotodo) = HL
+ buc:
+      ;; IF vivo == 0 THEN jump inc_contadores
+
+      ;; ELSE Apply Function
+      push    af                  ;; | PUSH AF
+      metodo  = . + 1             ;; | . es la dir.mem en la que estoy si le sumo 1 es el call
+      call    ent_draw            ;; | CALL metodo
+      pop     af                  ;; \ POP AF
+      
+      ld      bc, #k_obs_size     ;; | BC = #k_entity_size
+
+      ;inc_contadores:
+      add     ix, bc              ;; | IX += BC, Update pointer value
+      dec a                       ;; | A--
+      jr nz, buc                  ;; \ IF A == 0 THEN stop Apply Function
+
+    ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REGISTRA UNA NUEVA ENTIDAD
+;; REGISTROS DESTRUIDOS: A, HL, BC
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_new:
+    ld      a,  (m_num_obs)
+    inc     a
+    ld      (m_num_obs), a
+
+    ld      hl,     (m_next_obs)     ;; 0x10FF  +  9 = 0x1008
+    ld      bc,     #k_obs_size
+    add     hl,     bc
+    ld      (m_next_obs), hl
+    ld      bc,     #-k_obs_size     ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
+    add     hl,     bc                  ;;Se cambia por las 2   sbc hl, bc
+ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ACTUALIZAR UNa obstaculo
+;; REGISTROS DESTRUIDOS: TODOS
+;; ENTRADA: 
+;;          IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_update:
+  call ent_update
+  ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ent_draw_obs:
-call ren_drawEntity
+obs_draw:
+  call ren_drawEntity
   ret
-
-
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BORRA UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS: AF',AF, BC, DE, HL
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ent_clear_obs:
-  ld  a, de_col(ix)
-  ex af, af'
- 
-   ld  de_col(ix), #0
- 
-   call ent_draw_obs
-   ex af, af'
-  ld de_col(ix), a
- 
+obs_clear:
+  call ren_clearEntity
   ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
+;; REGISTROS DESTRUIDOS:
+;; ENTRADA: 
+;;        HL -> ENTIDAD ORIGEN
+;;        DE -> EMTODAD DESTINO
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_copy:
+    ld bc, #k_obs_size
+    ldir
+    ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MOVIEMIENTO DE UN OBSTACULO
+;; REGISTROS DESTRUIDOS:    A
+;; ENTRADA: IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_move:
+  ld    a,  de_x(ix)      ;;  A = de_x
+  ld    de_oldx(ix), a    ;;  oldx = A
+  add   e_vx(ix)          ;;  A += e_vx
+  ld    de_x(ix), a       ;;  de_x = A
+  ret
 
-  ;;=====================================================================
-  ;;   CHECKS COLLISIONS BETWEEN OBSTACLE AND OBJ
-  ;;    Input: Iy and IX swaped
-  ;;         IY: Points to the Hero 
-  ;;         IX: Points to the Obtacle
-  ;;        Delete Registers: IX, IY, A, C, B
-  ;;=====================================================================
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;   CHECKS COLLISIONS BETWEEN OBSTACLE AND OBJ
+;;    Input: Iy and IX swaped
+;;         IY: Points to the Hero 
+;;         IX: Points to the Obtacle
+;;        Delete Registers: IX, IY, A, C, B
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_checkCollision::
+  ;;  X axis - Left Side
+  ;;  IF (obs_x + obx_w <= herde_x) THEN no_collision
+  ;;  obs_x + obx_w - herde_x <= 0
+  ld    a,  de_x(iy)      ;;  A = obs_x
+  ld	  c,  a             ;;  C = A
+  ld    a,  de_w(iy)      ;;  A = obs_w
+  add   c                 ;;  A += C
+  sub	  de_x(ix)          ;;  Entiendo que herde_x tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
+  jr z, obs_no_collision      ;;  IF (<= 0)
+  jp m, obs_no_collision      ;; 
 
-  obstacle_checkCollision::
-    ;;  X axis
-    ;;
-    ;;  if (obs_x + obx_w <= herde_x) no_collision , ponemos mejor o igual, porque si no se estarían rozando pero daría fallo como si hubiese colision
-    ;;  En el caso de que esté en la izq
-    ;;  obs_x + obx_w - herde_x <= 0
- 
+  ;;  Y axis
+  ld    a,  de_y(iy)      ;;  A = obs_y
+  ld	  c,  a             ;;  C = A
+  ld    a,  de_h(iy)      ;;  A = obs_h
+  add   c                 ;;  A += C
+  sub	  de_y(ix)          ;;  A -= de_y
+  jr z, obs_no_collision      ;;  IF (<= 0)
+  jp m, obs_no_collision      ;;
 
-        ld  a,de_x(iy)       ;;  obs_x
-        ld	c, a            ;;  obs_x -> c
-        ld  a, de_w(iy)      ;;  obs_w
-        add c               ;;  obs_x + obs_w
-        sub	de_x(ix)            ;;Entiendo que herde_x tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
-        jr z, no_collision      ;;Menor o igual if (<= 0)
-        jp m, no_collision      ;;Es válido poner doble salto, ya que no modifican los flags entonces sigue siendo válido
-        
+  ;;  X axis - Right Side
+  ;;  IF (herde_x + hero_w <= obs_x)
+  ;;  herde_x + hero_w - obs_x <= 0
+  ld    a,  de_x(ix)      ;;  A = de_x
+  ld    c,  de_w(ix)      ;;  C = de_w
+  add   c                 ;;  A += C
+  ld	  c,  a             ;;  C += A
+  ld    a,  de_x(iy)      ;;  A = de_x
+  ld    b,  a             ;;  B = A
+  ld    a,  c             ;;  A = C
+  sub   b                 ;;  A -= B
+  jr z, obs_no_collision      ;;  IF (<=0)
+  jp m, obs_no_collision
 
-        ;;Other possibility
-       ;; Y axis
-        ld  a,de_y(iy)       ;;  obs_y
-        ld	c, a            ;;  obs_y -> c
-        ld  a, de_h(iy)      ;;  obs_h
-        add c               ;;  obs_y + obs_h
-        sub	de_y(ix)            ;;Entiendo que herde_y tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
-        jr z, no_collision      ;;Menor o igual if (<= 0)
-        jp m, no_collision      ;;Es válido poner doble salto, ya que no modifican los flags entonces sigue siendo válido
+  ;;  Y axis
+  ld    a,  de_y(ix)      ;;  A = hero_x
+  ld    c,  de_h(ix)      ;;  C = de_h
+  add   c                 ;;  A += C
+  ld	  c,  a             ;;  C = A
+  ld    a,  de_y(iy)      ;;  A = obs_y
+  ld    b,  a             ;;  obs_x = B
+  ld    a,  c             ;;  A = C
+  sub   b                 ;;  A = (herde_x + hero_w) - obs_x
+  jr z, obs_no_collision      ;;  IF (<=0)
+  jp m, obs_no_collision
 
-        
+  ld	a, #0x01 ;;#1
+  ret
 
-        ;;  If is on the right
-        ;;  if(herde_x + hero_w <= obs_x)
-        ;;  if(herde_x + hero_w - obs_x <= 0 )
-              ;;ld iy, #hero_data   ;;NUEVO Tengo que volver a cargarle el valor de hero_data porque si no en A se queda una posición desfasada
-        ld  a,de_x(ix) ;;Meto el valor de iy en a ;Meto en A herde_x
-        ld  c,de_w(ix)
-        add c
-        ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
-        ;;inc iy
-        ;;inc iy
-        ;;inc iy
-        ;;add (iy)    ;;Sumo a herde_x que lo tengo en A el valor de hero_w
-        ld	c, a    ;;Paso el valor de la suma a C
-        ld  a, de_x(iy)  ;;Paso a A el valor de obs_x
-        ld  b, a    ;;Paso el valor de obs_x que tengo en a B
-        ld  a, c    ;;Paso el valor de herde_x + hero_w de C a A para restar
-        sub b       ;;Resto el valor de (herde_x + hero_w) - obs_x
-        jr z, no_collision  ;; if(<=0)
-        jp m, no_collision
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;   CHECKS COLLISIONS BETWEEN OBSTACLE AND OBJ
+;;    Input: Iy and IX swaped
+;;         IY: Points to the Hero 
+;;         IX: Points to the Obtacle
+;;        Delete Registers: IX, IY, A, C, B
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_no_collision:
+  ld	a, #0x00
+  ret
 
-        ;ld iy, #hero_data ;;Vuelvo a cargar hero_data , porque los inc de antes me han cambiado la dir que apuntaba iy
-
-       ld  a,de_y(ix) ;;Meto el valor de iy en a ;Meto en A herde_x
-       ld  c,de_h(ix)
-       add c
-       ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
-       ;;inc iy
-       ;;inc iy
-       ;;inc iy
-       ;;inc iy
-       ;;add (iy)    ;;Sumo a herde_x que lo tengo en A el valor de hero_w
-       ld	c, a    ;;Paso el valor de la suma a C
-       ld  a, de_y(iy)  ;;Paso a A el valor de obs_y
-       ld  b, a    ;;Paso el valor de obs_x que tengo en a B
-       ld  a, c    ;;Paso el valor de herde_x + hero_w de C a A para restar
-       sub b       ;;Resto el valor de (herde_x + hero_w) - obs_x
-       jr z, no_collision  ;; if(<=0)
-       jp m, no_collision
-;        ;;Collision
-        ld	a, #0x01 ;;#1
-       
-
-        ret
-
-        ;;No collision
-        no_collision:
-            ld	a, #0x00
-        ret	
-
-        
-  ret	
