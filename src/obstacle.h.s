@@ -1,19 +1,21 @@
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Definir un Obstaculo
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineObstacle _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+.macro DefineObstacle _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile, _alive
 
-    DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+        DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+        .db _alive
 
 .endm
 
 .macro DefineObstacleDefault _name, _suf
 
-    DefineObstacle _name'_suf, 5, 30, 0, 0, 1, 0, 1, 2, 0xF0F0, #obs_move, 0xFFFF
+    DefineObstacle _name'_suf, 0, 0, 0, 0, 0, 0, 0, 0, 0xFFFF, 0xFFFF, 0xFFFF, 0
 
 .endm
+
+e_de_size = 7
+o_alive = 6 + e_de_size 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Array de Obstculos

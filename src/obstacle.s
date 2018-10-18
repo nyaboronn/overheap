@@ -9,46 +9,50 @@
 ;; Shoots Data
 ;;;;;;;;;;;;;;;;;;;;;
 k_max_num_obs = 3               ;; Maximo de objetos
-k_obs_size    = 11              ;; Obstacle size (in Bytes)
+k_obs_size    = 14              ;; Obstacle size (in Bytes)
 m_num_obs :   .db 0            ;; Número de obs creados
 m_next_obs:   .dw shot_array0   ;; Posicion actual en el array
 
 ;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
-DefineNObstacles shot_array, #k_max_num_obs
-DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xF0F0, obs_move, 0x0000
-DefineObstacle obstacle2, 5, 20, 5, 20, 1, 0, 1, 1, 0x0F0F, obs_move, 0x0000
+DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xF0F0, obs_move, 0x0000, 1
+DefineObstacle obstacle2, 5, 20, 5, 20, 1, 0, 1, 1, 0x0F0F, obs_move, 0x0000, 1
+shot_array:
+  DefineNObstacles shot_array, #k_max_num_obs
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DIBUJAR UNA ENTIDAD
-;; EXPLOTA: TODOS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
+;; EXPLOTA: AF, AF', BC, DE, HL
 ;; ENTRADA:
 ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_doForAll:
   ld    a,  (m_num_obs) ;; A = m_num_obs
   cp    #0              ;; A - 0
   ret   z               ;; IF A == 0 THEN ret
   
   ;; ELSE Apply Function
-  ld  ix, #shot_array0  ;; IX = Shot_array0
+  ld  ix, #shot_array   ;; IX = Shot_array0
   ld  (metodo), hl      ;; (meotodo) = HL
- buc:
-      ;; IF vivo == 0 THEN jump inc_contadores
+
+  buc:
+    ;; IF vivo == 0 THEN jump inc_contadores
+    push af
+    ld  a, o_alive(ix) 
+    cp  #0
+    jr  z,  inc_contadores
 
       ;; ELSE Apply Function
-      push    af                  ;; | PUSH AF
+      ;push    af                 ;; | PUSH AF
       metodo  = . + 1             ;; | . es la dir.mem en la que estoy si le sumo 1 es el call
       call    ent_draw            ;; | CALL metodo
-      pop     af                  ;; \ POP AF
-      
-      ld      bc, #k_obs_size     ;; | BC = #k_entity_size
+      ;pop     af                  ;; \ POP AF
 
-      ;inc_contadores:
-      add     ix, bc              ;; | IX += BC, Update pointer value
-      dec a                       ;; | A--
-      jr nz, buc                  ;; \ IF A == 0 THEN stop Apply Function
+    inc_contadores:
+    pop	af
+    ld      bc, #k_obs_size     ;; | BC = #k_entity_size
+    add     ix, bc              ;; | IX += BC, Update pointer value
+    dec a                       ;; | A--
+    jr nz, buc                  ;; \ IF A == 0 THEN stop Apply Function
 
     ret
 

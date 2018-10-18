@@ -149,6 +149,7 @@ _main::
     halt
     halt
     halt
+    
     ;call  cpct_scanKeyboard_asm
     ;ld    hl, #Key_P
     ;call  cpct_isKeyPressed_asm
