@@ -27,14 +27,14 @@ call ren_drawEntity
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear_obs:
-  ld  a, de_col(ix)
-  ex af, af'
- 
-   ld  de_col(ix), #0
- 
-   call ent_draw_obs
-   ex af, af'
-  ld de_col(ix), a
+  ;ld  a, de_col(ix)
+  ;ex af, af'
+ ;
+  ; ld  de_col(ix), #0
+ ;
+  ; call ent_draw_obs
+  ; ex af, af'
+  ;ld de_col(ix), a
  
   ret
 
@@ -84,11 +84,6 @@ ent_clear_obs:
         ld  a,de_x(ix) ;;Meto el valor de iy en a ;Meto en A herde_x
         ld  c,de_w(ix)
         add c
-        ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
-        ;;inc iy
-        ;;inc iy
-        ;;inc iy
-        ;;add (iy)    ;;Sumo a herde_x que lo tengo en A el valor de hero_w
         ld	c, a    ;;Paso el valor de la suma a C
         ld  a, de_x(iy)  ;;Paso a A el valor de obs_x
         ld  b, a    ;;Paso el valor de obs_x que tengo en a B
@@ -102,12 +97,7 @@ ent_clear_obs:
        ld  a,de_y(ix) ;;Meto el valor de iy en a ;Meto en A herde_x
        ld  c,de_h(ix)
        add c
-       ;;inc iy      ;;Tengo que incrementar en 4 iy para poder coger hero_w que es el tercer valor
-       ;;inc iy
-       ;;inc iy
-       ;;inc iy
-       ;;inc iy
-       ;;add (iy)    ;;Sumo a herde_x que lo tengo en A el valor de hero_w
+
        ld	c, a    ;;Paso el valor de la suma a C
        ld  a, de_y(iy)  ;;Paso a A el valor de obs_y
        ld  b, a    ;;Paso el valor de obs_x que tengo en a B

@@ -39,7 +39,9 @@
 #$(eval $(call IMG2SP, SET_OUTPUT      , c                  ))  { bin, c }
 #$(eval $(call IMG2SP, SET_PALETTE_FW  , $(PALETTE)         ))
 #$(eval $(call IMG2SP, CONVERT_PALETTE , $(PALETTE), g_palette ))
-#$(eval $(call IMG2SP, CONVERT         , img.png , w, h, array, palette, tileset))
+
+
+#$(eval $(call IMG2SP, CONVERT         , img/Xemnas.png , 16, 16, array, palette, tileset))
 
 ##
 ## OLD MACROS (For compatibility)
@@ -56,4 +58,6 @@ PALETTE={ 0 6 13 10 12 3 9 18 26 15 25 1 14 }
 ## called g_tiles{0-15} (g is prefix for _tiles) without interlaced mask. 
 ## Palette will also be converted to hardware values and outputed as a C-array
 ## named g_palette.
+
 $(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE),tileset,src/,hwpalette))
+$(eval $(call IMG2SPRITES,img/Xemnas.png,0,sprite,16,16,$(PALETTE),mask,src/))

@@ -2,20 +2,23 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Heroe
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineHero _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile, _jump  
+.macro DefineHero _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct
 
-    DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+    DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile
     .db  _jump          ;; Jump State,    -1 if not jumping (can jump)
                         ;;                -2 if is falling  (cant jump)
-
+    .db _vida
+    .db  _direct        ;; Sentido, 0 => left
+                        ;;          1 => right
 .endm
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-e_jump  = 11+2
-
+e_jump  = 13+1
+hero_vida = 13+2
+hero_direct = 13+3
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -31,3 +34,5 @@ e_jump  = 11+2
 .globl hero_clear
 .globl hero_draw
 .globl hero_move
+
+.globl hero_hit

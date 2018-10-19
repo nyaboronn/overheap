@@ -8,6 +8,9 @@
 .include "hero.h.s"
  
 .area _DATA
+
+
+
 .area _CODE
  
 
@@ -113,7 +116,7 @@ ret
 
 _main::
 ;;Cambiamos la pila de sitio:
-ld sp, #0x800 ;;STackPointer
+ld sp, #0x8000 ;;STackPointer
 
 
   call initialize_CPC
@@ -152,17 +155,14 @@ loop:
   call hero_update
   call hero_draw
 
-;;Una marca al
-  ld	(0xC027), a ;;Draw coliision level
-  ld	(0xC028), a ;;Draw coliision level
-  ld	(0xC029), a ;;Draw coliision level
 
-  ld	(0x8027), a ;;Draw coliision level
-  ld	(0x8028), a ;;Draw coliision level
-  ld	(0x8029), a ;;Draw coliision level
+
+  ;;call ren_drawHud
 
 
   
+
+
   call ren_switchBuffers
   call cpct_waitVSYNC_asm
 
