@@ -8,7 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Shoots Data
 ;;;;;;;;;;;;;;;;;;;;;
-k_max_num_obs = 1                 ;; Maximo de objetos
+k_max_num_obs = 20                 ;; Maximo de objetos
 k_obs_size    = 14                ;; Obstacle size (in Bytes)
 m_num_obs :   .db 0               ;; Número de obs creados
 m_next_obs:   .dw shot_array0     ;; Posicion actual en el array
@@ -18,12 +18,7 @@ m_murieron_obs: .db 0             ;; Numero de Obs que colisionan
 aux_pointer: .dw shot_array0
 
 ;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
-DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xFFFF, obs_move, 0x0000, 1
-;DefineObstacle obstacle2, 7, 10, 7, 10, 1, 0, 1, 1, 0x0F0F, obs_move, 0x0000, 1
-;DefineObstacle obstacle3, 9, 15, 9, 15, 1, 0, 1, 1, 0xF0F0, obs_move, 0x0000, 1
-;DefineObstacle obstacle4, 11, 35,11, 35, 1, 0, 1, 1, 0x020F, obs_move, 0x0000, 1
-;DefineObstacle obstacle5, 13, 40,13, 40, 1, 0, 1, 1, 0x0401, obs_move, 0x0000, 1
-;DefineObstacle obstacle6, 15, 8, 15, 8, 1, 0, 1, 1, 0x0209, obs_move, 0x0000, 1
+DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0x45, obs_move, 0x0000, 1
 shot_array:
   DefineNObstacles shot_array, #k_max_num_obs
 
@@ -35,34 +30,45 @@ shot_array:
 obs_reset_array:
 
   ;; Comprobar si TODAS las balas han colisionado
-  ld a, (m_murieron_obs)
-  ld h, a
-  ld	a,  #k_max_num_obs
-  cp  a,  h
-  jr  z,  actualizar_array
+  ld  a, (m_murieron_obs)     ;; A = (m_murieron_obs) value
+  ld  h, a                    ;; H = A
+  ld	a,  #k_max_num_obs      ;; A = #k_max_num_obs value
+  cp  a,  h                   ;; A == H??
+  jr  z,  actualizar_array    ;; IF A == H reset array
 
-    ;; ELSE devolver #0, necesita esperar a que todas colisionen
+    ;; ELSE devolver #0, esperar a que todas colisionen
     ld  a, #0
     ret
 
   actualizar_array:
-  ;; Copiar Obstacle1 en la posicion en cada posición del array
-  ld	hl, #obstacle1
-  ld  de, #shot_array
-  call obs_copy
+    ;; Copiar Obstacle1 en la posicion en cada posición del array
+    ld  de, #shot_array       ;; DE = pointer to shot_array
+    ld	hl, #obstacle1        ;; HL = pointer to obstalce1
+    ld  a, #0                 ;; A = 0
 
-  ;; Reiniciar Los Valores de Las Constantes y Contadores
-  ld  a, #0
-  ld (m_num_obs), a               ;; Número de obs creados
+    proceder_al_bucle:
+      call obs_copy
+      
+      ld  hl, #k_obs_size     ;; HL = #k_obs_size value
+      add hl, de              ;; HL = DE  
+      ld	hl, #obstacle1      ;; HL = #obstacle1 value
+      ex  de, hl              ;; DE <=> HL
 
-  ld hl, #shot_array
-  ld (m_next_obs), hl     ;; Posicion actual en el array
+      inc a                   ;; A++
+      cp #k_max_num_obs       ;; A == k_max_num_obs
+      jr nz, proceder_al_bucle;; IF A != k_max_num_obs iterar bucle
 
-  ld (m_alive_obs),  a               ;; Numero de Obs Usados
-  ld (m_murieron_obs), a             ;; Numero de Obs que colisionan
-  
-  ld a, #1
+    ;; Reiniciar Los Valores de Las Constantes y Contadores
+    ld  a, #0                 ;; A = 0
+    ld (m_num_obs), a         ;; Número de obs creados
 
+    ld hl, #shot_array        ;; HL = #shot_array pointer
+    ld (m_next_obs), hl       ;; Posicion actual en el array
+
+    ld (m_alive_obs),  a      ;; Numero de Obs Usados
+    ld (m_murieron_obs), a    ;; Numero de Obs que colisionan
+    
+    ld a, #1                  ;; A = 1
   ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -75,7 +81,7 @@ obs_new:
   ;; Ha llegado al maximo de obejtos ???
   ld  a,  (m_num_obs)     ;; A = (m_num_obs) Value
   cp  #k_max_num_obs      ;; A - #k_max_num_obs Value
-  jr  nz,  nuevo_obs  ;; IF A != k_max_num_obs THEN RET
+  jr  nz,  nuevo_obs      ;; IF A != k_max_num_obs THEN RET
 
     ;; ELSE A == k_max_num_obs
     call obs_reset_array
@@ -94,17 +100,16 @@ obs_new:
   ld      (m_num_obs), a
 
   ;; Hacer mas cosas :D
-  ld      hl,     (m_next_obs)     ;; 0x10FF  +  9 = 0x1008
+  ld      hl,     (m_next_obs)
   ld      bc,     #k_obs_size
   add     hl,     bc
   ld      (m_next_obs), hl
-  ld      bc,     #-k_obs_size     ;; 
-  add     hl,     bc                  ;;
+  ld      bc,     #-k_obs_size
+  add     hl,     bc
   
   ld a, #1
     
   ret
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
@@ -113,9 +118,9 @@ obs_new:
 ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_doForAll:
-  ld    a,  (m_num_obs) ;; A = m_num_obs
-  cp    #0              ;; A - 0
-  ret   z               ;; IF A == 0 THEN ret
+  ld  a,  (m_num_obs) ;; A = m_num_obs
+  cp  #0              ;; A - 0
+  ret z               ;; IF A == 0 THEN ret
   
   ;; ELSE Apply Function
   ld  ix, #shot_array   ;; IX = Shot_array0
@@ -134,10 +139,10 @@ obs_doForAll:
 
     inc_contadores:
     pop	af                      ;; | POP AF
-    ld      bc, #k_obs_size     ;; | BC = #k_entity_size
-    add     ix, bc              ;; | IX += BC, Update pointer value
+    ld  bc, #k_obs_size         ;; | BC = #k_entity_size
+    add ix, bc                  ;; | IX += BC, Update pointer value
     dec a                       ;; | A--
-    jr nz, buc                  ;; \ IF A == 0 THEN stop Apply Function
+    jr  nz, buc                 ;; \ IF A == 0 THEN stop Apply Function
 
     ret
 
@@ -148,25 +153,24 @@ obs_doForAll:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_update:
+  ;; Comprobar la colision
+  ld  a, #35                  ;; A = #35
+  ld  b, de_x(ix)             ;; B = de_x(ix) value
+  cp	a, b                    ;; A == B ??
+  jr	nc, no_la_ha_palmado    ;; IF A != B THEN NO Colisiona 
 
-  ld  a, #35
-  ld  b, de_x(ix)
-  cp	a, b
-  jr	nc, no_la_ha_palmado
-
-    ;; MUERE fuertemente
-    ;; Borrar 
-    call obs_clear
-    ;; Establecer alive = 0
-    ld o_alive(ix), #0
+    ;; ELSE: Borrarlo e incrementar m_murieron_obs
+    call obs_clear            ;; call to obs_clear function
+    ld  o_alive(ix), #0       ;; o_alive(ix) = 0
     ;; Incrementar contador de muertos
-    ld  a, (m_murieron_obs)
-    inc a
-    ld (m_murieron_obs), a
+    ld  a, (m_murieron_obs)   ;; A = (m_murieron_obs) value
+    inc a                     ;; A++
+    ld  (m_murieron_obs), a   ;; (m_murieron_obs)value = A
     ret
 
   no_la_ha_palmado:
-  call ent_update
+    call ent_update
+
   ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

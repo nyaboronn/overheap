@@ -102,37 +102,6 @@ _main::
   call ent_copy
 
 
-  ;call obs_new
-  ;ex	de, hl
-  ;ld	hl, #obstacle1
-  ;call obs_copy
-
-  ;call obs_new
-  ;ex	de, hl
-  ;ld	hl, #obstacle2
-  ;call obs_copy
-;
-;
-  ;  call obs_new
-  ;ex	de, hl
-  ;ld	hl, #obstacle3
-  ;call obs_copy
-;;
-  ;call obs_new
-  ;ex	de, hl
-  ;ld	hl, #obstacle4
-  ;call obs_copy
-;
-;
-  ;  call obs_new
-  ;ex	de, hl
-  ;ld	hl, #obstacle5
-  ;call obs_copy
-;
-  ;call obs_new
-  ;ex	de, hl
-  ;ld	hl, #obstacle6
-  ;call obs_copy
 
   loop:
 
@@ -149,28 +118,14 @@ _main::
     ld	hl, #obs_draw
     call	obs_doForAll
 
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
-    ;halt
     
     call  cpct_scanKeyboard_asm
     ld    hl, #Key_P
     call  cpct_isKeyPressed_asm
     jr    z, p_no_pulsada
     
-
       ;; Obs_new devuelve el resultado en A
-      ;; Si es 0 no, no ha creado el obs
+      ;; Si es 0, no ha creado el obs
       call obs_new
       cp #0
       jr z, p_no_pulsada
