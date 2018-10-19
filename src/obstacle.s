@@ -8,11 +8,14 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Shoots Data
 ;;;;;;;;;;;;;;;;;;;;;
-k_max_num_obs = 5                 ;; Maximo de objetos
+k_max_num_obs = 1                 ;; Maximo de objetos
 k_obs_size    = 14                ;; Obstacle size (in Bytes)
 m_num_obs :   .db 0               ;; Número de obs creados
 m_next_obs:   .dw shot_array0     ;; Posicion actual en el array
 m_alive_obs:  .db 0               ;; Numero de Obs Usados
+m_murieron_obs: .db 0             ;; Numero de Obs que colisionan
+
+aux_pointer: .dw shot_array0
 
 ;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
 DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xFFFF, obs_move, 0x0000, 1
@@ -23,6 +26,85 @@ DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xFFFF, obs_move, 0x0000, 1
 ;DefineObstacle obstacle6, 15, 8, 15, 8, 1, 0, 1, 1, 0x0209, obs_move, 0x0000, 1
 shot_array:
   DefineNObstacles shot_array, #k_max_num_obs
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RESETEA LA MEMORIA DE LAS BALAS PARA SU NUEVO USO
+;; ANTES DE HACERLO COMPRUEBA SI TODAS ESTAN DESTRUIDAS
+;; EXPLOTAN: A, BC,
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_reset_array:
+
+  ;; Comprobar si TODAS las balas han colisionado
+  ld a, (m_murieron_obs)
+  ld h, a
+  ld	a,  #k_max_num_obs
+  cp  a,  h
+  jr  z,  actualizar_array
+
+    ;; ELSE devolver #0, necesita esperar a que todas colisionen
+    ld  a, #0
+    ret
+
+  actualizar_array:
+  ;; Copiar Obstacle1 en la posicion en cada posición del array
+  ld	hl, #obstacle1
+  ld  de, #shot_array
+  call obs_copy
+
+  ;; Reiniciar Los Valores de Las Constantes y Contadores
+  ld  a, #0
+  ld (m_num_obs), a               ;; Número de obs creados
+
+  ld hl, #shot_array
+  ld (m_next_obs), hl     ;; Posicion actual en el array
+
+  ld (m_alive_obs),  a               ;; Numero de Obs Usados
+  ld (m_murieron_obs), a             ;; Numero de Obs que colisionan
+  
+  ld a, #1
+
+  ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REGISTRA UNA NUEVA ENTIDAD. SI HA LLEGADO
+;; AL TOPE DE OBS, NO REGISTRA OTRO
+;; REGISTROS DESTRUIDOS: A, HL, BC
+;; SALIDA: A => 0/1 si puede registrar el Obs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_new:
+  ;; Ha llegado al maximo de obejtos ???
+  ld  a,  (m_num_obs)     ;; A = (m_num_obs) Value
+  cp  #k_max_num_obs      ;; A - #k_max_num_obs Value
+  jr  nz,  nuevo_obs  ;; IF A != k_max_num_obs THEN RET
+
+    ;; ELSE A == k_max_num_obs
+    call obs_reset_array
+    ret
+
+  nuevo_obs:
+  ;; Incrementar los obs usados
+  ld	b, a                ;; B = A
+  ld  a,  #m_alive_obs    ;; A = #m_alive_obs Value
+  inc a                   ;; A++
+  ld  (m_alive_obs), a    ;; (m_alive_obs) value = A
+  ld  a, b                ;; A = B
+
+  ;; Incrementar el numero de obs
+  inc     a
+  ld      (m_num_obs), a
+
+  ;; Hacer mas cosas :D
+  ld      hl,     (m_next_obs)     ;; 0x10FF  +  9 = 0x1008
+  ld      bc,     #k_obs_size
+  add     hl,     bc
+  ld      (m_next_obs), hl
+  ld      bc,     #-k_obs_size     ;; 
+  add     hl,     bc                  ;;
+  
+  ld a, #1
+    
+  ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
@@ -59,44 +141,6 @@ obs_doForAll:
 
     ret
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; REGISTRA UNA NUEVA ENTIDAD. SI HA LLEGADO
-;; AL TOPE DE OBS, NO REGISTRA OTRO
-;; REGISTROS DESTRUIDOS: A, HL, BC
-;; SALIDA: A => 0/1 si puede registrar el Obs
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-obs_new:
-  ;; Ha llegado al maximo de obejtos ???
-  ld  a,  (m_num_obs)     ;; A = (m_num_obs) Value
-  cp  #k_max_num_obs      ;; A - #k_max_num_obs Value
-  jr  z,  no_crear  ;; IF A == k_max_num_obs THEN RET
-
-  ;; Incrementar los obs usados
-  ld	b, a                ;; B = A
-  ld  a,  #m_alive_obs    ;; A = #m_alive_obs Value
-  inc a                   ;; A++
-  ld  (m_alive_obs), a    ;; (m_alive_obs) value = A
-  ld  a, b                ;; A = B
-
-  ;; Incrementar el numero de obs
-  inc     a
-  ld      (m_num_obs), a
-
-  ;; Hacer mas cosas :D
-  ld      hl,     (m_next_obs)     ;; 0x10FF  +  9 = 0x1008
-  ld      bc,     #k_obs_size
-  add     hl,     bc
-  ld      (m_next_obs), hl
-  ld      bc,     #-k_obs_size     ;; 
-  add     hl,     bc                  ;;
-  ret
-
-  no_crear:
-  ld a, #0
-  ret
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNa obstaculo
 ;; REGISTROS DESTRUIDOS: TODOS
@@ -111,8 +155,14 @@ obs_update:
   jr	nc, no_la_ha_palmado
 
     ;; MUERE fuertemente
+    ;; Borrar 
     call obs_clear
+    ;; Establecer alive = 0
     ld o_alive(ix), #0
+    ;; Incrementar contador de muertos
+    ld  a, (m_murieron_obs)
+    inc a
+    ld (m_murieron_obs), a
     ret
 
   no_la_ha_palmado:
