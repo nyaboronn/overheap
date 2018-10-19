@@ -8,20 +8,25 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Shoots Data
 ;;;;;;;;;;;;;;;;;;;;;
-k_max_num_obs = 3               ;; Maximo de objetos
-k_obs_size    = 14              ;; Obstacle size (in Bytes)
-m_num_obs :   .db 0            ;; Número de obs creados
-m_next_obs:   .dw shot_array0   ;; Posicion actual en el array
+k_max_num_obs = 5                 ;; Maximo de objetos
+k_obs_size    = 14                ;; Obstacle size (in Bytes)
+m_num_obs :   .db 0               ;; Número de obs creados
+m_next_obs:   .dw shot_array0     ;; Posicion actual en el array
+m_alive_obs:  .db 0               ;; Numero de Obs Usados
 
 ;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
-DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xF0F0, obs_move, 0x0000, 1
-DefineObstacle obstacle2, 5, 20, 5, 20, 1, 0, 1, 1, 0x0F0F, obs_move, 0x0000, 1
+DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0xFFFF, obs_move, 0x0000, 1
+;DefineObstacle obstacle2, 7, 10, 7, 10, 1, 0, 1, 1, 0x0F0F, obs_move, 0x0000, 1
+;DefineObstacle obstacle3, 9, 15, 9, 15, 1, 0, 1, 1, 0xF0F0, obs_move, 0x0000, 1
+;DefineObstacle obstacle4, 11, 35,11, 35, 1, 0, 1, 1, 0x020F, obs_move, 0x0000, 1
+;DefineObstacle obstacle5, 13, 40,13, 40, 1, 0, 1, 1, 0x0401, obs_move, 0x0000, 1
+;DefineObstacle obstacle6, 15, 8, 15, 8, 1, 0, 1, 1, 0x0209, obs_move, 0x0000, 1
 shot_array:
   DefineNObstacles shot_array, #k_max_num_obs
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
-;; EXPLOTA: AF, AF', BC, DE, HL
+;; EXPLOTA: AF, BC, DE, HL
 ;; ENTRADA:
 ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,20 +40,18 @@ obs_doForAll:
   ld  (metodo), hl      ;; (meotodo) = HL
 
   buc:
-    ;; IF vivo == 0 THEN jump inc_contadores
-    push af
-    ld  a, o_alive(ix) 
-    cp  #0
-    jr  z,  inc_contadores
+    ;; IF vivo == 0 THEN no aplicar la función.
+    push af                       ;; PUSH AF
+    ld  a, o_alive(ix)            ;; A = obs_alive
+    cp  #0          
+    jr  z,  inc_contadores        ;; IF A == 0 THEN jump inc_contadores
 
       ;; ELSE Apply Function
-      ;push    af                 ;; | PUSH AF
-      metodo  = . + 1             ;; | . es la dir.mem en la que estoy si le sumo 1 es el call
-      call    ent_draw            ;; | CALL metodo
-      ;pop     af                  ;; \ POP AF
+      metodo  = . + 1             ;; | . + 1 es el call
+      call    ent_draw            ;; \ CALL metodo
 
     inc_contadores:
-    pop	af
+    pop	af                      ;; | POP AF
     ld      bc, #k_obs_size     ;; | BC = #k_entity_size
     add     ix, bc              ;; | IX += BC, Update pointer value
     dec a                       ;; | A--
@@ -58,21 +61,40 @@ obs_doForAll:
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; REGISTRA UNA NUEVA ENTIDAD
+;; REGISTRA UNA NUEVA ENTIDAD. SI HA LLEGADO
+;; AL TOPE DE OBS, NO REGISTRA OTRO
 ;; REGISTROS DESTRUIDOS: A, HL, BC
+;; SALIDA: A => 0/1 si puede registrar el Obs
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_new:
-    ld      a,  (m_num_obs)
-    inc     a
-    ld      (m_num_obs), a
+  ;; Ha llegado al maximo de obejtos ???
+  ld  a,  (m_num_obs)     ;; A = (m_num_obs) Value
+  cp  #k_max_num_obs      ;; A - #k_max_num_obs Value
+  jr  z,  no_crear  ;; IF A == k_max_num_obs THEN RET
 
-    ld      hl,     (m_next_obs)     ;; 0x10FF  +  9 = 0x1008
-    ld      bc,     #k_obs_size
-    add     hl,     bc
-    ld      (m_next_obs), hl
-    ld      bc,     #-k_obs_size     ;; O podemos usar sbc(restar con acarreo)       or  a       Quitamos el acarreo en el caso de que se genere a or a = a Acarreo 0
-    add     hl,     bc                  ;;Se cambia por las 2   sbc hl, bc
-ret
+  ;; Incrementar los obs usados
+  ld	b, a                ;; B = A
+  ld  a,  #m_alive_obs    ;; A = #m_alive_obs Value
+  inc a                   ;; A++
+  ld  (m_alive_obs), a    ;; (m_alive_obs) value = A
+  ld  a, b                ;; A = B
+
+  ;; Incrementar el numero de obs
+  inc     a
+  ld      (m_num_obs), a
+
+  ;; Hacer mas cosas :D
+  ld      hl,     (m_next_obs)     ;; 0x10FF  +  9 = 0x1008
+  ld      bc,     #k_obs_size
+  add     hl,     bc
+  ld      (m_next_obs), hl
+  ld      bc,     #-k_obs_size     ;; 
+  add     hl,     bc                  ;;
+  ret
+
+  no_crear:
+  ld a, #0
+  ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -82,6 +104,18 @@ ret
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_update:
+
+  ld  a, #35
+  ld  b, de_x(ix)
+  cp	a, b
+  jr	nc, no_la_ha_palmado
+
+    ;; MUERE fuertemente
+    call obs_clear
+    ld o_alive(ix), #0
+    ret
+
+  no_la_ha_palmado:
   call ent_update
   ret
 
@@ -142,7 +176,7 @@ obs_checkCollision::
   ld	  c,  a             ;;  C = A
   ld    a,  de_w(iy)      ;;  A = obs_w
   add   c                 ;;  A += C
-  sub	  de_x(ix)          ;;  Entiendo que herde_x tiene que estar cargado en iy   Resto lo que hay en el acumulador con lo que hay en iy, también modifica los flags
+  sub	  de_x(ix)          ;;  A - con lo que hay en iy
   jr z, obs_no_collision      ;;  IF (<= 0)
   jp m, obs_no_collision      ;; 
 
@@ -194,4 +228,3 @@ obs_checkCollision::
 obs_no_collision:
   ld	a, #0x00
   ret
-
