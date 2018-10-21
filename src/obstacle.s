@@ -1,7 +1,3 @@
-
-
-.include "cpctelera.h.s"
-.include "main.h.s"
 .include "obstacle.h.s"
 .include "entity.h.s"
 

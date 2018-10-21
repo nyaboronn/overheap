@@ -1,11 +1,6 @@
-.include "cpctelera.h.s"
 .include "tileManager.h.s"
-.include "main.h.s"
 .include "utils.h.s"
-
-.include "obstacle.h.s"
 .include "entity.h.s"
-.include "enemy.h.s"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;CONSTANTES
