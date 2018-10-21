@@ -23,7 +23,7 @@ DefineNEntities entity_vector, 9
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve 0 si la tile donde esta la entidad en solida
-;; Distinto de cero en caso contrario
+;; Distinto de -1 en caso contrario
 ;; REGISTROS DESTRUIDOS: 
 ;; ENTRADA: 
 ;;          IX -> Entity
@@ -31,12 +31,62 @@ DefineNEntities entity_vector, 9
 ;;          A
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_is_solidTile:
+
+    ld  h,  e_tile_h(ix)
+    ld  l,  e_tile_l(ix)
+    inc hl ;; En vez de incrementar habria que hacerlo con el ancho - 1
+
+    ld  A,  (hl)
+    bit     #7, a
+    ld      a,  #0  ;;Esto es necesario=
+    ret nz
+
+
+    ld a, de_y(ix)
+    ;;inc a
+    add #2
+    ld de_y(ix),a
+    call CalcualteOFFSET
+
+    ld a, de_y(ix)
+    ;;dec a
+    sub #2
+    ld de_y(ix),a
+
+    ld  A,  (hl)
+    bit     #7, a
+    ld      a,  #0  ;;Esto es necesario=
+    ret nz
+
+
+
+    ld a, de_y(ix)
+    ;;inc a
+    add #3
+    ld de_y(ix),a
+    call CalcualteOFFSET
+
+    ld a, de_y(ix)
+    ;;dec a
+    sub #3
+    ld de_y(ix),a
+
+    ld  A,  (hl)
+    bit     #7, a
+    ld      a,  #0  ;;Esto es necesario=
+    ret nz
+
+
+    
     call    ent_getActualTile
 
     bit     #7, a
-    ld      a,  #0
+    ld      a,  #0  ;;
     ret z
-    ld      a,  #-2
+
+
+
+    ld      a,  #-1
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -149,6 +199,10 @@ ent_update:
     jp  (hl)
 
     ret
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD

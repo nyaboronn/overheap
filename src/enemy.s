@@ -4,7 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
-DefineEnemy enm_data, 20, 41, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
+DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -85,9 +85,9 @@ enm_move1:
             ;; TEMPORAL => FALTA DISPARAR AL DETECTAR EL HERO
             ;; ELSE Encontrado hero
             ld a, e_direct(ix)  ;; A = enemy_direction
-            ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
-            inc a               ;; A++
-            ld de_col(ix), a     ; enemy_color = A
+           ; ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
+           ; inc a               ;; A++
+           ; ld de_col(ix), a     ; enemy_color = A
 
         no_aplica:
     ret
@@ -224,10 +224,16 @@ enm_move:
 ;;          IY -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_update:
-    ;; Puntero a la función que actualiza la entidad
+
+    ;; Puntero a la función  del  codigo para generar evento y cambiar de estado 
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
-    jp  (hl)
+    jp  (hl) ;; llamada al estado
+    ;; La funciona Hl dependeria del typo de enemigo,
+    
+    
+
+
 
     ret
 

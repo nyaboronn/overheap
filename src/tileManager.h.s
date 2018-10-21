@@ -14,7 +14,7 @@ RepeatRender: .db #0
 ;;INPUT -> scroll= h
 ;;         column = l
 
-InputHL: .dw #0x000      
+InputHL: .dw #0x0000      
 
 
 
