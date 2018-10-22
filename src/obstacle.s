@@ -6,9 +6,8 @@
 ;; Shoots Data
 ;;;;;;;;;;;;;;;;;;;;;
 
-;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile, isAlive
 DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0x45, obs_move, 0x0000, 1
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RESETEA LA MEMORIA DE LAS BALAS PARA SU NUEVO USO
@@ -110,7 +109,7 @@ obs_new:
   ;; Incrementar el numero de obs
   inc     a
   ld      enm_m_num_obs(ix), a
-
+ ; ld      enm_m_alive_obs(ix), a
 
 
   ;; Hacer mas cosas :D
@@ -136,9 +135,9 @@ obs_new:
 ;; EXPLOTA: AF, BC, DE, HL
 ;; ENTRADA:
 ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
-;;          IX => Puntero a la entidad
+;;          IX => Puntero a la entidad dueña de las balas
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-obs_doForAll:
+obs_doForAll::
   ld  a,  enm_m_num_obs(ix) ;; A = m_num_obs
   cp  #0              ;; A - 0
   ret z               ;; IF A == 0 THEN ret
@@ -146,8 +145,15 @@ obs_doForAll:
 
   ;; ELSE Apply Function
   push hl
-  ld  h, enm_shot_array+1(ix)   ;; IX = Shot_array0
-  ld  l, enm_shot_array(ix)   ;; IX = Shot_array0
+  ;ld  h, enm_shot_array+1(ix)   ;; IX = Shot_array0
+  ;ld  l, enm_shot_array(ix)   ;; IX = Shot_array0
+  
+  push ix
+  pop hl
+  
+  ld de, #enm_shot_array
+  add hl, de
+  
   push hl
   pop iy
   pop hl
@@ -161,11 +167,14 @@ obs_doForAll:
     cp  #0          
     jr  z,  inc_contadores        ;; IF A == 0 THEN jump inc_contadores
 
-    
+        push ix
+      push iy
+      pop ix 
+
       ;; ELSE Apply Function
       metodo  = . + 1             ;; | . + 1 es el call
       call    ent_draw            ;; \ CALL metodo
-
+      pop ix
     inc_contadores:
     pop	af                      ;; | POP AF
     ld c, enm_k_obs_size(ix)

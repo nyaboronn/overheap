@@ -87,10 +87,11 @@ enm_move1:
 
             ;; TEMPORAL => FALTA DISPARAR AL DETECTAR EL HERO
             ;; ELSE Encontrado hero
-            ;ld a, e_direct(ix)  ;; A = enemy_direction
-            ;ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
-            ;inc a               ;; A++
-            ;ld de_col(ix), a     ; enemy_color = A
+            ld a, e_direct(ix)  ;; A = enemy_direction
+            ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
+            inc a               ;; A++
+            ld de_col(ix), a     ; enemy_color = A
+            
             call obs_new
             cp #0
             jr z, no_aplica
