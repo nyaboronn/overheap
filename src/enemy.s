@@ -2,11 +2,13 @@
 
 .include "enemy.h.s"
 .include "entity.h.s"
+.include "obstacle.h.s"
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
-DefineEnemy enm_data, 20, 41, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
+DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
+DefineEnemyShoot eshoot, 30, 41, 10, 20, 1, 0, 2, 4, 0x34, enm_move1, 0x1020, 0, 3, 13, 0, 0xFFFF, 3, 0, 1
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -50,16 +52,15 @@ enm_move2:
 ;; SALIDAS: 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move1:
-    ;;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
-    ;;; h_y == e_y ?? => CALCULAR si lo detecta
+
+    ;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
+    ;; h_y == e_y ?? => CALCULAR si lo detecta
     ld  a, de_y(iy)  ;; A = hero_x
     ld  h, de_y(ix)  ;; H = enm_x
     cp  a, h        ;; A - H
-    jr  z, misma_y  ;; IF h_y == e_y THEN detectar al hero
-
+    jr  z, misma_y  ;; IF h_y == e_y THE    N detectar al hero   
         ;; ELSE h_y != e_y. No detectarlo
-        ret
-
+        ret  
     misma_y:
 
     ;;;; En que dirección hay que comprobar???
@@ -86,10 +87,16 @@ enm_move1:
 
             ;; TEMPORAL => FALTA DISPARAR AL DETECTAR EL HERO
             ;; ELSE Encontrado hero
-            ld a, e_direct(ix)  ;; A = enemy_direction
-            ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
-            inc a               ;; A++
-            ld de_col(ix), a     ; enemy_color = A
+            ;ld a, e_direct(ix)  ;; A = enemy_direction
+            ;ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
+            ;inc a               ;; A++
+            ;ld de_col(ix), a     ; enemy_color = A
+            call obs_new
+            cp #0
+            jr z, no_aplica
+            ;;;;;;;;;;;;;;;;;;;;
+            ld	hl, #obstacle1
+            call obs_copy
 
         no_aplica:
     ret
@@ -248,5 +255,9 @@ enm_clear:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_draw:
     call ent_draw
+
+
+    ld	hl, #obs_draw
+    call	obs_doForAll
 
     ret

@@ -1,16 +1,14 @@
 .include "cpctelera.h.s"
+.include "entity.h.s"
 .include "tileManager.h.s"
 .include "main.h.s"
 
-.include "entity.h.s"
+.include "obstacle.h.s"
 .include "enemy.h.s"
 .include "hero.h.s"
-
+ 
 .area _DATA
 .area _CODE
- 
-
-entity_contador = 0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Inicializamos todas las funciones y configuraciones
@@ -106,67 +104,79 @@ call ent_getActualTile
 ret
 
 
-
-
-
-
 _main::
-;;Cambiamos la pila de sitio:
-ld sp, #0x800 ;;STackPointer
-
+  ;;Cambiamos la pila de sitio:
+  ld sp, #0x800 ;;STackPointer
 
   call initialize_CPC
-   ;; push iy
 
-  
-    ;;; Crear una nueva entidad
-    call ent_new
-    ex	de, hl
-    ld    hl,#hero_data
-    call ent_copy
- 
-    ; Crear una nueva entidad
-    call ent_new
-    ex	de, hl
-    ld    hl, #enm_data
-    call ent_copy
- 
-loop:
+  ;;; Crear una nueva entidad
+  call ent_new
+  ex	de, hl
+  ld    hl,#hero_data
+  call ent_copy
 
 
-  ;ld	  ix, #obstacle1
-  ;call ent_draw_obs
+
+  loop:
+
+    ld    ix, #hero_data
+    call hero_clear
+    call hero_update
+    call hero_draw
+
+    ld ix, #eshoot
+    call enm_clear
+    ld ix, #eshoot
+    ld iy, #hero_data
+    call enm_update
+    ld ix, #eshoot
+    call enm_draw
 
 
-  ld    ix, #enm_data
-  ld	  iy, #hero_data
-  call enm_clear
-  ld	  iy, #hero_data
-  call enm_update
-  ld	  iy, #hero_data
-  call enm_draw
+   ; ld ix, #eshoot
+   ; ld	hl, #obs_clear
+   ; call	obs_doForAll
+   ; ld	hl, #obs_update
+   ; call	obs_doForAll
+   ; ld	hl, #obs_draw
+   ; call	obs_doForAll
+;
+   ; 
+   ; call  cpct_scanKeyboard_asm
+   ; ld    hl, #Key_P
+   ; call  cpct_isKeyPressed_asm
+   ; jr    z, p_no_pulsada
+   ; 
+   ;   ;; Obs_new devuelve el resultado en A
+   ;   ;; Si es 0, no ha creado el obs
+   ;   ld ix, #eshoot
+   ;   call obs_new
+   ;   cp #0
+   ;   jr z, p_no_pulsada
+   ;   ;;;;;;;;;;;;;;;;;;;;
+   ;   ex	de, hl
+   ;   ld	hl, #obstacle1
+   ;   call obs_copy
+;
+   ; p_no_pulsada:
+    
+    ;;Una marca al
+    ld	(0xC027), a ;;Draw coliision level
+    ld	(0xC028), a ;;Draw coliision level
+    ld	(0xC029), a ;;Draw coliision level
 
-  ld    ix, #hero_data
-  call hero_clear
-  call hero_update
-  call hero_draw
-
-;;Una marca al
-  ld	(0xC027), a ;;Draw coliision level
-  ld	(0xC028), a ;;Draw coliision level
-  ld	(0xC029), a ;;Draw coliision level
-
-  ld	(0x8027), a ;;Draw coliision level
-  ld	(0x8028), a ;;Draw coliision level
-  ld	(0x8029), a ;;Draw coliision level
+    ld	(0x8027), a ;;Draw coliision level
+    ld	(0x8028), a ;;Draw coliision level
+    ld	(0x8029), a ;;Draw coliision level
 
 
-  
-  call ren_switchBuffers
-  call cpct_waitVSYNC_asm
+    
+    call ren_switchBuffers
+    call cpct_waitVSYNC_asm
 
 
-    jp loop
+  jp loop
 
 
 

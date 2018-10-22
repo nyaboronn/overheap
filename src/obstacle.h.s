@@ -10,7 +10,7 @@
 
 .macro DefineObstacleDefault _name, _suf
 
-    DefineObstacle _name'_suf, 0, 0, 0, 0, 0, 0, 0, 0, 0xFFFF, 0xFFFF, 0xFFFF, 0
+    DefineObstacle _name'_suf, 0, 0, 0, 0, 0, 0, 0, 0, 0xFFFF, obs_update, 0xFFFF, 1
 
 .endm
 
@@ -45,8 +45,3 @@ o_alive = 6 + e_de_size
 .globl obs_no_collision
 
 .globl obstacle1
-;.globl obstacle2
-;.globl obstacle3
-;.globl obstacle4
-;.globl obstacle5
-;.globl obstacle6
