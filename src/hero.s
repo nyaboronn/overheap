@@ -140,7 +140,7 @@ hero_update:
     call    hero_jumpControl     
     ;; Llamada a la función que actualiza una entidad
     call ent_update
-    call hero_hit
+;    call hero_hit
 
     ret
 

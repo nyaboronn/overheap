@@ -116,7 +116,7 @@ ret
 
 _main::
 ;;Cambiamos la pila de sitio:
-ld sp, #0x8000 ;;STackPointer
+ld sp, #0x7FFA ;;STackPointer
 
 
   call initialize_CPC
@@ -158,9 +158,6 @@ loop:
 
 
   ;;call ren_drawHud
-
-
-  
 
 
   call ren_switchBuffers
