@@ -90,23 +90,28 @@ call cpct_etm_drawTileBox2x4_asm
 call cpct_etm_drawTileBox2x4_asm
 
 call ent_initialTile
+
 ld    ix, #hero_data
 ld    e_tile_l(ix),l
 ld    e_tile_h(ix),h
 call ent_getActualTile
 
 call ent_initialTile
-ld    ix, #enm_data
+
+ld    ix, #eshoot
 ld    e_tile_l(ix),l
 ld    e_tile_h(ix),h
 call ent_getActualTile
+
+
+
 
 ret
 
 
 _main::
   ;;Cambiamos la pila de sitio:
-  ld sp, #0x800 ;;STackPointer
+  ld sp, #0x7FFA ;;STackPointer
 
   call initialize_CPC
 
@@ -120,18 +125,57 @@ _main::
 
   loop:
 
+
+    ld ix, #eshoot
+    call enm_clear
+
+    ld ix, #eshoot
+    ld iy, #hero_data
+    call enm_update
+    
+    ld ix, #eshoot
+    call enm_draw
+
+
+    ld ix, #eshoot2
+    call enm_clear
+
+    ld ix, #eshoot2
+    ld iy, #hero_data
+    call enm_update
+    
+    ld ix, #eshoot2
+    call enm_draw
+
+    ld ix, #eshoot3
+    call enm_clear
+
+    ld ix, #eshoot3
+    ld iy, #hero_data
+    call enm_update
+    
+    ld ix, #eshoot3
+    call enm_draw
+
+
+
+    ld ix, #eshoot4
+    call enm_clear
+
+    ld ix, #eshoot4
+    ld iy, #hero_data
+    call enm_update
+    
+    ld ix, #eshoot4
+    call enm_draw
+
+
+
     ld    ix, #hero_data
     call hero_clear
     call hero_update
     call hero_draw
 
-    ld ix, #eshoot
-    call enm_clear
-    ld ix, #eshoot
-    ld iy, #hero_data
-    call enm_update
-    ld ix, #eshoot
-    call enm_draw
 
 
    ; ld ix, #eshoot
@@ -162,6 +206,7 @@ _main::
    ; p_no_pulsada:
     
     ;;Una marca al
+    
     ld	(0xC027), a ;;Draw coliision level
     ld	(0xC028), a ;;Draw coliision level
     ld	(0xC029), a ;;Draw coliision level

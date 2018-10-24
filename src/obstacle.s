@@ -7,7 +7,6 @@
 ;;;;;;;;;;;;;;;;;;;;;
 
 ;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile, isAlive
-DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0x45, obs_move, 0x0000, 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RESETEA LA MEMORIA DE LAS BALAS PARA SU NUEVO USO
@@ -16,7 +15,9 @@ DefineObstacle obstacle1, 5, 30, 5, 30, 1, 0, 1, 1, 0x45, obs_move, 0x0000, 1
 ;; ENTRADAS: 
 ;;          IX => Puntero a la entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-obs_reset_array:
+obs_reset_array::
+
+
 
   ;; Comprobar si TODAS las balas han colisionado
   ld  a, enm_m_murieron_obs(ix)     ;; A = enm_m_murieron_obs(ix) value
@@ -31,36 +32,64 @@ obs_reset_array:
 
   actualizar_array:
     ;; Copiar Obstacle1 en la posicion en cada posición del array
-    ld  d, enm_shot_array+1(ix) 
-    ld  e, enm_shot_array(ix)       ;; DE = pointer to shot_array
-    ld	hl, #obstacle1        ;; HL = pointer to obstalce1
+        ;; DE = pointer to shot_array
+
+    push ix
+    pop hl
+    ld de, #enm_shot_array
+    add hl, de
+  
+    ;lets save IY register in the stacks
+    push iy
+
+    push HL
+    pop iy
+
+    ;ld	hl, #obstacle1        ;; HL = pointer to obstalce1
     ld  a, #0                 ;; A = 0
 
     proceder_al_bucle:
-      call obs_copy
+      ;call obs_copy
+
+
+      ;; Esto esta mal porque el punteor es a enemy, y tenemos que usar la bala
+      ld o_alive(iy), #1 ;;
       
-      ld  h, #0     ;; HL = #k_obs_size value
-      ld  l, enm_k_obs_size(ix)
-      add hl, de              ;; HL = DE  
-      ld	hl, #obstacle1      ;; HL = #obstacle1 value
-      ex  de, hl              ;; DE <=> HL
+
+      ld  d, #0     ;; de = #k_obs_size value
+      ld  e, enm_k_obs_size(ix)
+      add iy, de              ;; 
+
 
       inc a                   ;; A++
       cp enm_k_max_num_obs(ix)      ;; A == k_max_num_obs
       jr nz, proceder_al_bucle;; IF A != k_max_num_obs iterar bucle
 
-    ;; Reiniciar Los Valores de Las Constantes y Contadores
-    ld  a, #0                 ;; A = 0
-    ld enm_m_num_obs(ix), a         ;; Número de obs creados
 
-    ld  h, enm_shot_array+1(ix) 
-    ld  l, enm_shot_array(ix)       ;; DE = pointer to shot_array
+
+
+    ;; Reiniciar Los Valores de Las Constantes y Contadores
+   ; ld  a, #0                 ;; A = 0
+    ld enm_m_num_obs(ix), #0         ;; Número de obs creados
+
+
+    ; ix + enm_shot_array  = Array de balas
+    push ix
+    pop hl
+    ld de, #enm_shot_array
+    add hl, de
+
     ld  enm_m_next_obs+1(ix), h   ;; IX = Shot_array0
     ld  enm_m_next_obs(ix), l   ;; IX = Shot_array0
 
-    ld enm_m_alive_obs(ix),  a      ;; Numero de Obs Usados
-    ld enm_m_murieron_obs(ix), a    ;; Numero de Obs que colisionan
-    
+    ld a, enm_k_max_num_obs(ix)
+    ld enm_m_alive_obs(ix), a     ;; Numero de Obs Usados
+    ld enm_m_murieron_obs(ix), #0    ;; Numero de Obs que colisionan
+
+    ;; Resetear puntero al array
+
+    ;;And now restore iy
+    pop iy 
     ld a, #1                  ;; A = 1
   ret
 
@@ -70,7 +99,7 @@ obs_reset_array:
 ;; REGISTROS DESTRUIDOS: A, HL, BC
 ;; SALIDA: A => 0/1 si puede registrar el Obs
 ;; ENTRADAS: 
-;;          IX => Puntero a la entidad
+;;          IX => Puntero a la entidad, enemigo
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_new:
   ;; Ha llegado al maximo de obejtos ???
@@ -86,18 +115,12 @@ obs_new:
 
     ;; ELSE A == k_max_num_obs
     call obs_reset_array
-    ret
+    ret ;; Borrar para asi no recargar
 
   nuevo_obs:
   ;; Poner
-  ;push af
-  ;ld a, de_x(ix)
-  ;ld de_x(iy), a
-;
-  ;ld a, de_y(ix)
-  ;ld de_y(iy), a
-;
-  ;pop af
+
+
 
   ;; Incrementar los obs usados
   ld	b, a                ;; B = A
@@ -116,6 +139,21 @@ obs_new:
   ;ld      hl,     (m_next_obs)
   ld  h, enm_m_next_obs+1(ix)   ;; IX = Shot_array0
   ld  l, enm_m_next_obs(ix)   ;; IX = Shot_array0
+
+  push HL
+  pop iy
+
+  ld a, de_x(ix)
+  ld de_x(iy), a
+ ld de_oldx(iy), a
+ 
+  ld a, de_y(ix)
+  ld de_y(iy), a
+  ld de_oldy(iy), a
+
+
+
+  
   ld c, enm_k_obs_size(ix)
   ld b, #0
   add     hl,     bc
@@ -135,7 +173,7 @@ obs_new:
 ;; EXPLOTA: AF, BC, DE, HL
 ;; ENTRADA:
 ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
-;;          IX => Puntero a la entidad dueña de las balas
+;;          IX => Puntero a la entidad dueña de las balas/ enemy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_doForAll::
   ld  a,  enm_m_num_obs(ix) ;; A = m_num_obs
@@ -167,19 +205,28 @@ obs_doForAll::
     cp  #0          
     jr  z,  inc_contadores        ;; IF A == 0 THEN jump inc_contadores
 
+  ;Salvar
         push ix
-      push iy
-      pop ix 
+        push iy 
+
+;; metemos EXchange
+      push iy 
+      push ix 
+      pop iy
+      pop ix
 
       ;; ELSE Apply Function
       metodo  = . + 1             ;; | . + 1 es el call
       call    ent_draw            ;; \ CALL metodo
+
+      pop iy
       pop ix
+
     inc_contadores:
     pop	af                      ;; | POP AF
     ld c, enm_k_obs_size(ix)
     ld b, #0
-    add iy, bc                  ;; | IX += BC, Update pointer value
+    add iy, bc                  ;; | Iy += BC, Update pointer value
     dec a                       ;; | A--
     jr  nz, buc                 ;; \ IF A == 0 THEN stop Apply Function
 
@@ -189,10 +236,11 @@ obs_doForAll::
 ;; ACTUALIZAR UNa obstaculo
 ;; REGISTROS DESTRUIDOS: TODOS
 ;; ENTRADA: 
-;;          IX -> Puntero a entidad
-;;          IX => Puntero a la entidad
+;;   
+;;          IX => Al obstaculo -> Una bala
+;;          IY => Enemigo 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-obs_update:
+obs_update::
   ;; Comprobar la colision
   ld  a, #35                  ;; A = #35
   ld  b, de_x(ix)             ;; B = de_x(ix) value
@@ -200,14 +248,14 @@ obs_update:
   jr	nc, no_la_ha_palmado    ;; IF A != B THEN NO Colisiona 
 
     ;; ELSE: Borrarlo e incrementar m_murieron_obs
-    call obs_clear            ;; call to obs_clear function
+    ;call obs_clear            ;; call to obs_clear function
     ld  o_alive(ix), #0       ;; o_alive(ix) = 0
     ;; Incrementar contador de muertos
-    ld  a, enm_m_murieron_obs(ix)   ;; A = enm_m_murieron_obs(ix) value
+    ld  a, enm_m_murieron_obs(iy)   ;; A = enm_m_murieron_obs(ix) value
     inc a                     ;; A++
-    ld  enm_m_murieron_obs(ix), a   ;; enm_m_murieron_obs(ix)value = A
+    ld  enm_m_murieron_obs(iy), a   ;; enm_m_murieron_obs(ix)value = A
     ret
-
+;
   no_la_ha_palmado:
     call ent_update
 

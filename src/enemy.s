@@ -7,9 +7,10 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
-DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, 0xFF, enm_move1, 0x0000, 0
-DefineEnemyShoot eshoot, 30, 41, 10, 20, 1, 0, 2, 4, 0x34, enm_move1, 0x1020, 0, 3, 13, 0, 0xFFFF, 3, 0, 1
-
+DefineEnemyShoot eshoot, 30, 41, 30, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 0, 5, 14, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot2, 2, 41, 2, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 1, 5, 14, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot3, 30, 41, 30, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 0, 5, 14, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot4, 2, 41, 2, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 1, 5, 14, 0, .+4 , 5, 0, 34
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIAGONAL
@@ -51,7 +52,7 @@ enm_move2:
 ;;              IY => puntero al hero
 ;; SALIDAS: 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enm_move1:
+enm_move1::
 
     ;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
     ;; h_y == e_y ?? => CALCULAR si lo detecta
@@ -92,12 +93,18 @@ enm_move1:
             inc a               ;; A++
             ld de_col(ix), a     ; enemy_color = A
             
+           ; ;;FIX
+           ; ld  a,de_x(iy)
+           ; add a,# -15
+           ; ld de_x(iy), a
+
+
             call obs_new
             cp #0
             jr z, no_aplica
             ;;;;;;;;;;;;;;;;;;;;
-            ld	hl, #obstacle1
-            call obs_copy
+            ;ld	hl, #obstacle1
+            ;call obs_copy
 
         no_aplica:
     ret
@@ -230,14 +237,28 @@ enm_move:
 ;; ACTUALIZAR UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS: TODOS
 ;; ENTRADA: 
-;;          IX -> Puntero a entidad
+;;          IX -> Puntero a entidad, enemy
 ;;          IY -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_update:
+
+    push ix
+    push iy
+
+    ;Acutalizas las balas del enemigo
+    ld	hl, #obs_update
+    call	obs_doForAll
+    
+    pop iy
+    pop ix
+
+    ;Actualizar el enemigo
     ;; Puntero a la función que actualiza la entidad
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
     jp  (hl)
+
+
 
     ret
 
@@ -246,7 +267,11 @@ enm_update:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_clear:
-    call ent_clear
+    call ent_clear ;; Borras enemigos
+
+    ;; Borras las balas del enemigo IX
+    ld	hl, #obs_clear
+    call	obs_doForAll
 
     ret
 

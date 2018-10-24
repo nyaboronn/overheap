@@ -31,11 +31,11 @@
 e_size = 13
 e_direct           = 0 + e_size
 enm_k_max_num_obs  = 1 + e_size
-enm_k_obs_size     = 2 + e_size
+enm_k_obs_size     = 2 + e_size ;; posible constante
 enm_m_num_obs      = 3 + e_size
 enm_m_next_obs     = 4 + e_size
-enm_m_alive_obs    = 6 + e_size
-enm_m_murieron_obs = 7 + e_size
+enm_m_alive_obs    = 6 + e_size 
+enm_m_murieron_obs = 7 + e_size 
 enm_shot_array     = 8 + e_size
 
 
@@ -45,7 +45,10 @@ enm_shot_array     = 8 + e_size
 .globl enm_clear
 .globl enm_update
 .globl enm_draw
-.globl enm_data
+;.globl enm_data
 ;;;;;;;;;;;;;;; Temporal
 .globl enm_move1
 .globl eshoot
+.globl eshoot2
+.globl eshoot3
+.globl eshoot4
