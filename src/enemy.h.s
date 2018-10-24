@@ -20,7 +20,7 @@
     .db _k_max_num_obs   ;; Maximo de objetos
     .db _k_obs_size      ;; Obstacle size (in Bytes)
     .db _m_num_obs       ;; Número de obs creados
-    .dw _m_next_obs      ;; Posicion actual en el array
+    .dw .+4      ;; Posicion actual en el array
     .db _m_alive_obs     ;; Numero de Obs Usados
     .db _m_murieron_obs  ;; Numero de Obs que colisionan
 

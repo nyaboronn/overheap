@@ -9,6 +9,9 @@
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
+
+ListaEnemigos: 
+
 DefineEnemyShoot eshoot, 30, 37, 30, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 0, 5, 15, 0, .+4 , 5, 0, 34
 DefineEnemyShoot eshoot2, 20, 37, 20, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 1, 5, 15, 0, .+4 , 5, 0, 34
 DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 0, 5, 15, 0, .+4 , 5, 0, 34
