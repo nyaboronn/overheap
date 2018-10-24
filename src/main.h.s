@@ -14,3 +14,12 @@
 .globl cpct_waitVSYNC_asm
 .globl cpct_getBit_asm
 .globl cpct_setVideoMemoryPage_asm
+
+.globl cpct_setDrawCharM0_asm
+.globl cpct_drawStringM0_asm
+
+.globl cpct_setDrawCharM1_asm
+.globl cpct_drawStringM1_asm
+
+.globl cpct_drawSpriteMasked_asm
+.globl cpct_hflipSpriteMaskedM0_asm

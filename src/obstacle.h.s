@@ -1,16 +1,18 @@
+.globl _sprite_bala
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Definir un Obstaculo
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineObstacle _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile, _alive
+.macro DefineObstacle _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _alive
 
-        DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+        DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile
         .db _alive
 
 .endm
 
 .macro DefineObstacleDefault _name, _suf
 
-    DefineObstacle _name'_suf, 10, 10, 10, 10, 1, 0, 1, 1, 0xFFFF, obs_move, 0xFFFF, 1
+    DefineObstacle _name'_suf, 10, 10, 10, 10, 1, 0, 1, 1, _sprite_bala, obs_move, 0xFFFF, 1
 
 .endm
 

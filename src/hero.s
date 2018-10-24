@@ -1,31 +1,134 @@
 
 .include "hero.h.s"
+.include "enemy.h.s"
 .include "entity.h.s"
+.include "obstacle.h.s"
+
 
 .include "cpctelera.h.s"
 .include "main.h.s"
 .include "tileManager.h.s"
 .include "utils.h.s"
 
+.globl _sprite_Xemnas
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Jump Table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;hero_jumptable:
-;    .db #-6, #-4, #-3, #-3
-;    .db #-3, #01, #01, #01
-;    .db #0, #0, #0, #0
-;    .db #0x80                   ;; #0x80 marca el último byte
-
 hero_jumptable:
-    .db #-6, #-4, #-4, #-3
-    .db #-1, #02, #01, #02
-    .db #01, #01, #01, #01
+    .db #-5, #-3, #-3, #-3
+    .db #-3, #01, #01, #01
+    .db #0, #0, #0, #0
     .db #0x80                   ;; #0x80 marca el último byte
+
+;;hero_jumptable:
+;;    .db #-6, #-4, #-4, #-3
+;;    .db #-1, #02, #01, #02
+;;    .db #01, #01, #01, #01
+;;    .db #0x80                   ;; #0x80 marca el último byte
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 10, 30, 10, 30, 0x00, 0x00, 0x02, 0x04, 0x77, hero_moveKeyboard, 0x0000, -1
+DefineHero hero_data, 10, 30, 10, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Comprueba si es encesario un cambio de direccion y hace flip al sprite
+;; Entradas: IX -> Puntero a hero 
+;;    
+;; Destroy:  AF, BC, DE, HL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_directAndFlip:
+ld b, e_vx(ix)
+ld a, #0
+cp b
+jr z, mismaDir ; Si la velocidad es cero ignoracmos el cambio 
+
+ld a, hero_direct(ix)
+cp b ;; si ambas son iguales, me mantengo en la misma direccion
+jr z, mismaDir
+ld  hero_direct(ix),b
+
+
+ld h, de_sprite+1(ix)
+ld l, de_sprite(ix)
+;ld hl, #_G_sprite_EMR ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+                      ;;(2B DE) memory	Destination video memory pointer
+ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
+ld  a, de_w(ix)
+add a,c 
+ld c, a
+
+
+ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
+ld  a, de_h(ix)
+add a,b
+add a,a 
+ld b, a
+
+call cpct_hflipSpriteMaskedM0_asm
+
+mismaDir:
+
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resta vidas al hero cuando detecta una colisión
+;; ENTRADAS:
+;;          IX -> Puntero a hero
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_hit::
+
+      ld	  ix, #hero_data
+      ;ld	  iy, #enm_data
+
+        ;;IX and IY pointers to entitys
+    ;call obstacle_checkCollision
+    ;;Una marca al
+    ld	(0xC027), a ;;Draw coliision level
+    ld	(0xC028), a ;;Draw coliision level
+    ld	(0xC029), a ;;Draw coliision level
+
+    ld	(0x8027), a ;;Draw coliision level
+    ld	(0x8028), a ;;Draw coliision level
+    ld	(0x8029), a ;;Draw coliision level
+
+    cp #1
+    jr nz, colisionNODetected
+
+            ;; Si existe colision precedemos a restar la vida...
+        ld a, hero_vida(ix)
+        dec a
+        ld hero_vida(ix), a
+        cp #0
+        jr nz,colisionNODetected ;; si la vida no es cero salimos del metodo
+        
+        ;TODO
+        ;ld a,de_col(ix)
+        ;add a
+        ;ld de_col(ix),a
+        
+        
+        jr . ;; Bucle infinto
+
+    colisionNODetected:
+
+
+    ;; Comprobar colisión con un enemigo -- Colision entre dos entidades 
+
+    ;; Decrementar vida
+
+    ;; Comprobar si es cero
+
+        ;; Pantalla end game
+        ;; Volver al menu principal
+
+    ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
@@ -38,6 +141,7 @@ hero_update:
     call    hero_jumpControl     
     ;; Llamada a la función que actualiza una entidad
     call ent_update
+;    call hero_hit
 
     ret
 
@@ -60,7 +164,7 @@ hero_clear:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_draw:
     ;; LLamada a al función que dibuja una entidad
-    call ent_draw
+    call ren_drawEntityAlpha
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -156,6 +260,8 @@ hero_moveKeyboard::
     funcRet:
 
 
+
+  call hero_directAndFlip
   call  hero_move
  
 
@@ -286,7 +392,7 @@ hero_jumpControl:
 ;; ENTRADA: 
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_move:
+hero_move::
     ;;Sumamos velocidad X a posicion X
     ld      a, de_x(ix)
     ld       de_oldx(ix), a
@@ -344,6 +450,9 @@ hero_move:
 
         push hl
 
+
+
+
         call CalcualteOFFSET
 
         ;; Sumamos velocidad al tile,para cambiar
@@ -354,6 +463,13 @@ hero_move:
         ;; Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
         call    ent_is_solidTile ;; Devuelve en B true o false
         jr z,   exit
+
+
+
+
+
+
+
 
         ;; Check if entity has a collision with an obstacle
         ;ld    iy, #obstacle1

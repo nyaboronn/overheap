@@ -1,0 +1,11 @@
+#include "bala.h"
+// Data created with Img2CPC - (c) Retroworks - 2007-2017
+// Tile sprite_bala: 4x4 pixels, 2x4x2 bytes.
+// Mask data is interlaced (MASK BYTE, DATA BYTE).
+const u8 sprite_bala[2 * 2 * 4] = {
+	0x00, 0xc0, 0x00, 0xc0,
+	0x00, 0xc0, 0x00, 0xc0,
+	0x00, 0xc0, 0x00, 0xc0,
+	0x00, 0xc0, 0x00, 0xc0
+};
+

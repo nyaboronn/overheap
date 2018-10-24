@@ -4,18 +4,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Enemy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _col, _upd, _tile, _direct  
+.macro DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct  
 
-    DefineEntity _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _col, _upd, _tile
+    DefineEntity _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile
     .db  _direct        ;; Sentido, 0 => left
                         ;;          1 => right
                         
 .endm
 
 
-.macro DefineEnemyShoot _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _col, _upd, _tile, _direct, _k_max_num_obs, _k_obs_size, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+.macro DefineEnemyShoot _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct, _k_max_num_obs, _k_obs_size, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
-    DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _col, _upd, _tile, _direct  
+    DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct  
 
     .db _k_max_num_obs   ;; Maximo de objetos
     .db _k_obs_size      ;; Obstacle size (in Bytes)
@@ -28,7 +28,7 @@
 
 .endm
 
-e_size = 13
+e_size = 14
 e_direct           = 0 + e_size
 enm_k_max_num_obs  = 1 + e_size
 enm_k_obs_size     = 2 + e_size ;; posible constante

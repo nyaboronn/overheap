@@ -4,13 +4,17 @@
 .include "entity.h.s"
 .include "obstacle.h.s"
 
+
+.globl _sprite_Skeleton
 ;;;;;;;;;;;;;;;;;;;
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
-DefineEnemyShoot eshoot, 30, 41, 30, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 0, 5, 14, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot2, 2, 41, 2, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 1, 5, 14, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot3, 30, 41, 30, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 0, 5, 14, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot4, 2, 41, 2, 41, 1, 0, 2, 4, 0xFF, enm_move1, 0x1020, 1, 5, 14, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot, 30, 37, 30, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 0, 5, 15, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot2, 20, 37, 20, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 1, 5, 15, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 0, 5, 15, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 1, 5, 15, 0, .+4 , 5, 0, 34
+;DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, _sprite_Skeleton, enm_move1, 0x0000, 0
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIAGONAL
@@ -88,10 +92,10 @@ enm_move1::
 
             ;; TEMPORAL => FALTA DISPARAR AL DETECTAR EL HERO
             ;; ELSE Encontrado hero
-            ld a, e_direct(ix)  ;; A = enemy_direction
-            ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
-            inc a               ;; A++
-            ld de_col(ix), a     ; enemy_color = A
+            ;ld a, e_direct(ix)  ;; A = enemy_direction
+            ;ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
+            ;inc a               ;; A++
+            ;ld de_col(ix), a     ; enemy_color = A
             
            ; ;;FIX
            ; ld  a,de_x(iy)
@@ -256,7 +260,12 @@ enm_update:
     ;; Puntero a la función que actualiza la entidad
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
-    jp  (hl)
+    jp  (hl) ;; llamada al estado
+    ;; La funciona Hl dependeria del typo de enemigo,
+    
+    
+
+
 
 
 
@@ -280,7 +289,7 @@ enm_clear:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_draw:
-    call ent_draw
+    call ren_drawEntityAlpha
 
 
     ld	hl, #obs_draw

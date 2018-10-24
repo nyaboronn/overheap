@@ -12,7 +12,7 @@
 .endm
 
 e_de = 0
-e_de_size = 7
+e_de_size = 8
 e_vx = 0 + e_de_size  
 e_vy = 1 + e_de_size
 e_up_l = 2 + e_de_size
