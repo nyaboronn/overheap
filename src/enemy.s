@@ -10,42 +10,25 @@
 ;; Enemy Data
 ;;;;;;;;;;;;;;;;;;;;
 
-ListaEnemigos: 
+;;;
+;; _type = 0 => simple enm (enm_move0)
+;; _type = 1 => shoot enm  (enm_move1)
+;; _type = 2 => ....
 
-DefineEnemyShoot eshoot, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, -1,1, 5, 15, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 1,1, 5, 15, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, -1,1, 5, 15, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 1, 5,1, 15, 0, .+4 , 5, 0, 34
+ListaEnemigos: 
+DefineEnemyShoot eshoot, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020, -1, 1, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, 1, 1, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1, 1, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move1, 0x1020, 1, 5, 1, 0, .+4 , 5, 0, 34
 ;DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, _sprite_Skeleton, enm_move1, 0x0000, 0
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DIAGONAL
-;; A la vez que avanza, sube y baja una distancia N
-;; en forma de diagonal.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DESTRUIDOS:
-;; ENTRADAS:
-;;              IX => puntero al enemigo
-;;                 => N es el ancho que baja/sube
-;; SALIDAS: 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enm_move2:
-
-    ;bucle:
-
-        ;; bajar diagonal (x++y++)
-
-        ;; parar cuando y = N
-
-        ;; subir diagonal (x++y--)
-
-        ;; Parar cuando y = Y
-
-    ;jump bucle
-
-
-    ret
+;;;;;;;;;;;;;;;;
+;; Constantes
+;;;;;;;;;;;;;;;;
+k_lim_der = #34         ;; Limite Derecho del movimiento
+k_lim_izq = #4          ;; Limite Izquierda del movimiento
+k_lim_detectar = #15    ;; Distancia maxima a la que detecta al hero
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -59,7 +42,7 @@ enm_move2:
 ;;              IY => puntero al hero
 ;; SALIDAS: 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enm_move1::
+enm_move1:
 
     ;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
     ;; h_y == e_y ?? => CALCULAR si lo detecta
@@ -73,7 +56,7 @@ enm_move1::
 
     ;;;; En que dirección hay que comprobar???
     ld a, e_direct(ix)          ;; A = enemy_direction
-    cp a, #0                    
+    cp a, #-1                    
     jr z, busca_en_la_izquierda ;; IF enm_dict == 0 THEN detect left
         
         ;; ELSE buscar en la derecha
@@ -81,39 +64,23 @@ enm_move1::
 
 
     busca_en_la_izquierda:
-        call buscar_izquierda   ;; H = buscar_izquierda
-        jp aplicar
+    call buscar_izquierda   ;; H = buscar_izquierda
+    jp aplicar
 
     busca_en_la_derecha:
-        call buscar_derecha     ;; H = busca_derecha
+    call buscar_derecha     ;; H = busca_derecha
 
 
     aplicar:
-        ld a, h                 ;; A = H
+    ld a, h                 ;; A = H
+    cp #0
+    jr z, no_aplica         ;; IF A == 0 THEN ret
+
+        call obs_new
         cp #0
-        jr z, no_aplica         ;; IF A == 0 THEN ret
+        jr z, no_aplica
 
-            ;; TEMPORAL => FALTA DISPARAR AL DETECTAR EL HERO
-            ;; ELSE Encontrado hero
-            ;ld a, e_direct(ix)  ;; A = enemy_direction
-            ;ld a, de_col(ix)     ;; TEMPORAL A = color enemigo
-            ;inc a               ;; A++
-            ;ld de_col(ix), a     ; enemy_color = A
-            
-           ; ;;FIX
-           ; ld  a,de_x(iy)
-           ; add a,# -15
-           ; ld de_x(iy), a
-
-
-            call obs_new
-            cp #0
-            jr z, no_aplica
-            ;;;;;;;;;;;;;;;;;;;;
-            ;ld	hl, #obstacle1
-            ;call obs_copy
-
-        no_aplica:
+    no_aplica:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -137,7 +104,7 @@ buscar_izquierda:
     sub a, de_x(iy)  ;; A -= hero_x
 
     ;; IF (e_x - h_x) <= 5 THEN detected
-    cp  a, #15
+    cp  a, #k_lim_detectar
     jr  nc,  no_detectado
 
         ;; Detectado
@@ -167,7 +134,7 @@ buscar_derecha:
     sub a, de_x(ix)  ;; A -= enm_x
 
     ;; IF (h_x - e_x) <= 5 THEN detected
-    cp  a, #15
+    cp  a, #k_lim_detectar
     jr  nc,  no_detecta
 
         ;; Detectado
@@ -177,15 +144,6 @@ buscar_derecha:
     no_detecta:
     ret
 
-
-;; Sentido por defecto = 0
-;; 0 => Izquierda
-;; 1 => Derecha
-sentido: .db #1
-;;
-lim_der = #34   ;; Limite Derecho del movimiento
-lim_izq = #4    ;; Limite Izquierda del movimiento
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HORIZONTAL
 ;; Ida y Vuelta Sin Parar de un punto A a otro B
@@ -193,110 +151,100 @@ lim_izq = #4    ;; Limite Izquierda del movimiento
 ;; INPUT:
 ;;          IX => puntero a la entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enm_move:
+enm_move0:
     ;; Posicion
-    ld a, (sentido)     ;; | A = Sentido value
-    ld b, a             ;; | B = A 
     ld a, de_x(ix)       ;; \ A = e_x(IX)
-                    
 
     ;; Actualizar El Valor del Sentido
-    cp a, #lim_der                  ;; A == lim_der value ???
+    cp a, #k_lim_der                  ;; A == lim_der value ???
     jr z, cambiar_izq               ;; IF A==max left right limit. THEN  move left
 
         ;; Comprueba si está en el límite izquierdo
-        cp a, #lim_izq              ;; A == lim_izq value ???
+        cp a, #k_lim_izq              ;; A == lim_izq value ???
         jr z, cambiar_der           ;; IF A==lim_izq THEN move right
         jp aplicar_sentido          ;; Aplicar el nuevo sentido a la X del enemigo
 
     cambiar_izq:
-    ld b, #0                        ;; B = #0
+    ld e_direct(ix), #-1
     jp aplicar_sentido              ;; Aplicar el nuevo sentido a la X del enemigo
 
     cambiar_der:
-    ld b, #1                        ;; B = #1
-
+    ld e_direct(ix), #1
 
     ;; Aplica El Sentido Obtenido
     aplicar_sentido:
-    ld a, b                         ;; A = B
-    cp a, #0                        ;; A == #0 ??
-    ld a, de_x(ix)                   ;; A = e_x(IX)
-    jr z, mover_izq                 ;; IF A == 0 THEN move lef side
+    ld a, e_direct(ix)              ;; A = B
+    cp a, #-1                        ;; A == #-1 ??
+    jr z, mover_izq                 ;; IF A == -1 THEN move lef side
 
-            ;; mover_der
-            inc a                   ;; A++
-            jp update_x             ;; Update the new A value
+        ;; mover_der
+        ld e_vx(ix), #1
+        jp update_x             ;; Update the new A value
 
     mover_izq:
-    dec a                           ;; A--
+    ld e_vx(ix), #-1
 
     update_x:
-    ld de_x(ix), a                   ;; e_y = A
-    ld hl, #sentido                 ;; HL = sentido dic memory
-    ld (hl), b                      ;; (HL) = B
-    
     call ent_move                   ;; Call func ent_move for applay new x value
 
     ret
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ACTUALIZAR UNA ENTIDAD
+;; ACTUALIZAR ENEMIGO QUE PUEDE DISPARAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REGISTROS DESTRUIDOS: TODOS
 ;; ENTRADA: 
 ;;          IX -> Puntero a entidad, enemy
 ;;          IY -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_update:
-
-
     push ix
     push iy
-
     ;Acutalizas las balas del enemigo
     ld	hl, #obs_update
     call	obs_doForAll
-    
+    ;Actualizar el enemigo
     pop iy
     pop ix
-
-    ;Actualizar el enemigo
-    ;; Puntero a la función que actualiza la entidad
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
     jp  (hl) ;; llamada al estado
-    ;; La funciona Hl dependeria del typo de enemigo,
-    
-    
-
-
-
-
-
     ret
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BORRAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ENTRADA: 
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_clear:
-    call ent_clear ;; Borras enemigos
-
     ;; Borras las balas del enemigo IX
     ld	hl, #obs_clear
     call	obs_doForAll
-
+    ;; Borras enemigos
+    call ent_clear 
     ret
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIBUJAR ENEMIGO QUE PUEDE DISPARAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIBUJAR ENEMIGO CON T
 ;; ENTRADA: 
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_draw:
+    ;; Comprobar si necesita tranparencia
+    ld	a,  #0
+    cp  e_alpha(ix)
+    jr  nz,  dibujar_con_transparencia
+    
+        ;; ELSE No necesita Transparencia
+        call    ren_drawEntity
+        jp	    tiene_balas
+
+    dibujar_con_transparencia:
     call ren_drawEntityAlpha
 
-
+    tiene_balas:
     ld	hl, #obs_draw
     call	obs_doForAll
-
     ret
