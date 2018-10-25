@@ -5,8 +5,7 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Shoots Data
 ;;;;;;;;;;;;;;;;;;;;;
-
-;_name,   _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile, isAlive
+k_obs_size = #15
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RESETEA LA MEMORIA DE LAS BALAS PARA SU NUEVO USO
@@ -16,8 +15,6 @@
 ;;          IX => Puntero a la entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_reset_array::
-
-
 
   ;; Comprobar si TODAS las balas han colisionado
   ld  a, enm_m_murieron_obs(ix)     ;; A = enm_m_murieron_obs(ix) value
@@ -49,23 +46,17 @@ obs_reset_array::
     ld  a, #0                 ;; A = 0
 
     proceder_al_bucle:
-      ;call obs_copy
-
-
       ;; Esto esta mal porque el punteor es a enemy, y tenemos que usar la bala
       ld o_alive(iy), #1 ;;
       
 
       ld  d, #0     ;; de = #k_obs_size value
-      ld  e, enm_k_obs_size(ix)
+      ld  e, #k_obs_size
       add iy, de              ;; 
-
 
       inc a                   ;; A++
       cp enm_k_max_num_obs(ix)      ;; A == k_max_num_obs
       jr nz, proceder_al_bucle;; IF A != k_max_num_obs iterar bucle
-
-
 
 
     ;; Reiniciar Los Valores de Las Constantes y Contadores
@@ -118,9 +109,6 @@ obs_new:
     ret ;; Borrar para asi no recargar
 
   nuevo_obs:
-  ;; Poner
-
-
 
   ;; Incrementar los obs usados
   ld	b, a                ;; B = A
@@ -154,13 +142,13 @@ obs_new:
 
 
   
-  ld c, enm_k_obs_size(ix)
+  ld c, #k_obs_size
   ld b, #0
   add     hl,     bc
   ;ld      (m_next_obs), hl
   ld  enm_m_next_obs+1(ix), h   ;; IX = Shot_array0
   ld  enm_m_next_obs(ix), l   ;; IX = Shot_array0
-  ld c, enm_k_obs_size(ix)
+  ld c, #k_obs_size
   ld b, #-1
   add     hl,     bc
   
@@ -224,7 +212,7 @@ obs_doForAll::
 
     inc_contadores:
     pop	af                      ;; | POP AF
-    ld c, enm_k_obs_size(ix)
+    ld c, #k_obs_size
     ld b, #0
     add iy, bc                  ;; | Iy += BC, Update pointer value
     dec a                       ;; | A--
@@ -288,7 +276,7 @@ obs_clear:
 ;;        IX => Puntero a la entidad, posiciom del array
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_copy:
-    ld c, enm_k_obs_size(ix)
+    ld c, #k_obs_size
     ld b, #0
     ld d, enm_m_next_obs+1(ix)
     ld e, enm_m_next_obs(ix)
