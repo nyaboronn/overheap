@@ -106,9 +106,6 @@ ld    e_tile_l(ix),l
 ld    e_tile_h(ix),h
 call ent_getActualTile
 
-
-
-
 ret
 
 
@@ -124,8 +121,6 @@ _main::
   ld    hl,#hero_data
   call ent_copy
 
-
-
   loop:
 
 
@@ -138,15 +133,15 @@ _main::
    call enm_draw
 
 
-    ld ix, #eshoot2
-    call enm_clear
-
-    ld ix, #eshoot2
-    ld iy, #hero_data
-    call enm_update
-   
-    ld ix, #eshoot2
-    call enm_draw
+    ;ld ix, #eshoot2
+    ;call enm_clear
+;
+    ;ld ix, #eshoot2
+    ;ld iy, #hero_data
+    ;call enm_update
+   ;
+    ;ld ix, #eshoot2
+    ;call enm_draw
 ;
    ; ld ix, #eshoot3
    ; call enm_clear
@@ -176,36 +171,26 @@ _main::
     call hero_clear
     call hero_update
     call hero_draw
-
-
-
-   ; ld ix, #eshoot
-   ; ld	hl, #obs_clear
-   ; call	obs_doForAll
-   ; ld	hl, #obs_update
-   ; call	obs_doForAll
-   ; ld	hl, #obs_draw
-   ; call	obs_doForAll
 ;
-   ; 
-   ; call  cpct_scanKeyboard_asm
-   ; ld    hl, #Key_P
-   ; call  cpct_isKeyPressed_asm
-   ; jr    z, p_no_pulsada
-   ; 
-   ;   ;; Obs_new devuelve el resultado en A
-   ;   ;; Si es 0, no ha creado el obs
-   ;   ld ix, #eshoot
-   ;   call obs_new
-   ;   cp #0
-   ;   jr z, p_no_pulsada
-   ;   ;;;;;;;;;;;;;;;;;;;;
-   ;   ex	de, hl
-   ;   ld	hl, #obstacle1
-   ;   call obs_copy
+
+    ;call  cpct_scanKeyboard_asm
+    ;ld    hl, #Key_P
+    ;call  cpct_isKeyPressed_asm
+    ;jr    z, p_no_pulsada
+    ;
+    ;  ;; Obs_new devuelve el resultado en A
+    ;  ;; Si es 0, no ha creado el obs
+    ;  ld ix, #eshoot
+    ;  call obs_new
+    ;  cp #0
+    ;  jr z, p_no_pulsada
+    ;  ;;;;;;;;;;;;;;;;;;;;
+    ;  ex	de, hl
+    ;  ld	hl, #obstacle1
+    ;  call obs_copy
 ;
-   ; p_no_pulsada:
-    
+    ;p_no_pulsada:
+    ;
     ;;Una marca al
     
     ld	(0xC027), a ;;Draw coliision level

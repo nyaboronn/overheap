@@ -17,9 +17,9 @@ k_obs_size = #15
 obs_reset_array::
 
   ;; Comprobar si TODAS las balas han colisionado
-  ld  a, enm_m_murieron_obs(ix)     ;; A = enm_m_murieron_obs(ix) value
+  ld  a, m_murieron_obs(ix)     ;; A = m_murieron_obs(ix) value
   ld  h, a                    ;; H = A
-  ld	a,  enm_k_max_num_obs(ix)      ;; A = k_max_num_obs value
+  ld	a,  k_max_num_obs(ix)      ;; A = k_max_num_obs value
   cp  a,  h                   ;; A == H??
   jr  z,  actualizar_array    ;; IF A == H reset array
 
@@ -33,7 +33,7 @@ obs_reset_array::
 
     push ix
     pop hl
-    ld de, #enm_shot_array
+    ld de, #shot_array
     add hl, de
   
     ;lets save IY register in the stacks
@@ -55,27 +55,27 @@ obs_reset_array::
       add iy, de              ;; 
 
       inc a                   ;; A++
-      cp enm_k_max_num_obs(ix)      ;; A == k_max_num_obs
+      cp k_max_num_obs(ix)      ;; A == k_max_num_obs
       jr nz, proceder_al_bucle;; IF A != k_max_num_obs iterar bucle
 
 
     ;; Reiniciar Los Valores de Las Constantes y Contadores
    ; ld  a, #0                 ;; A = 0
-    ld enm_m_num_obs(ix), #0         ;; Número de obs creados
+    ld m_num_obs(ix), #0         ;; Número de obs creados
 
 
-    ; ix + enm_shot_array  = Array de balas
+    ; ix + shot_array  = Array de balas
     push ix
     pop hl
-    ld de, #enm_shot_array
+    ld de, #shot_array
     add hl, de
 
-    ld  enm_m_next_obs+1(ix), h   ;; IX = Shot_array0
-    ld  enm_m_next_obs(ix), l   ;; IX = Shot_array0
+    ld  m_next_obs+1(ix), h   ;; IX = Shot_array0
+    ld  m_next_obs(ix), l   ;; IX = Shot_array0
 
-    ld a, enm_k_max_num_obs(ix)
-    ld enm_m_alive_obs(ix), a     ;; Numero de Obs Usados
-    ld enm_m_murieron_obs(ix), #0    ;; Numero de Obs que colisionan
+    ld a, k_max_num_obs(ix)
+    ld m_alive_obs(ix), a     ;; Numero de Obs Usados
+    ld m_murieron_obs(ix), #0    ;; Numero de Obs que colisionan
 
     ;; Resetear puntero al array
 
@@ -94,14 +94,14 @@ obs_reset_array::
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_new:
   ;; Ha llegado al maximo de obejtos ???
-  ld h, enm_m_next_obs+1(ix)
-  ld l, enm_m_next_obs(ix)
+  ld h, m_next_obs+1(ix)
+  ld l, m_next_obs(ix)
 ;push hl 
 ;pop iy
 
 
-  ld  a,  enm_m_num_obs(ix)     ;; A = enm_m_num_obs(ix) Value
-  cp  enm_k_max_num_obs(ix);#k_max_num_obs      ;; A - k_max_num_obs Value
+  ld  a,  m_num_obs(ix)     ;; A = m_num_obs(ix) Value
+  cp  k_max_num_obs(ix);#k_max_num_obs      ;; A - k_max_num_obs Value
   jr  nz,  nuevo_obs      ;; IF A != k_max_num_obs THEN RET
 
     ;; ELSE A == k_max_num_obs
@@ -112,21 +112,21 @@ obs_new:
 
   ;; Incrementar los obs usados
   ld	b, a                ;; B = A
-  ld  a,  enm_m_alive_obs(ix)    ;; A = enm_m_alive_obs(ix) Value
+  ld  a,  m_alive_obs(ix)    ;; A = m_alive_obs(ix) Value
   inc a                   ;; A++
-  ld  enm_m_alive_obs(ix), a    ;; enm_m_alive_obs(ix) value = A
+  ld  m_alive_obs(ix), a    ;; m_alive_obs(ix) value = A
   ld  a, b                ;; A = B
 
   ;; Incrementar el numero de obs
   inc     a
-  ld      enm_m_num_obs(ix), a
- ; ld      enm_m_alive_obs(ix), a
+  ld      m_num_obs(ix), a
+ ; ld      m_alive_obs(ix), a
 
 
   ;; Hacer mas cosas :D
   ;ld      hl,     (m_next_obs)
-  ld  h, enm_m_next_obs+1(ix)   ;; IX = Shot_array0
-  ld  l, enm_m_next_obs(ix)   ;; IX = Shot_array0
+  ld  h, m_next_obs+1(ix)   ;; IX = Shot_array0
+  ld  l, m_next_obs(ix)   ;; IX = Shot_array0
 
   push HL
   pop iy
@@ -146,8 +146,8 @@ obs_new:
   ld b, #0
   add     hl,     bc
   ;ld      (m_next_obs), hl
-  ld  enm_m_next_obs+1(ix), h   ;; IX = Shot_array0
-  ld  enm_m_next_obs(ix), l   ;; IX = Shot_array0
+  ld  m_next_obs+1(ix), h   ;; IX = Shot_array0
+  ld  m_next_obs(ix), l   ;; IX = Shot_array0
   ld c, #k_obs_size
   ld b, #-1
   add     hl,     bc
@@ -164,20 +164,20 @@ obs_new:
 ;;          IX => Puntero a la entidad dueña de las balas/ enemy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_doForAll::
-  ld  a,  enm_m_num_obs(ix) ;; A = m_num_obs
+  ld  a,  m_num_obs(ix) ;; A = m_num_obs
   cp  #0              ;; A - 0
   ret z               ;; IF A == 0 THEN ret
   
 
   ;; ELSE Apply Function
   push hl
-  ;ld  h, enm_shot_array+1(ix)   ;; IX = Shot_array0
-  ;ld  l, enm_shot_array(ix)   ;; IX = Shot_array0
+  ;ld  h, shot_array+1(ix)   ;; IX = Shot_array0
+  ;ld  l, shot_array(ix)   ;; IX = Shot_array0
   
   push ix
   pop hl
   
-  ld de, #enm_shot_array
+  ld de, #shot_array
   add hl, de
   
   push hl
@@ -239,9 +239,9 @@ obs_update::
     ;call obs_clear            ;; call to obs_clear function
     ld  o_alive(ix), #0       ;; o_alive(ix) = 0
     ;; Incrementar contador de muertos
-    ld  a, enm_m_murieron_obs(iy)   ;; A = enm_m_murieron_obs(ix) value
+    ld  a, m_murieron_obs(iy)   ;; A = m_murieron_obs(ix) value
     inc a                     ;; A++
-    ld  enm_m_murieron_obs(iy), a   ;; enm_m_murieron_obs(ix)value = A
+    ld  m_murieron_obs(iy), a   ;; m_murieron_obs(ix)value = A
     ret
 ;
   no_la_ha_palmado:
@@ -278,8 +278,8 @@ obs_clear:
 obs_copy:
     ld c, #k_obs_size
     ld b, #0
-    ld d, enm_m_next_obs+1(ix)
-    ld e, enm_m_next_obs(ix)
+    ld d, m_next_obs+1(ix)
+    ld e, m_next_obs(ix)
     ldir
     ret
 

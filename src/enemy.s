@@ -22,7 +22,6 @@ DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   
 DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move1, 0x1020, 1, 5, 1, 0, .+4 , 5, 0, 34
 ;DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, _sprite_Skeleton, enm_move1, 0x0000, 0
 
-
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;

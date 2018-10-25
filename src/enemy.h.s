@@ -30,12 +30,12 @@
 e_size = 14
 e_direct           = 0 + e_size
 e_alpha             = 1 + e_size
-enm_k_max_num_obs  = 2 + e_size
-enm_m_num_obs      = 3 + e_size
-enm_m_next_obs     = 4 + e_size
-enm_m_alive_obs    = 6 + e_size 
-enm_m_murieron_obs = 7 + e_size 
-enm_shot_array     = 8 + e_size
+k_max_num_obs  = 2 + e_size
+m_num_obs      = 3 + e_size
+m_next_obs     = 4 + e_size
+m_alive_obs    = 6 + e_size 
+m_murieron_obs = 7 + e_size 
+shot_array     = 8 + e_size
 
 
 
