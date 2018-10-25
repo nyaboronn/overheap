@@ -33,7 +33,7 @@ hero_jumptable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
+DefineHero hero_data, 1, 30, 1, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -227,7 +227,14 @@ hero_moveKeyboard::
         ld d, scroll(iy)
         cp d
         jr z, funcRet
+        
+
+        ld a, #0 ;; 0
+        ld d, scroll(iy)
+        cp d
+        jr z, funcRet
         jr calltoFunc
+
 
     morethanZero:
 
@@ -401,7 +408,7 @@ hero_move::
     add     e_vx(ix)
     ld      de_x(ix), a
 
-    ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+    ;;Recogemos la coordenados y la guerdamos en la pila,(variable local)
     ld      h, e_tile_h(ix)
     ld      l, e_tile_l(ix)
     push hl
