@@ -57,7 +57,7 @@ ren_DWisInScreen:
   sub a, b
   ld b,#MAP_WIDTH
   add a, b
-  cp #SCR_TILE_WIDTH + #MAP_WIDTH +1
+  cp #SCR_TILE_WIDTH + #MAP_WIDTH
 
   jr c, pertenece
   ld a, #0
@@ -115,6 +115,12 @@ ret
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_drawEntity:
+
+call ren_DWisInScreen
+cp #0
+ret z
+
+
   ;;  ld de, #0xC000       ;;Comienzo memoria de video
     ld hl, (#m_back_tileMap)
     push hl
@@ -252,7 +258,9 @@ call cpct_drawSpriteMasked_asm
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_clearEntity:
- call ren_DWisInScreen
+
+;; TODO, no borro la bala que se queda al final
+call ren_DWisInScreen
 cp #0
 ret z
 

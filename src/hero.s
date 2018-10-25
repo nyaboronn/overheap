@@ -12,9 +12,6 @@
 
 .globl _sprite_Xemnas
 
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Jump Table
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -33,8 +30,10 @@ hero_jumptable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 1, 30, 1, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
+;DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
 
+; _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct,                         _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1,    5, 0, .+4 , 5, 0, 32
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comprueba si es encesario un cambio de direccion y hace flip al sprite
@@ -43,45 +42,45 @@ DefineHero hero_data, 1, 30, 1, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero
 ;; Destroy:  AF, BC, DE, HL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_directAndFlip:
-ld b, e_vx(ix)
-ld a, #0
-cp b
-jr z, mismaDir ; Si la velocidad es cero ignoracmos el cambio 
+    ld b, e_vx(ix)
+    ld a, #0
+    cp b
+    jr z, mismaDir ; Si la velocidad es cero ignoracmos el cambio 
 
-ld a, hero_direct(ix)
-cp b ;; si ambas son iguales, me mantengo en la misma direccion
-jr z, mismaDir
-ld  hero_direct(ix),b
-
-
-ld h, de_sprite+1(ix)
-ld l, de_sprite(ix)
-;ld hl, #_G_sprite_EMR ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
-                      ;;(2B DE) memory	Destination video memory pointer
-ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
-ld  a, de_w(ix)
-add a,c 
-ld c, a
+    ld a, hero_direct(ix)
+    cp b ;; si ambas son iguales, me mantengo en la misma direccion
+    jr z, mismaDir
+    ld  hero_direct(ix),b
 
 
-ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
-ld  a, de_h(ix)
-add a,b
-add a,a 
-ld b, a
+    ld h, de_sprite+1(ix)
+    ld l, de_sprite(ix)
+    ;ld hl, #_G_sprite_EMR ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+                        ;;(2B DE) memory	Destination video memory pointer
+    ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
+    ld  a, de_w(ix)
+    add a,c 
+    ld c, a
 
-call cpct_hflipSpriteMaskedM0_asm
 
-mismaDir:
+    ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
+    ld  a, de_h(ix)
+    add a,b
+    add a,a 
+    ld b, a
 
-ret
+    call cpct_hflipSpriteMaskedM0_asm
+
+    mismaDir:
+
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Resta vidas al hero cuando detecta una colisión
 ;; ENTRADAS:
 ;;          IX -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_hit::
+hero_hit:
 
       ld	  ix, #hero_data
       ;ld	  iy, #enm_data
@@ -134,16 +133,21 @@ hero_hit::
 ;; ACTUALIZAR UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS: TODOS
 ;; ENTRADA: 
-;;          IX -> Puntero a entidad
+;;          IX -> Puntero a entidad hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_update:
 
-    ;; Llamada a la función que controla el salto
-    call    hero_jumpControl     
-    ;; Llamada a la función que actualiza una entidad
-    call ent_update
-;    call hero_hit
+    call hero_jumpControl
 
+    push ix
+    ;Acutalizas las balas del enemigo
+    ld	hl, #obs_update
+    call	obs_doForAll
+    ;Actualizar el enemigo
+    pop ix
+    ld  h, e_up_h(ix)
+    ld  l, e_up_l(ix)
+    jp  (hl) ;; llamada al estado
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -153,8 +157,11 @@ hero_update:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_clear:
-    ;; Llamda a la función que borra una entidad
-    call ent_clear
+    ;; Borras las balas del enemigo IX
+    ld	hl, #obs_clear
+    call	obs_doForAll
+    ;; Borras enemigos
+    call ent_clear 
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -166,16 +173,19 @@ hero_clear:
 hero_draw:
     ;; LLamada a al función que dibuja una entidad
     call ren_drawEntityAlpha
+
+    ;; Llamada a la función para dibujar las balas
+    ld	hl, #obs_draw
+    call	obs_doForAll
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD CON TECLADO
 ;; REGISTROS DESTRUIDOS:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;           IY -> Puntero a TileMAp
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_moveKeyboard::
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_moveKeyboard:
 
     ld hl, (#m_back_tileMap)
     push hl
@@ -190,20 +200,18 @@ hero_moveKeyboard::
 
     ld hl,(InputHL)
 
-
-
     ld a,#0
     ld (bc), a
     pop af
     cp #0
 
-  JP NZ, #calltoFuncOtherBuffer
+    JP NZ, #calltoFuncOtherBuffer
 
 
-  call hero_wait4KeyboardInput
+    call hero_wait4KeyboardInput
 
-  ;;al comrpobar si hemos pulsado A o D
-  ;;Si es A, comprobamos si estamos en la columna izquierda limite, 
+    ;;al comrpobar si hemos pulsado A o D
+    ;;Si es A, comprobamos si estamos en la columna izquierda limite, 
     ;; Si hemo sllegado al borde, movemos al player y el mapa.
 
     ld a, #0
@@ -216,11 +224,11 @@ hero_moveKeyboard::
     JP z, morethanZero;carry flag
 
     ;;If A >= N, then C flag is reset.
-        ld a, scroll(iy)
-        add a, #10
-        ld d,de_x(ix)
-        cp d
-        jr c, funcRet
+    ld a, scroll(iy)
+    add a, #10
+    ld d,de_x(ix)
+    cp d
+    jr c, funcRet
 
 
         ld a, #1 ;; 0
@@ -238,18 +246,18 @@ hero_moveKeyboard::
 
     morethanZero:
 
-        ;;If A < N, then C flag is set.|| CP REGister N
-        ld a, scroll(iy)
-        add a, #30
-        ld d,de_x(ix)
-        cp d
-        jr nc, funcRet
+    ;;If A < N, then C flag is set.|| CP REGister N
+    ld a, scroll(iy)
+    add a, #24
+    ld d,de_x(ix)
+    cp d
+    jr nc, funcRet
 
-        ;; h == MAXSCROLL NEXT ITERATION
-        ld a, #MAXSCROLL  ;; #MAXSCROLL
-        ld d, scroll(iy)
-        cp d
-        jr z, funcRet
+    ;; h == MAXSCROLL NEXT ITERATION
+    ld a, #MAXSCROLL  ;; #MAXSCROLL
+    ld d, scroll(iy)
+    cp d
+    jr z, funcRet
 
     calltoFunc:
     ld a,#1
@@ -260,28 +268,22 @@ hero_moveKeyboard::
 
 
     calltoFuncOtherBuffer:
-
-
-
     call scrollScreenTilemap
 
     funcRet:
 
+    call hero_directAndFlip
+    call  hero_move
 
 
-  call hero_directAndFlip
-  call  hero_move
- 
+    ld e_vx(ix), #0
+    ld  e_vy(ix), #0
 
-  ld e_vx(ix), #0
-  ld  e_vy(ix), #0
- 
-  ret
- 
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve el estado segun una entidad
-;; REGISTROS DESTRUIDOS: HL, 
+;; REGISTROS DESTRUIDOS: HL
 ;; ENTRADA: 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_wait4KeyboardInput:
@@ -322,9 +324,20 @@ hero_wait4KeyboardInput:
 
     d_no_pulsada:
 
+    ;;Comprobamos si la tecla P ha sido pulsada
+    ld    hl, #Key_P
+    call  cpct_isKeyPressed_asm
+    jr    z, p_no_pulsada      ;;P is pressed
+
+        ;; LLamada a la Función Para Disparar
+        call obs_new
+            ld h,#0
+
+
+    p_no_pulsada:
+
     ld h,#0
 ret
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HACER EL SALTO. Si el estado es -2 no puede saltar
@@ -333,7 +346,7 @@ ret
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_startJump:
-    ld  a,  e_jump(ix)  ;; A = hero_jumpstate
+    ld  a,  hero_jump(ix)  ;; A = hero_jumpstate
     cp  #-2             ;; A == -2?
     ret z               ;; A == 0. Cant activate. Entity is falling
     cp  #-1             ;; A == -1? 
@@ -341,7 +354,7 @@ hero_startJump:
 
     ;; Jump is inactive, active it
     ld  a,  #0
-    ld  e_jump(ix), a
+    ld  hero_jump(ix), a
 
     ret
 
@@ -354,7 +367,7 @@ hero_startJump:
 hero_jumpControl:
 
     ;; Check if we are jumping right now
-    ld  a,  e_jump(ix)      ;; A = hero_jumpstate status
+    ld  a,  hero_jump(ix)      ;; A = hero_jumpstate status
     cp  #-2                 ;; A == -2?
     ret z                   ;; A == 0. Cant activate. Entity is falling
     cp  #-1                 ;; A == -1? (-1 is not jumping)
@@ -378,19 +391,17 @@ hero_jumpControl:
     ld  e_vy(ix), a         ;; e_x = Calculo de la nueva X 
 
     ;;call hero_move
-;;
-    ;;
 
     ;; Increment hero_jumpstate Index
-    ld  a,  e_jump(ix)      ;; A = hero_jumpstate
+    ld  a,  hero_jump(ix)      ;; A = hero_jumpstate
     inc a                   ;; | 
-    ld  e_jump(ix), a       ;; \ hero_jumpstate++
+    ld  hero_jump(ix), a       ;; \ hero_jumpstate++
     ret
 
     ;; Put -1 in the jump index when jump ends
     end_of_jump:
         ld  a, #-1           ;; |
-        ld  e_jump(ix), a    ;; \ hero_jumpstate = -1
+        ld  hero_jump(ix), a    ;; \ hero_jumpstate = -1
     ret
 
 
@@ -445,63 +456,53 @@ hero_move::
     ld      e_tile_l(ix), l
 
     checkY:
-        pop hl
-        ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
-        ld      a, de_y(ix)
-        ld       de_oldy(ix), a
-        add     e_vy(ix)
-        inc a
-        ld      de_y(ix), a
-        ;; Recogemos la coordenados y la cuerdamos en la pila,(variable local)
-        ld h, e_tile_h(ix)
-        ld l, e_tile_l(ix)
+    pop hl
+    ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
+    ld      a, de_y(ix)
+    ld       de_oldy(ix), a
+    add     e_vy(ix)
+    inc a
+    ld      de_y(ix), a
+    ;; Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+    ld h, e_tile_h(ix)
+    ld l, e_tile_l(ix)
 
-        push hl
+    push hl
 
+    call CalcualteOFFSET
 
+    ;; Sumamos velocidad al tile,para cambiar
+    ld  e_tile_h(ix) , h
+    ld  e_tile_l(ix), l
 
+    ;; check if entity is in a solid tile
+    ;; Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
+    call    ent_is_solidTile ;; Devuelve en B true o false
+    jr z,   exit
 
-        call CalcualteOFFSET
-
-        ;; Sumamos velocidad al tile,para cambiar
-        ld  e_tile_h(ix) , h
-        ld  e_tile_l(ix), l
-
-        ;; check if entity is in a solid tile
-        ;; Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
-        call    ent_is_solidTile ;; Devuelve en B true o false
-        jr z,   exit
-
-
-
-
-
-
-
-
-        ;; Check if entity has a collision with an obstacle
-        ;ld    iy, #obstacle1
-        ; Call to function
-        ;call	obstacle_checkCollision
-        ;If collide dont move (A == 0) exit function
-        ;Else revet changes in e_x and e_y
-        ;cp #0
-        ;jr z, exit
+    ;; Check if entity has a collision with an obstacle
+    ;ld    iy, #obstacle1
+    ; Call to function
+    ;call	obstacle_checkCollision
+    ;If collide dont move (A == 0) exit function
+    ;Else revet changes in e_x and e_y
+    ;cp #0
+    ;jr z, exit
 
     resetY:
-        pop     hl ;; para restaurar el puntero a la tile actual
-        push    hl
+    pop     hl ;; para restaurar el puntero a la tile actual
+    push    hl
 
-        ld       a, de_y(ix)
-        sub     e_vy(ix)
-        dec a
-        ld      de_y(ix), a
+    ld       a, de_y(ix)
+    sub     e_vy(ix)
+    dec a
+    ld      de_y(ix), a
 
-        ;;restauramos puntero
-        ld      e_tile_h(ix) , h
-        ld      e_tile_l(ix), l
+    ;;restauramos puntero
+    ld      e_tile_h(ix) , h
+    ld      e_tile_l(ix), l
 
     exit:
-        ;;pop ix
-        pop hl
-        ret
+    ;;pop ix
+    pop hl
+    ret
