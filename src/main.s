@@ -116,13 +116,20 @@ _main::
   call initialize_CPC
 
   ;;; Crear una nueva entidad
-  call ent_new
-  ex	de, hl
-  ld    hl,#hero_data
-  call ent_copy
+  ;call ent_new
+  ;ex	de, hl
+  ;ld    hl,#hero_data
+  ;call ent_copy
 
   loop:
 
+
+    ld ix, #hero_data
+    call hero_clear
+    ld ix, #hero_data
+    call hero_update
+    ld ix, #hero_data
+    call hero_draw
 
    ld ix, #eshoot
    call enm_clear
@@ -130,8 +137,7 @@ _main::
    ld iy, #hero_data
    call enm_update
    ld ix, #eshoot
-   call enm_draw
-
+    call enm_draw
 
     ;ld ix, #eshoot2
     ;call enm_clear
@@ -167,10 +173,6 @@ _main::
 ;
 ;
 
-    ld    ix, #hero_data
-    call hero_clear
-    call hero_update
-    call hero_draw
 ;
 
     ;call  cpct_scanKeyboard_asm

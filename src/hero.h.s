@@ -39,10 +39,8 @@ m_murieron_obs = 8 + e_size
 shot_array     = 9 + e_size
 
 
-;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;;;;;;;;;;;;;;;;;;;;;
 .globl hero_jumptable
+
 .globl hero_data
 
 .globl hero_moveKeyboard

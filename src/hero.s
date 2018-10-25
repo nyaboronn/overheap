@@ -30,13 +30,10 @@ hero_jumptable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
+;DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
 
-;DefineHeroShot _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
-
-;DefineHeroShot heroshot_data, 0, 30, 0, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, _upd, 0x0000, -1, 10, 1, 5, 0, 5, 0, 34
-
-;DefineEnemyShoot eshoot, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton, enm_move1, 0x1020, 0, 1, 5, 0, .+4 , 5, 0, 34
+; _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct,                         _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1,    5, 0, .+4 , 5, 0, 32
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comprueba si es encesario un cambio de direccion y hace flip al sprite
@@ -83,7 +80,7 @@ hero_directAndFlip:
 ;; ENTRADAS:
 ;;          IX -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_hit::
+hero_hit:
 
       ld	  ix, #hero_data
       ;ld	  iy, #enm_data
@@ -136,13 +133,21 @@ hero_hit::
 ;; ACTUALIZAR UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS: TODOS
 ;; ENTRADA: 
-;;          IX -> Puntero a entidad
+;;          IX -> Puntero a entidad hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_update:
-    ;; Llamada a la función que controla el salto
-    call    hero_jumpControl     
-    ;; Llamada a la función que actualiza una entidad
-    call ent_update
+
+    call hero_jumpControl
+
+    push ix
+    ;Acutalizas las balas del enemigo
+    ld	hl, #obs_update
+    call	obs_doForAll
+    ;Actualizar el enemigo
+    pop ix
+    ld  h, e_up_h(ix)
+    ld  l, e_up_l(ix)
+    jp  (hl) ;; llamada al estado
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -152,8 +157,11 @@ hero_update:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_clear:
-    ;; Llamda a la función que borra una entidad
-    call ent_clear
+    ;; Borras las balas del enemigo IX
+    ld	hl, #obs_clear
+    call	obs_doForAll
+    ;; Borras enemigos
+    call ent_clear 
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -165,14 +173,18 @@ hero_clear:
 hero_draw:
     ;; LLamada a al función que dibuja una entidad
     call ren_drawEntityAlpha
+
+    ;; Llamada a la función para dibujar las balas
+    ld	hl, #obs_draw
+    call	obs_doForAll
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD CON TECLADO
 ;; REGISTROS DESTRUIDOS:
 ;; ENTRADA: IX -> Puntero a entidad
 ;;           IY -> Puntero a TileMAp
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_moveKeyboard:
 
     ld hl, (#m_back_tileMap)
@@ -261,11 +273,10 @@ hero_moveKeyboard:
     ld  e_vy(ix), #0
 
     ret
- 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve el estado segun una entidad
-;; REGISTROS DESTRUIDOS: HL, 
+;; REGISTROS DESTRUIDOS: HL
 ;; ENTRADA: 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_wait4KeyboardInput:
@@ -305,6 +316,18 @@ hero_wait4KeyboardInput:
         ret
 
     d_no_pulsada:
+
+    ;;Comprobamos si la tecla P ha sido pulsada
+    ld    hl, #Key_P
+    call  cpct_isKeyPressed_asm
+    jr    z, p_no_pulsada      ;;P is pressed
+
+        ;; LLamada a la Función Para Disparar
+        call obs_new
+            ld h,#0
+
+
+    p_no_pulsada:
 
     ld h,#0
 ret
