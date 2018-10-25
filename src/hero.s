@@ -231,11 +231,18 @@ hero_moveKeyboard:
     jr c, funcRet
 
 
-    ld a, #1 ;; 0
-    ld d, scroll(iy)
-    cp d
-    jr z, funcRet
-    jr calltoFunc
+        ld a, #1 ;; 0
+        ld d, scroll(iy)
+        cp d
+        jr z, funcRet
+        
+
+        ld a, #0 ;; 0
+        ld d, scroll(iy)
+        cp d
+        jr z, funcRet
+        jr calltoFunc
+
 
     morethanZero:
 
@@ -412,7 +419,7 @@ hero_move::
     add     e_vx(ix)
     ld      de_x(ix), a
 
-    ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
+    ;;Recogemos la coordenados y la guerdamos en la pila,(variable local)
     ld      h, e_tile_h(ix)
     ld      l, e_tile_l(ix)
     push hl

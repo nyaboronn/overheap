@@ -9,11 +9,11 @@
 
 TScreenTilemapFront: .dw #0x8000
                 .dw #_g_tilemap
-                .db 0x00
+                .db 0x0000
 
 TScreenTilemapBack: .dw #0xC000
                 .dw #_g_tilemap
-                .db 0x00
+                .db 0x0000
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

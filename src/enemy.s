@@ -60,7 +60,7 @@ enm_move1:
 
     ;;;; En que dirección hay que comprobar???
     ld a, e_direct(ix)          ;; A = enemy_direction
-    cp a, #0                    
+    cp a, #-1                    
     jr z, busca_en_la_izquierda ;; IF enm_dict == 0 THEN detect left
         
         ;; ELSE buscar en la derecha
@@ -169,7 +169,7 @@ enm_move0:
         jp aplicar_sentido          ;; Aplicar el nuevo sentido a la X del enemigo
 
     cambiar_izq:
-    ld e_direct(ix), #0
+    ld e_direct(ix), #-1
     jp aplicar_sentido              ;; Aplicar el nuevo sentido a la X del enemigo
 
     cambiar_der:
@@ -178,8 +178,8 @@ enm_move0:
     ;; Aplica El Sentido Obtenido
     aplicar_sentido:
     ld a, e_direct(ix)              ;; A = B
-    cp a, #0                        ;; A == #0 ??
-    jr z, mover_izq                 ;; IF A == 0 THEN move lef side
+    cp a, #-1                        ;; A == #-1 ??
+    jr z, mover_izq                 ;; IF A == -1 THEN move lef side
 
         ;; mover_der
         ld e_vx(ix), #1

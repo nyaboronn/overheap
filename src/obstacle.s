@@ -1,6 +1,7 @@
 .include "obstacle.h.s"
 .include "entity.h.s"
 .include "enemy.h.s"
+.include "utils.h.s"
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Shoots Data
@@ -139,8 +140,16 @@ obs_new:
   ld de_y(iy), a
   ld de_oldy(iy), a
 
+  push hl
+  call CalcualteOFFSET
 
+    ;;cargamos la tile donde estams
+    ld      e_tile_h(iy) , h
+    ld      e_tile_l(iy), l
+  pop hl
 
+  ld a, e_direct(ix)
+  ld e_vx(iy), a
   
   ld c, #k_obs_size
   ld b, #0
@@ -220,6 +229,37 @@ obs_doForAll::
 
     ret
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve 0 si la tile donde esta la entidad en solida
+;; Distinto de -1 en caso contrario
+;; REGISTROS DESTRUIDOS: 
+;; ENTRADA: 
+;;          IX -> Entity
+;; SALIDA: 
+;;          A
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_is_solidTile:
+
+    ld  h,  e_tile_h(ix)
+    ld  l,  e_tile_l(ix)
+    inc hl ;; En vez de incrementar habria que hacerlo con el ancho - 1
+
+    ld  A,  (hl)
+    bit     #7, a
+    ld      a,  #0  ;;Esto es necesario=
+    ret nz
+
+    call    ent_getActualTile
+
+    bit     #7, a
+    ld      a,  #0  ;;
+    ret z
+
+ret	
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNa obstaculo
 ;; REGISTROS DESTRUIDOS: TODOS
@@ -229,11 +269,19 @@ obs_doForAll::
 ;;          IY => Enemigo 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_update::
+
+
+    ;;check if entity is in a solid tile
+    ;;Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
+    call    obs_is_solidTile ;; Devuelve en B true o false
+    jr z, no_la_ha_palmado
+
+
   ;; Comprobar la colision
-  ld  a, #35                  ;; A = #35
-  ld  b, de_x(ix)             ;; B = de_x(ix) value
-  cp	a, b                    ;; A == B ??
-  jr	nc, no_la_ha_palmado    ;; IF A != B THEN NO Colisiona 
+ ; ld  a, #35                  ;; A = #35
+ ; ld  b, de_x(ix)             ;; B = de_x(ix) value
+ ; cp	a, b                    ;; A == B ??
+ ; jr	nc, no_la_ha_palmado    ;; IF A != B THEN NO Colisiona 
 
     ;; ELSE: Borrarlo e incrementar m_murieron_obs
     ;call obs_clear            ;; call to obs_clear function
@@ -285,14 +333,29 @@ obs_copy:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVIEMIENTO DE UN OBSTACULO
-;; REGISTROS DESTRUIDOS:    A
+;; REGISTROS DESTRUIDOS:    A,BC
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_move:
+
+  ld   a, e_vx(ix)          ;;  A = e_vx
+
+  call AtoBCextendendsign
+
   ld    a,  de_x(ix)      ;;  A = de_x
   ld    de_oldx(ix), a    ;;  oldx = A
   add   e_vx(ix)          ;;  A += e_vx
   ld    de_x(ix), a       ;;  de_x = A
+
+  ld    h , e_tile_h(ix) 
+  ld    l,  e_tile_l(ix)
+
+  add hl, bc
+
+  ;;cargamos la tile donde estams
+  ld      e_tile_h(ix) , h
+  ld      e_tile_l(ix), l
+
   ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
