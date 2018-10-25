@@ -114,7 +114,7 @@ ret
 
 _main::
   ;;Cambiamos la pila de sitio:
-  ld sp, #0x7FFE ;;STackPointer
+  ld sp, #0x7FFA ;;STackPointer
 
   call initialize_CPC
 
@@ -129,26 +129,24 @@ _main::
   loop:
 
 
-   ; ld ix, #eshoot
-   ; call enm_clear
-;
-   ; ld ix, #eshoot
-   ; ld iy, #hero_data
-   ; call enm_update
-   ; 
-   ; ld ix, #eshoot
-   ; call enm_draw
-;
-;
-   ; ld ix, #eshoot2
-   ; call enm_clear
-;
-   ; ld ix, #eshoot2
-   ; ld iy, #hero_data
-   ; call enm_update
-   ; 
-   ; ld ix, #eshoot2
-   ; call enm_draw
+   ld ix, #eshoot
+   call enm_clear
+   ld ix, #eshoot
+   ld iy, #hero_data
+   call enm_update
+   ld ix, #eshoot
+   call enm_draw
+
+
+    ld ix, #eshoot2
+    call enm_clear
+
+    ld ix, #eshoot2
+    ld iy, #hero_data
+    call enm_update
+   
+    ld ix, #eshoot2
+    call enm_draw
 ;
    ; ld ix, #eshoot3
    ; call enm_clear

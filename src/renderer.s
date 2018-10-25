@@ -40,6 +40,42 @@ ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Comprueba si DrawableEntity esta dentro de la ventana
+;; REGISTROS DESTRUIDOS: A
+;; Parametro Entrada IX : DrawableEntity
+;; Return: A      A= 0 si no esta dentro de la ventana
+;;                A= 1 Si si esta dentro de la ventana
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ren_DWisInScreen:
+  ld iy, (#m_back_tileMap)
+
+  ;; 0 < Offset + WinSize - X(ix) +MAP_WIDTH  < winSize +MAP_WIDTH
+  ld a, scroll(iy)
+  ld b, #SCR_TILE_WIDTH
+  add a, b
+  ld b, de_x(ix)
+  sub a, b
+  ld b,#MAP_WIDTH
+  add a, b
+  cp #SCR_TILE_WIDTH + #MAP_WIDTH +1
+
+  jr c, pertenece
+  ld a, #0
+ret
+
+pertenece:
+
+  cp  #MAP_WIDTH + 4
+  jr nc, pertenece2
+  ld a, #0
+ret
+
+
+pertenece2:
+ld a,#1
+ret	
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Intercambiamos los buffer
 ;; REGISTROS DESTRUIDOS: A,B, IY,HL
 ;; Parametro Entrada IY : TILEMAPScreen
@@ -135,7 +171,13 @@ call cpct_drawSprite_asm
 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ren_drawEntityAlpha:
+ren_drawEntityAlpha::
+
+call ren_DWisInScreen
+cp #0
+ret z
+
+
   ;;  ld de, #0xC000       ;;Comienzo memoria de video
     ld hl, (#m_back_tileMap)
     push hl
@@ -210,7 +252,10 @@ call cpct_drawSpriteMasked_asm
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_clearEntity:
- 
+ call ren_DWisInScreen
+cp #0
+ret z
+
     ld hl, (#m_back_tileMap)
     push hl
     pop iy

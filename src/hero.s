@@ -33,7 +33,7 @@ hero_jumptable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Data
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DefineHero hero_data, 10, 30, 10, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
+DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -137,6 +137,7 @@ hero_hit::
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_update:
+
     ;; Llamada a la función que controla el salto
     call    hero_jumpControl     
     ;; Llamada a la función que actualiza una entidad
@@ -222,7 +223,7 @@ hero_moveKeyboard::
         jr c, funcRet
 
 
-        ld a, #0 ;; 0
+        ld a, #1 ;; 0
         ld d, scroll(iy)
         cp d
         jr z, funcRet
