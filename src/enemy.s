@@ -16,10 +16,12 @@
 ;; _type = 2 => ....
 
 ListaEnemigos: 
-DefineEnemyShoot eshoot, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020, -1, 1, 5, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, 1, 1, 5, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1, 1, 5, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move1, 0x1020, 1, 5, 1, 0, .+4 , 5, 0, 34
+;              _name,    x,  y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct,_alpha, _health _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+
+DefineEnemyShoot eshoot, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020, -1, 1,3, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, 1,  1,3, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1, 1,3, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move1, 0x1020, 1,  1,3, 5, 0, .+4 , 5, 0, 34
 ;DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, _sprite_Skeleton, enm_move1, 0x0000, 0
 
 
@@ -29,6 +31,9 @@ DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     
 k_lim_der = #34         ;; Limite Derecho del movimiento
 k_lim_izq = #4          ;; Limite Izquierda del movimiento
 k_lim_detectar = #15    ;; Distancia maxima a la que detecta al hero
+k_total_enm = #2
+k_enm_size = #23 + 5*15 ; 5*obs + 14+9
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -190,6 +195,10 @@ enm_move0:
     ret
 
 
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -199,6 +208,20 @@ enm_move0:
 ;;          IY -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_update:
+    ;Comprobar si han golpeado a enemy
+    call obs_checkCollision
+    cp #0
+    jr z,noDamage
+    ;;enemigo dañado
+    
+    ld a,#0
+    dec e_health(ix)
+    cp e_health(ix)
+    jr nz, noDamage
+        ;;Cambiar de estado?
+      ;jr .
+    noDamage:
+
     push ix
     push iy
     ;Acutalizas las balas del enemigo
@@ -211,6 +234,9 @@ enm_update:
     ld  l, e_up_l(ix)
     jp  (hl) ;; llamada al estado
     ret
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BORRAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -247,4 +273,56 @@ enm_draw:
     tiene_balas:
     ld	hl, #obs_draw
     call	obs_doForAll
+    ret
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
+;; EXPLOTA: AF, BC, DE, HL
+;; ENTRADA:
+;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
+;;          
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enm_doForAll::
+
+
+    ld a,#k_total_enm ; Contador 
+    
+  ld iy, #ListaEnemigos
+
+  ld  (metodo), hl      ;; (meotodo) = HL
+
+  buc:
+    ;; IF vivo == 0 THEN no aplicar la función.
+    push af                       ;; PUSH AF
+    ld  a, e_health(iy)            ;; A = obs_alive
+    cp  #0          
+    jr  z,  inc_contadores        ;; IF A == 0 THEN jump inc_contadores
+
+  ;Salvar
+        push ix
+        push iy 
+
+;; metemos EXchange
+      push iy 
+      push ix 
+      pop iy
+      pop ix
+
+      ;; ELSE Apply Function
+      metodo  = . + 1             ;; | . + 1 es el call
+      call    ent_draw            ;; \ CALL metodo
+
+      pop iy
+      pop ix
+
+    inc_contadores:
+    pop	af                      ;; | POP AF
+    ld c, #k_enm_size
+    ld b, #0
+    add iy, bc                  ;; | Iy += BC, Update pointer value
+    dec a                       ;; | A--
+    jr  nz, buc                 ;; \ IF A == 0 THEN stop Apply Function
+
     ret

@@ -129,24 +129,35 @@ _main::
   loop:
 
 
-   ld ix, #eshoot
-   call enm_clear
-   ld ix, #eshoot
-   ld iy, #hero_data
-   call enm_update
-   ld ix, #eshoot
-   call enm_draw
+  ld	hl, #enm_clear
+  call enm_doForAll
+
+  ld iy, #hero_data
+  ld	hl, #enm_update
+  call enm_doForAll
+
+    ld	hl, #enm_draw
+  call enm_doForAll
 
 
-    ld ix, #eshoot2
-    call enm_clear
-
-    ld ix, #eshoot2
-    ld iy, #hero_data
-    call enm_update
-   
-    ld ix, #eshoot2
-    call enm_draw
+  ;  ld ix, #eshoot
+  ;  call enm_clear
+  ;  ld ix, #eshoot
+  ;  ld iy, #hero_data
+  ;  call enm_update
+  ;  ld ix, #eshoot
+  ;  call enm_draw
+; 
+; 
+  ;   ld ix, #eshoot2
+  ;   call enm_clear
+; 
+  ;   ld ix, #eshoot2
+  ;   ld iy, #hero_data
+  ;   call enm_update
+  ;  
+  ;   ld ix, #eshoot2
+  ;   call enm_draw
 ;
    ; ld ix, #eshoot3
    ; call enm_clear
