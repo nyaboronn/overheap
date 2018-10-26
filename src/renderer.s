@@ -250,6 +250,56 @@ call cpct_drawSpriteMasked_asm
 
 
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Destruir entidad, la diferencia con limpiar es que ay que llamar cuando 
+;; El objeto a sido destruido por una colision o algo asi
+;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; ENTRADA: IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ren_DestroyEntity:
+
+;; TODO, no borro la bala que se queda al final
+call ren_DWisInScreen
+cp #0
+ret z
+
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+
+    ;; Repintamos una columna, izquierda o derecha
+
+    ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
+    ld a, de_x(ix)    ;; X
+    ld c, scroll(iy)
+    sub c
+    ld c, a
+
+    ld B, de_y(ix)  ;; Y
+
+
+    ld E, de_w(ix)  ;; W
+    ld D, de_h(ix)  ;; W
+
+
+    ld A, #MAP_WIDTH ;; map_width
+
+    
+    ld h, pTilemap+1(iy)
+    ld l, pTilemap(iy)
+    push hl
+
+
+    ld h, pVideo+1(iy)
+    ld l, pVideo(iy)
+    
+    push hl
+
+    call cpct_etm_drawTileBox2x4_asm
+
+  ret
+
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD

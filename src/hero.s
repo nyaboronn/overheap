@@ -33,7 +33,7 @@ hero_jumptable:
 ;DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
 
 ; _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct,                         _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
-DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1,    5, 0, .+4 , 5, 0, 32
+DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1,    1, 0, .+4 , 1, 0, 32
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comprueba si es encesario un cambio de direccion y hace flip al sprite
@@ -55,7 +55,7 @@ hero_directAndFlip:
 
     ld h, de_sprite+1(ix)
     ld l, de_sprite(ix)
-    ;ld hl, #_G_sprite_EMR ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
                         ;;(2B DE) memory	Destination video memory pointer
     ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
     ld  a, de_w(ix)

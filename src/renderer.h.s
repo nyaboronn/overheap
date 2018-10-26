@@ -16,6 +16,7 @@ de_sprite = 6
 
 .globl ren_clearEntity
 
+.globl ren_DestroyEntity
 .globl ren_drawEntityAlpha
 .globl ren_drawEntity
 .globl ren_switchBuffers

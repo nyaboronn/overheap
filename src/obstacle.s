@@ -230,6 +230,91 @@ obs_doForAll::
     ret
 
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; EJECUTA EL METODO PASADO EN HL , que devuelve bool,
+;; EXPLOTA: AF, BC, DE, HL
+;; ENTRADA:
+;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
+;;          IX => Puntero a la entidad dueña de las balas/ enemy o hero
+;;          IY => Objetivo de la bala/ enemy o hero
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_doForAllBool::
+  ld  a,  m_num_obs(ix) ;; A = m_num_obs
+  cp  #0              ;; A - 0
+  ret z               ;; IF A == 0 THEN ret
+  
+
+  ;; ELSE Apply Function
+  push hl
+  ;ld  h, shot_array+1(ix)   ;; IX = Shot_array0
+  ;ld  l, shot_array(ix)   ;; IX = Shot_array0
+  
+  push ix
+  pop hl
+  
+  ld de, #shot_array
+  add hl, de
+  
+
+  push iy
+  pop ix
+
+  ;; Hl es el comienzo del array de balas
+  push hl
+  pop iy
+  pop hl
+
+  ld  (metodoo), hl      ;; (meotodo) = HL
+
+  bucc:
+    ;; IF vivo == 0 THEN no aplicar la función.
+    push af                       ;; PUSH AF
+    ld  a, o_alive(iy)            ;; A = obs_alive
+    cp  #0          
+    jr  z,  inc_contadoress        ;; IF A == 0 THEN jump inc_contadores
+
+  ;Salvar
+        push ix
+        push iy 
+
+;; metemos EXchange
+      push iy 
+      push ix 
+      pop iy
+      pop ix
+
+      ;; ELSE Apply Function
+      metodoo  = . + 1             ;; | . + 1 es el call
+      call    0X0000            ;; \ CALL metodo  ;; ix seria la bala, iy hero
+
+
+
+      pop iy
+      pop ix
+
+     cp #1
+     jr nz, inc_contadoress
+         pop	af                      ;; | POP AF
+        ld a,#1
+     ret  ;return si A = 1
+
+    inc_contadoress:
+    pop	af                      ;; | POP AF
+    ld c, #k_obs_size
+    ld b, #0
+    add iy, bc                  ;; | Iy += BC, Update pointer value
+    dec a                       ;; | A--
+    jr  nz, bucc                 ;; \ IF A == 0 THEN stop Apply Function
+
+    ld a,#0
+    ret
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve 0 si la tile donde esta la entidad en solida
 ;; Distinto de -1 en caso contrario
@@ -290,6 +375,10 @@ obs_update::
     ld  a, m_murieron_obs(iy)   ;; A = m_murieron_obs(ix) value
     inc a                     ;; A++
     ld  m_murieron_obs(iy), a   ;; m_murieron_obs(ix)value = A
+
+    ;Tenemos que limpiar la imagen porque acabas de morir
+    call ren_DestroyEntity
+
     ret
 ;
   no_la_ha_palmado:
@@ -303,6 +392,7 @@ obs_update::
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_draw:
+
   call ren_drawEntity
   ret
  
