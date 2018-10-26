@@ -18,10 +18,10 @@
 ListaEnemigos: 
 ;              _name,    x,  y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct,_alpha, _health _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
-DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
 DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
 DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
+DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
 ;DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, _sprite_Skeleton, enm_move1, 0x0000, 0
 ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020, 0, 1, 5, 0, .+4 , 5, 0, 34
 ;DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, 1, 1, 5, 0, .+4 , 5, 0, 34
@@ -200,10 +200,6 @@ enm_move0:
 
 
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -212,9 +208,7 @@ enm_move0:
 ;;          IX -> Puntero a entidad, enemy
 ;;          IY -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enm_update::
-
-
+enm_update:
 
     ;Salvamos ix e iy 
     push ix

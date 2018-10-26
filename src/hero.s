@@ -32,7 +32,7 @@ hero_jumptable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
 
-; _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct,                         _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+; _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump,                            _vida,_direct,                         _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1,    1, 0, .+4 , 1, 0, 32
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -75,59 +75,57 @@ hero_directAndFlip:
 
     ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Resta vidas al hero cuando detecta una colisión
-;; ENTRADAS:
-;;          IX -> Puntero a hero
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_hit:
 
-      ld	  ix, #hero_data
-      ;ld	  iy, #enm_data
 
-        ;;IX and IY pointers to entitys
-    ;call obstacle_checkCollision
-    ;;Una marca al
-    ld	(0xC027), a ;;Draw coliision level
-    ld	(0xC028), a ;;Draw coliision level
-    ld	(0xC029), a ;;Draw coliision level
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;; EXPLOTA: AF, BC, DE, HL
+;; ENTRADA:
+;;          IX -> Puntero a entidad, enemy
+;;          IY -> Puntero a hero
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_check_hit::
 
-    ld	(0x8027), a ;;Draw coliision level
-    ld	(0x8028), a ;;Draw coliision level
-    ld	(0x8029), a ;;Draw coliision level
+ ;Salvamos ix e iy 
+    push ix
+    push iy 
+
+;; intercambiamos registros
+
+
+    ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
+    ;;          ;;          IY -> Puntero a entidad, enemy
+;;                         IX -> Puntero a hero
+
+    ld hl, #obs_checkCollision
+    call obs_doForAllBool
+    ;;rescatamos
+    pop iy
+    pop ix
 
     cp #1
-    jr nz, colisionNODetected
-
-            ;; Si existe colision precedemos a restar la vida...
-        ld a, hero_vida(ix)
-        dec a
-        ld hero_vida(ix), a
-        cp #0
-        jr nz,colisionNODetected ;; si la vida no es cero salimos del metodo
+    jr nz, #noGolpeado
+        ;;Cambiar estado?
         
-        ;TODO
-        ;ld a,de_col(ix)
-        ;add a
-        ;ld de_col(ix),a
-        
-        
-        jr . ;; Bucle infinto
-
-    colisionNODetected:
 
 
-    ;; Comprobar colisión con un enemigo -- Colision entre dos entidades 
+    ld a, e_health(IY)
+    dec a
+    ld e_health(IY),a
+    cp #0
+    jr nz, noDamage
+        ;;Cambiar de estado?
+        ;; Animacion de muerte
+        jr .
 
-    ;; Decrementar vida
+    noDamage:
 
-    ;; Comprobar si es cero
 
-        ;; Pantalla end game
-        ;; Volver al menu principal
+    noGolpeado:
 
-    ret
 
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
@@ -136,6 +134,16 @@ hero_hit:
 ;;          IX -> Puntero a entidad hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_update:
+
+    push ix
+
+   
+   
+    ld hl, #hero_check_hit
+    call enm_doForAll
+
+
+    pop ix
 
     call hero_jumpControl
 
