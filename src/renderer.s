@@ -3,7 +3,6 @@
 .include "tileManager.h.s"
 
 
-.globl _G_sprite_EMR
 
 
 
@@ -150,7 +149,7 @@ ret z
 
 ld h, de_sprite+1(ix)
 ld l, de_sprite(ix)
-;ld hl, #_G_sprite_EMR ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
                       ;;(2B DE) memory	Destination video memory pointer
 ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
 ld  a, de_w(ix)
@@ -231,7 +230,7 @@ ret z
 
 ld h, de_sprite+1(ix)
 ld l, de_sprite(ix)
-;ld hl, #_G_sprite_EMR ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
                       ;;(2B DE) memory	Destination video memory pointer
 ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
 ld  a, de_w(ix)

@@ -59,7 +59,7 @@ PALETTE={ 0 6 13 10 12 3 9 18 26 15 25 1 14 }
 ## Palette will also be converted to hardware values and outputed as a C-array
 ## named g_palette.
 
-$(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE),tileset,src/,hwpalette))
-$(eval $(call IMG2SPRITES,img/Xemnas.png,0,sprite,16,16,$(PALETTE),mask,src/))
-$(eval $(call IMG2SPRITES,img/Skeleton.png,0,sprite,16,16,$(PALETTE),mask,src/))
-$(eval $(call IMG2SPRITES,img/bala.png,0,sprite,4,4,$(PALETTE),mask,src/))
+$(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE),tileset,src/assets,hwpalette))
+$(eval $(call IMG2SPRITES,img/Xemnas.png,0,sprite,16,16,$(PALETTE),mask,src/assets))
+$(eval $(call IMG2SPRITES,img/Skeleton.png,0,sprite,16,16,$(PALETTE),mask,src/assets))
+$(eval $(call IMG2SPRITES,img/bala.png,0,sprite,4,4,$(PALETTE),mask,src/assets))

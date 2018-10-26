@@ -35,7 +35,7 @@ DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     
 k_lim_der = #34         ;; Limite Derecho del movimiento
 k_lim_izq = #4          ;; Limite Izquierda del movimiento
 k_lim_detectar = #15    ;; Distancia maxima a la que detecta al hero
-k_total_enm = #2
+k_total_enm = #4
 k_enm_size = #23 + 5*15 ; 5*obs + 14+9
 
 
@@ -194,7 +194,7 @@ enm_move0:
     ld e_vx(ix), #-1
 
     update_x:
-    call ent_move                   ;; Call func ent_move for applay new x value
+    call obs_move                   ;; Call func ent_move for applay new x value
 
     ret
 
@@ -248,10 +248,11 @@ enm_update:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_clear:
-
+    ;; Borras las balas del enemigo IX
+    ld	hl, #obs_clear
+    call	obs_doForAll
     ;; Borras enemigos
     call ent_clear 
-    
     ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR ENEMIGO QUE PUEDE DISPARAR

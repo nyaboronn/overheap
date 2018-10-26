@@ -44,7 +44,7 @@ e_tile_h = 5 + e_de_size
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.globl ent_move
+
 .globl ent_draw
 .globl ent_clear
 .globl ent_update
