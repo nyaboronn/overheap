@@ -1,4 +1,5 @@
 
+
 .include "hero.h.s"
 .include "enemy.h.s"
 .include "entity.h.s"
@@ -10,95 +11,78 @@
 .include "tileManager.h.s"
 .include "utils.h.s"
 
+
+
+;; SPRITE usado por el Hero
 .globl _sprite_Xemnas
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Hero Jump Table
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_jumptable:
     .db #-5, #-3, #-3, #-3
     .db #-3, #01, #01, #01
     .db #0, #0, #0, #0
     .db #0x80                   ;; #0x80 marca el último byte
 
-;;hero_jumptable:
-;;    .db #-6, #-4, #-4, #-3
-;;    .db #-1, #02, #01, #02
-;;    .db #01, #01, #01, #01
-;;    .db #0x80                   ;; #0x80 marca el último byte
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
 ;; Hero Data
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;DefineHero hero_data, 0, 30, 0, 30, 0x00, 0x00, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x0000, -1, 10,1
+DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1, 1, 0, .+4 , 1, 0, 32
 
-; _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump,                            _vida,_direct,                         _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
-DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1,    1, 0, .+4 , 1, 0, 32
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Comprueba si es encesario un cambio de direccion y hace flip al sprite
+;; Comprueba direccion y hace flip al sprite
 ;; Entradas: IX -> Puntero a hero 
 ;;    
 ;; Destroy:  AF, BC, DE, HL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_directAndFlip:
-    ld b, e_vx(ix)
-    ld a, #0
-    cp b
+    ld  b, e_vx(ix)
+    ld  a, #0
+    cp  b
     jr z, mismaDir ; Si la velocidad es cero ignoracmos el cambio 
 
-    ld a, hero_direct(ix)
-    cp b ;; si ambas son iguales, me mantengo en la misma direccion
+    ld  a, hero_direct(ix)
+    cp  b ;; si ambas son iguales, me mantengo en la misma direccion
     jr z, mismaDir
     ld  hero_direct(ix),b
 
 
-    ld h, de_sprite+1(ix)
-    ld l, de_sprite(ix)
-;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
-                        ;;(2B DE) memory	Destination video memory pointer
+    ld  h, de_sprite+1(ix)
+    ld  l, de_sprite(ix)
+    ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+    ;;(2B DE) memory	Destination video memory pointer
     ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
     ld  a, de_w(ix)
     add a,c 
-    ld c, a
+    ld  c, a
 
 
     ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
     ld  a, de_h(ix)
     add a,b
     add a,a 
-    ld b, a
+    ld  b, a
 
     call cpct_hflipSpriteMaskedM0_asm
 
     mismaDir:
 
-    ret
+ret
 
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EXPLOTA: AF, BC, DE, HL
 ;; ENTRADA:
 ;;          IX -> Puntero a entidad, enemy
 ;;          IY -> Puntero a hero
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_check_hit::
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_check_hit:
+    ;Salvamos ix e iy 
+    push ix     ;; IX -> Puntero a hero
+    push iy     ;; IY -> Puntero a entidad, enemy
 
- ;Salvamos ix e iy 
-    push ix
-    push iy 
-
-;; intercambiamos registros
-
-
-    ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
-    ;;          ;;          IY -> Puntero a entidad, enemy
-;;                         IX -> Puntero a hero
-
-    ld hl, #obs_checkCollision
+    ;; HL -> PUNTERO AL MÉTODO A EJECUTAR
+    ld   hl, #obs_checkCollision
     call obs_doForAllBool
     ;;rescatamos
     pop iy
@@ -106,24 +90,19 @@ hero_check_hit::
 
     cp #1
     jr nz, #noGolpeado
-        ;;Cambiar estado?
-        
+    ;;Cambiar estado?
 
-
-    ld a, e_health(IY)
+    ld  a, e_health(IY)
     dec a
-    ld e_health(IY),a
-    cp #0
-    jr nz, noDamage
-        ;;Cambiar de estado?
-        ;; Animacion de muerte
-        jr .
+    ld  e_health(IY),a
+    cp  #0
+    jr  nz, noDamage
+    ;;Cambiar de estado?
+    ;; Animacion de muerte
+    jr .
 
     noDamage:
-
-
     noGolpeado:
-
 
 ret
 
@@ -134,11 +113,8 @@ ret
 ;;          IX -> Puntero a entidad hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_update:
-
     push ix
 
-   
-   
     ld hl, #hero_check_hit
     call enm_doForAll
 
@@ -156,7 +132,7 @@ hero_update:
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
     jp  (hl) ;; llamada al estado
-    ret
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BORRA UNA ENTIDAD
@@ -170,7 +146,8 @@ hero_clear:
     call	obs_doForAll
     ;; Borras enemigos
     call ent_clear 
-    ret
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -185,7 +162,8 @@ hero_draw:
     ;; Llamada a la función para dibujar las balas
     ld	hl, #obs_draw
     call	obs_doForAll
-    ret
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD CON TECLADO
@@ -287,7 +265,8 @@ hero_moveKeyboard:
     ld e_vx(ix), #0
     ld  e_vy(ix), #0
 
-    ret
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve el estado segun una entidad
@@ -341,15 +320,15 @@ hero_wait4KeyboardInput:
         call obs_new
             ld h,#0
 
-
     p_no_pulsada:
 
     ld h,#0
 ret
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HACER EL SALTO. Si el estado es -2 no puede saltar
-;; REGISTROS DESTRUIDOS: AF
+;; REGISTROS DESTRUIDOS: A
 ;; ENTRADAS:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -364,11 +343,12 @@ hero_startJump:
     ld  a,  #0
     ld  hero_jump(ix), a
 
-    ret
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CONTROLA EL SALTO DE LA ENTIDAD
-;; REGISTROS DESTRUIDOS: AF, BC, HL
+;; REGISTROS DESTRUIDOS: A, BC, HL
 ;; ENTRADAS:
 ;;          IX => Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -410,16 +390,16 @@ hero_jumpControl:
     end_of_jump:
         ld  a, #-1           ;; |
         ld  hero_jump(ix), a    ;; \ hero_jumpstate = -1
-    ret
+ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MOVER UNA ENTIDAD
-;; REGISTROS DESTRUIDOS: af, hl,de
+;; REGISTROS DESTRUIDOS: A, HL
 ;; ENTRADA: 
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-hero_move::
+hero_move:
     ;;Sumamos velocidad X a posicion X
     ld      a, de_x(ix)
     ld       de_oldx(ix), a
@@ -513,4 +493,4 @@ hero_move::
     exit:
     ;;pop ix
     pop hl
-    ret
+ret

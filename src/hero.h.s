@@ -1,17 +1,21 @@
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Heroe
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MACRO PARA DEFINIR UN HERO A PARTIR DE UNA ENTIDAD
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 .macro DefineHero _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct
 
     DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile
-    .db  _direct        ;; Sentido, 0 => left
+    .db  _direct        ;; Donde apunta    0 => left
     .db  _jump          ;; Jump State,    -1 if not jumping (can jump)
                         ;;                -2 if is falling  (cant jump)
-    .db _vida
-                        ;;          1 => right
+    .db _vida           ;; Numero de Vidas
+
 .endm
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MACRO PARA DEFINIR UN HERO QUE PUEDE DISPARAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 .macro DefineHeroShot _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
     DefineHero _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida, _direct
@@ -37,6 +41,7 @@ m_next_obs     = 5 + e_size
 m_alive_obs    = 7 + e_size 
 m_murieron_obs = 8 + e_size 
 shot_array     = 9 + e_size
+
 
 
 .globl hero_jumptable

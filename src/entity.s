@@ -2,24 +2,20 @@
 .include "utils.h.s"
 .include "entity.h.s"
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;CONSTANTES
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; constantes
 k_max_num_ent   = 9
 k_entity_size   = 9
 m_num_ent:      .db 00
 m_next_entity:  .dw entity_vector0
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Entidades
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Array de Entidades
 DefineNEntities entity_vector, 9
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve 0 si la tile donde esta la entidad en solida
 ;; Distinto de -1 en caso contrario
-;; REGISTROS DESTRUIDOS: 
+;; REGISTROS DESTRUIDOS: A, HL, DE
 ;; ENTRADA: 
 ;;          IX -> Entity
 ;; SALIDA: 
@@ -32,54 +28,49 @@ ent_is_solidTile:
     inc hl ;; En vez de incrementar habria que hacerlo con el ancho - 1
 
     ld  A,  (hl)
-    bit     #7, a
-    ld      a,  #0  ;;Esto es necesario=
+    bit #7, a
+    ld  a,  #0  ;;Esto es necesario=
     ret nz
 
 
-    ld a, de_y(ix)
+    ld  a,  de_y(ix)
     ;;inc a
     add #2
-    ld de_y(ix),a
+    ld  de_y(ix),   a
     call CalcualteOFFSET
 
-    ld a, de_y(ix)
+    ld  a,  de_y(ix)
     ;;dec a
     sub #2
-    ld de_y(ix),a
+    ld  de_y(ix),   a
 
     ld  A,  (hl)
-    bit     #7, a
-    ld      a,  #0  ;;Esto es necesario=
+    bit #7, a
+    ld  a,  #0  ;;Esto es necesario=
     ret nz
 
 
-
-    ld a, de_y(ix)
+    ld a,   de_y(ix)
     ;;inc a
     add #3
-    ld de_y(ix),a
+    ld  de_y(ix),   a
     call CalcualteOFFSET
 
-    ld a, de_y(ix)
+    ld  a,  de_y(ix)
     ;;dec a
     sub #3
-    ld de_y(ix),a
+    ld de_y(ix),    a
 
     ld  A,  (hl)
-    bit     #7, a
-    ld      a,  #0  ;;Esto es necesario=
+    bit #7, a
+    ld  a,  #0  ;;Esto es necesario=
     ret nz
-
-
     
     call    ent_getActualTile
 
     bit     #7, a
     ld      a,  #0  ;;
     ret z
-
-
 
     ld      a,  #-1
 ret
@@ -127,16 +118,16 @@ ent_new:
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
-;;; REGISTROS DESTRUIDOS:
-;;; ENTRADA: 
-;;;        HL -> ENTIDAD ORIGEN
-;;;        DE -> EMTODAD DESTINO
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
+;; REGISTROS DESTRUIDOS:
+;; ENTRADA: 
+;;        HL -> ENTIDAD ORIGEN
+;;        DE -> EMTODAD DESTINO
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_copy:
     ld bc, #k_entity_size
     ldir
-    ret
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -148,17 +139,16 @@ ent_doForAll:
     ld  ix, #entity_vector0
     ld  (metodo), hl
  buc:
-        push    af
-        metodo  = . + 1     ;; . es la dir.mem en la que estoy si le sumo 1 es el call
-        call    ent_draw
-        pop     af
-        ld      bc, #k_entity_size
-        add     ix, bc
-        ;;
-        dec a
-        jr nz, buc
-
-    ret
+    push    af
+    metodo  = . + 1     ;; . es la dir.mem en la que estoy si le sumo 1 es el call
+    call    ent_draw
+    pop     af
+    ld      bc, #k_entity_size
+    add     ix, bc
+    ;;
+    dec a
+    jr nz, buc
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -168,7 +158,7 @@ ent_doForAll:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_draw:
     call ren_drawEntity
-  ret
+ret
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BORRA UNA ENTIDAD
@@ -177,9 +167,8 @@ ent_draw:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear:
-call ren_clearEntity
- 
-    ret
+    call ren_clearEntity
+ret
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
@@ -193,19 +182,15 @@ ent_update:
     ld  l, e_up_l(ix)
     jp  (hl)
 
-    ret
-
-
-
-
-
+ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  Calculate the offset of the first tile of the box inside the tilemap and add it
+;; Calculate the offset of the first tile of the box inside the tilemap and add it
 ;; to the main tilemap pointer (ptilemap)
 ;; Offset = y * map_width + x
 ;; HL = ptilemap + Offset
+;; DESTRUIDOS: A, HL, DE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 CalcualteOFFSET: 
     ld  hl, #_g_tilemap             ;; [3] HL=ptilemap 
@@ -218,4 +203,4 @@ CalcualteOFFSET:
     
     mult_de_a                       ;; [11-83] HL += DE * A (HL = y * map_width + x) ;; A * C + 
                                     ;; HL now points to the next tile to draw from the tilemap!
-    ret
+ret
