@@ -13,7 +13,7 @@
 
 ListaEnemigos: 
     ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    ;DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
     DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
 
@@ -23,10 +23,11 @@ ListaEnemigos:
 k_lim_der       = #34       ;; Limite Derecho del movimiento
 k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
-k_total_enm     = #1            ;; Total de enemigos en memoria
+k_total_enm     = #2            ;; Total de enemigos en memoria
 k_enm_size      = #23 + 5*15 ; 5*obs + 14+9
 
-
+;; Numero de enemigos vivos en el MapX
+enm_map_alive: .db #2
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Detecta al hero a una distancia k_lim_detectar 
@@ -186,6 +187,38 @@ enm_move0:
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CARGA EL SIGUIENTE MAPA / GAME OVER cuando el número
+;; de enemigos vivos en el mapa llega a 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REGISTROS DESTRUIDOS: A
+;; ENTRADA: 
+;;          IX -> Puntero a entidad, enemy
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+siguiente_mapa:
+    ;; Cuando Un Enemigo Llega a Heal = 0, 
+    ;; Decrementar enm_map_alive. Si este valor
+    ;; llega a 0, no quedan enemigos por matar y acaba el mapa
+    ;; Comprobar si el enemigo sigue con vida
+    ld  a,  e_health(ix)  ;; A = e_health
+    cp  #0
+    jr  nz, seguir_el_mapa   ;; IF A == 0 THEN jump inc_contadores
+
+        ;; ELSE decrementar enm_map_alive
+        ld  a, (enm_map_alive)
+        dec a
+        ld  (enm_map_alive), a
+
+        ;; Quedan enemigos vivos???
+        cp a, #0
+        jr nz, seguir_el_mapa
+
+            ;; ELSE CARGAR SIGUIENTE MAPA
+            jr .
+
+    seguir_el_mapa:
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
@@ -243,11 +276,16 @@ enm_update:
     pop iy
     pop ix
 
+
+    ;; Comprobar si quedan enemigos vivos
+    ;; En caso contrario carga la siguiente pantalla
+    call siguiente_mapa
+
     ;Actualizar el enemigo
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
     jp  (hl) ;; llamada al estado
-    
+
 ret
 
 

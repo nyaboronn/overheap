@@ -95,10 +95,6 @@ initialize_CPC:
 
   call ent_initialTile
 
-  ;ld    ix, #eshoot
-  ;ld    e_tile_l(ix),l
-  ;ld    e_tile_h(ix),h
-  ;call ent_getActualTile
 
 ret
 
@@ -127,8 +123,8 @@ _main::
     call enm_doForAll
 
 
-  call ren_switchBuffers
-  call cpct_waitVSYNC_asm
+    call ren_switchBuffers
+    call cpct_waitVSYNC_asm
 
 jp loop
 
