@@ -1,30 +1,21 @@
-.include "cpctelera.h.s"
 .include "tileManager.h.s"
-.include "main.h.s"
 .include "utils.h.s"
-
-.include "obstacle.h.s"
 .include "entity.h.s"
-.include "enemy.h.s"
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;CONSTANTES
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; constantes
 k_max_num_ent   = 9
 k_entity_size   = 9
 m_num_ent:      .db 00
 m_next_entity:  .dw entity_vector0
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Entidades
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Array de Entidades
 DefineNEntities entity_vector, 9
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve 0 si la tile donde esta la entidad en solida
 ;; Distinto de -1 en caso contrario
-;; REGISTROS DESTRUIDOS: 
+;; REGISTROS DESTRUIDOS: A, HL, DE
 ;; ENTRADA: 
 ;;          IX -> Entity
 ;; SALIDA: 
@@ -37,54 +28,49 @@ ent_is_solidTile:
     inc hl ;; En vez de incrementar habria que hacerlo con el ancho - 1
 
     ld  A,  (hl)
-    bit     #7, a
-    ld      a,  #0  ;;Esto es necesario=
+    bit #7, a
+    ld  a,  #0  ;;Esto es necesario=
     ret nz
 
 
-    ld a, de_y(ix)
+    ld  a,  de_y(ix)
     ;;inc a
     add #2
-    ld de_y(ix),a
+    ld  de_y(ix),   a
     call CalcualteOFFSET
 
-    ld a, de_y(ix)
+    ld  a,  de_y(ix)
     ;;dec a
     sub #2
-    ld de_y(ix),a
+    ld  de_y(ix),   a
 
     ld  A,  (hl)
-    bit     #7, a
-    ld      a,  #0  ;;Esto es necesario=
+    bit #7, a
+    ld  a,  #0  ;;Esto es necesario=
     ret nz
 
 
-
-    ld a, de_y(ix)
+    ld a,   de_y(ix)
     ;;inc a
     add #3
-    ld de_y(ix),a
+    ld  de_y(ix),   a
     call CalcualteOFFSET
 
-    ld a, de_y(ix)
+    ld  a,  de_y(ix)
     ;;dec a
     sub #3
-    ld de_y(ix),a
+    ld de_y(ix),    a
 
     ld  A,  (hl)
-    bit     #7, a
-    ld      a,  #0  ;;Esto es necesario=
+    bit #7, a
+    ld  a,  #0  ;;Esto es necesario=
     ret nz
-
-
     
     call    ent_getActualTile
 
     bit     #7, a
     ld      a,  #0  ;;
     ret z
-
-
 
     ld      a,  #-1
 ret
@@ -131,17 +117,17 @@ ent_new:
     add     hl,     bc                  ;;Se cambia por las 2   sbc hl, bc
 ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
+;; REGISTROS DESTRUIDOS:
+;; ENTRADA: 
+;;        HL -> ENTIDAD ORIGEN
+;;        DE -> EMTODAD DESTINO
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
-;;; REGISTROS DESTRUIDOS:
-;;; ENTRADA: 
-;;;        HL -> ENTIDAD ORIGEN
-;;;        DE -> EMTODAD DESTINO
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_copy:
     ld bc, #k_entity_size
-    ldir
-    ret
+    
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -153,17 +139,17 @@ ent_doForAll:
     ld  ix, #entity_vector0
     ld  (metodo), hl
  buc:
-        push    af
-        metodo  = . + 1     ;; . es la dir.mem en la que estoy si le sumo 1 es el call
-        call    ent_draw
-        pop     af
-        ld      bc, #k_entity_size
-        add     ix, bc
-        ;;
-        dec a
-        jr nz, buc
+    push    af
 
-    ret
+    metodo  = . + 1     ;; . es la dir.mem en la que estoy si le sumo 1 es el call
+    call    ent_draw
+    pop     af
+    ld      bc, #k_entity_size
+    add     ix, bc
+    ;;
+    dec a
+    jr nz, buc
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -173,7 +159,7 @@ ent_doForAll:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_draw:
     call ren_drawEntity
-  ret
+ret
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BORRA UNA ENTIDAD
@@ -182,9 +168,8 @@ ent_draw:
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_clear:
-call ren_clearEntity
- 
-    ret
+    call ren_clearEntity
+ret
  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR UNA ENTIDAD
@@ -198,117 +183,15 @@ ent_update:
     ld  l, e_up_l(ix)
     jp  (hl)
 
-    ret
+ret
 
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MOVER UNA ENTIDAD
-;; REGISTROS DESTRUIDOS: af, hl,de
-;; ENTRADA: 
-;;          IX -> Puntero a entidad
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ent_move:
-    ;;Sumamos velocidad X a posicion X
-    ;;Guardamos la X actual en oldX, para poder borrar desde el buffer sin problema
-    ld      a, de_x(ix)
-    add     e_vx(ix)
-    ld      de_x(ix), a
-
-    ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
-    ld      h, e_tile_h(ix)
-    ld      l, e_tile_l(ix)
-    push hl
-
-    call CalcualteOFFSET
-
-    ;;Sumamos velocidad al tile,para cambiar
-    ld      e_tile_h(ix) , h
-    ld      e_tile_l(ix), l
-
-    ;;check if entity is in a solid tile
-    ;;Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
-    call    ent_is_solidTile ;; Devuelve en B true o false
-    jr z, checkY
-
-    ;; Check if entity has a collision with an obstacle
-    ;ld    iy, #obstacle1
-    ; Call to function
-    ;call	obstacle_checkCollision
-    ;If collide dont move (A == 0) exit function
-    ;Else revet changes in e_x and e_y
-    ;cp #0
-    ;jr z, exit
-
-    pop hl ;;para restaurar el puntero a la tile actual
-    push hl
-
-    ld      a, de_x(ix)
-    sub     e_vx(ix)
-    ld      de_x(ix), a
-
-    ;;restauramos puntero
-    ld      e_tile_h(ix) , h
-    ld      e_tile_l(ix), l
-
-    checkY:
-        pop hl
-        ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
-        ;ld      a, e_y(ix)
-        ;add     e_vy(ix)
-        ;inc a
-        ;ld      e_y(ix), a
-        ;; Recogemos la coordenados y la cuerdamos en la pila,(variable local)
-        ld h, e_tile_h(ix)
-        ld l, e_tile_l(ix)
-
-        push hl
-
-        call CalcualteOFFSET
-
-        ;; Sumamos velocidad al tile,para cambiar
-        ld  e_tile_h(ix) , h
-        ld  e_tile_l(ix), l
-
-        ;; check if entity is in a solid tile
-        ;; Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
-        call    ent_is_solidTile ;; Devuelve en B true o false
-        jr z,   exit
-
-        ;; Check if entity has a collision with an obstacle
-        ;ld    iy, #obstacle1
-        ; Call to function
-        ;call	obstacle_checkCollision
-        ;If collide dont move (A == 0) exit function
-        ;Else revet changes in e_x and e_y
-        ;cp #0
-        ;jr z, exit
-
-    resetY:
-        pop     hl ;; para restaurar el puntero a la tile actual
-        push    hl
-
-        ld       a, de_y(ix)
-        sub     e_vy(ix)
-        dec a
-        ld      de_y(ix), a
-
-        ;;restauramos puntero
-        ld      e_tile_h(ix) , h
-        ld      e_tile_l(ix), l
-
-    exit:
-        ;;pop ix
-        pop hl
-        ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  Calculate the offset of the first tile of the box inside the tilemap and add it
+;; Calculate the offset of the first tile of the box inside the tilemap and add it
 ;; to the main tilemap pointer (ptilemap)
 ;; Offset = y * map_width + x
 ;; HL = ptilemap + Offset
+;; DESTRUIDOS: A, HL, DE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 CalcualteOFFSET: 
     ld  hl, #_g_tilemap             ;; [3] HL=ptilemap 
@@ -321,4 +204,4 @@ CalcualteOFFSET:
     
     mult_de_a                       ;; [11-83] HL += DE * A (HL = y * map_width + x) ;; A * C + 
                                     ;; HL now points to the next tile to draw from the tilemap!
-    ret
+ret
