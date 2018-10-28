@@ -24,19 +24,17 @@ m_back_tileMap::  .dw #TScreenTilemapBack ;;
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Intercambiamos los buffer
-;; REGISTROS DESTRUIDOS: A,B
-;;
+;; REGISTROS DESTRUIDOS: HL, BC, DE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_initBuffers:
-    ld hl, #0x8000
-    ld (hl), #0
-    ld de, #0x8000 + 1
-    ld bc, #0x4000 - 1
-    ldir
+  ld hl, #0x8000
+  ld (hl), #0
+  ld de, #0x8000 + 1
+  ld bc, #0x4000 - 1
+  ldir
 ret
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -61,19 +59,21 @@ ren_DWisInScreen:
 
   jr c, pertenece
   ld a, #0
-ret
+  ret
 
-pertenece:
+  pertenece:
 
-  cp  #MAP_WIDTH + 4
+  cp  #MAP_WIDTH + 4 -1
   jr nc, pertenece2
   ld a, #0
-ret
+  ret
 
 
-pertenece2:
-ld a,#1
+  pertenece2:
+  ld a,#1
 ret	
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Intercambiamos los buffer
@@ -111,246 +111,237 @@ ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
-;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; REGISTROS DESTRUIDOS: A, BC, DE, HL, IY
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_drawEntity:
 
-call ren_DWisInScreen
-cp #0
-ret z
-
+  call ren_DWisInScreen
+  cp #0
+  ret z
 
   ;;  ld de, #0xC000       ;;Comienzo memoria de video
-    ld hl, (#m_back_tileMap)
-    push hl
-    pop iy
-    ld d, pVideo+1(iy)
-    ld e, #0 ;pVideo(iy)
+  ld hl, (#m_back_tileMap)
+  push hl
+  pop iy
+  ld d, pVideo+1(iy)
+  ld e, #0 ;pVideo(iy)
 
 
 
-    ;; Convert de X tile in X in bytes
-    ld C, de_x(ix)    ;; X
-    ld A, de_x(ix)    ;; X
-    add a,c
-    ld c, a
-;; Convert de y tile in y in bytes
-    ld b, de_y(ix)    ;; y
-    ld A, de_y(ix)    ;; y
-    add a,b
-    add a,a
-    ld b, a
+  ;; Convert de X tile in X in bytes
+  ld C, de_x(ix)    ;; X
+  ld A, de_x(ix)    ;; X
+  add a,c
+  ld c, a
+  ;; Convert de y tile in y in bytes
+  ld b, de_y(ix)    ;; y
+  ld A, de_y(ix)    ;; y
+  add a,b
+  add a,a
+  ld b, a
 
- ;; ld     b, de_y(ix)         ;; B = Entity Y
+  ;; ld     b, de_y(ix)         ;; B = Entity Y
   call cpct_getScreenPtr_asm ;; RETURN IN HL
- 
+
   ex    de, hl   ;; DE = Puntero a memoria
 
 
-ld h, de_sprite+1(ix)
-ld l, de_sprite(ix)
-;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
-                      ;;(2B DE) memory	Destination video memory pointer
-ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
-ld  a, de_w(ix)
-add a,c 
-ld c, a
+  ld h, de_sprite+1(ix)
+  ld l, de_sprite(ix)
+  ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+                    ;;(2B DE) memory	Destination video memory pointer
+  ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
+  ld  a, de_w(ix)
+  add a,c 
+  ld c, a
 
 
-ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
-ld  a, de_h(ix)
-add a,b
-add a,a 
-ld b, a
+  ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
+  ld  a, de_h(ix)
+  add a,b
+  add a,a 
+  ld b, a
 
-call cpct_drawSprite_asm
+  call cpct_drawSprite_asm
 
-  ret
-
-
-
+ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
-;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; REGISTROS DESTRUIDOS: A, BC, DE, HL, IY
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ren_drawEntityAlpha::
+ren_drawEntityAlpha:
 
-call ren_DWisInScreen
-cp #0
-ret z
+  call ren_DWisInScreen
+  cp #0
+  ret z
 
 
   ;;  ld de, #0xC000       ;;Comienzo memoria de video
-    ld hl, (#m_back_tileMap)
-    push hl
-    pop iy
-    ld d, pVideo+1(iy)
-    ld e, #0 ;pVideo(iy)
+  ld hl, (#m_back_tileMap)
+  push hl
+  pop iy
+  ld d, pVideo+1(iy)
+  ld e, #0 ;pVideo(iy)
 
 
 
-    ;; Convert de X tile in X in bytes
-    ld C, de_x(ix)    ;; X
-    ld A, de_x(ix)    ;; X
-    add a,c
-    ld c, a
-;; Convert de y tile in y in bytes
-    ld b, de_y(ix)    ;; y
-    ld A, de_y(ix)    ;; y
-    add a,b
-    add a,a
-    ld b, a
+  ;; Convert de X tile in X in bytes
+  ld C, de_x(ix)    ;; X
+  ld A, de_x(ix)    ;; X
+  add a,c
+  ld c, a
+  ;; Convert de y tile in y in bytes
+  ld b, de_y(ix)    ;; y
+  ld A, de_y(ix)    ;; y
+  add a,b
+  add a,a
+  ld b, a
 
- ;; ld     b, de_y(ix)         ;; B = Entity Y
+  ;; ld     b, de_y(ix)         ;; B = Entity Y
   call cpct_getScreenPtr_asm ;; RETURN IN HL
- 
+
   ex    de, hl   ;; DE = Puntero a memoria
 
- ; ld  b, de_h(ix)   ;; alto
- ; ld A, de_h(ix)    ;; y
- ; add a,b
- ; add a,a
- ; ld b, a
- ;
- ; ld  c, de_w(ix)   ;; Ancho
- ; ld A, de_w(ix)    ;; X
- ; add a,c
- ; ld c, a
- ;  ld  a, de_col(ix)   ;; Color
- ; 
- ; call cpct_drawSolidBox_asm
- 
+  ; ld  b, de_h(ix)   ;; alto
+  ; ld A, de_h(ix)    ;; y
+  ; add a,b
+  ; add a,a
+  ; ld b, a
+  ;
+  ; ld  c, de_w(ix)   ;; Ancho
+  ; ld A, de_w(ix)    ;; X
+  ; add a,c
+  ; ld c, a
+  ;  ld  a, de_col(ix)   ;; Color
+  ; 
+  ; call cpct_drawSolidBox_asm
+
 
   ; pvmem = cpct_getScreenPtr(CPCT_VMEM_START, x, y);      
   ; cpct_drawSpriteMasked(G_sprite_EMR, pvmem, SPR_W, SPR_H);
 
 
-ld h, de_sprite+1(ix)
-ld l, de_sprite(ix)
-;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
-                      ;;(2B DE) memory	Destination video memory pointer
-ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
-ld  a, de_w(ix)
-add a,c 
-ld c, a
+  ld h, de_sprite+1(ix)
+  ld l, de_sprite(ix)
+  ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+                  ;;(2B DE) memory	Destination video memory pointer
+  ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
+  ld  a, de_w(ix)
+  add a,c 
+  ld c, a
 
 
-ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
-ld  a, de_h(ix)
-add a,b
-add a,a 
-ld b, a
+  ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
+  ld  a, de_h(ix)
+  add a,b
+  add a,a 
+  ld b, a
 
-call cpct_drawSpriteMasked_asm
+  call cpct_drawSpriteMasked_asm
 
-  ret
+ret
 
 
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Destruir entidad, la diferencia con limpiar es que ay que llamar cuando 
 ;; El objeto a sido destruido por una colision o algo asi
-;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; REGISTROS DESTRUIDOS: A, BC, DE, HL, IY
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_DestroyEntity:
 
-;; TODO, no borro la bala que se queda al final
-call ren_DWisInScreen
-cp #0
-ret z
+  ;; TODO, no borro la bala que se queda al final
 
-    ld hl, (#m_back_tileMap)
-    push hl
-    pop iy
+  ld hl, (#m_front_tileMap)
+  push hl
+  pop iy
 
 
-    ;; Repintamos una columna, izquierda o derecha
+  ;; Repintamos una columna, izquierda o derecha
 
-    ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
-    ld a, de_x(ix)    ;; X
-    ld c, scroll(iy)
-    sub c
-    ld c, a
+  ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
+  ld a, de_x(ix)    ;; X
+  ld c, scroll(iy)
+  sub c
+  ld c, a
 
-    ld B, de_y(ix)  ;; Y
-
-
-    ld E, de_w(ix)  ;; W
-    ld D, de_h(ix)  ;; W
+  ld B, de_y(ix)  ;; Y
 
 
-    ld A, #MAP_WIDTH ;; map_width
-
-    
-    ld h, pTilemap+1(iy)
-    ld l, pTilemap(iy)
-    push hl
+  ld E, de_w(ix)  ;; W
+  ld D, de_h(ix)  ;; W
 
 
-    ld h, pVideo+1(iy)
-    ld l, pVideo(iy)
-    
-    push hl
+  ld A, #MAP_WIDTH ;; map_width
 
-    call cpct_etm_drawTileBox2x4_asm
-
-  ret
+  
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
 
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  
+  push hl
+
+  call cpct_etm_drawTileBox2x4_asm
+
+ret
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_clearEntity:
 
-;; TODO, no borro la bala que se queda al final
-call ren_DWisInScreen
-cp #0
-ret z
+  ;; TODO, no borro la bala que se queda al final
+  call ren_DWisInScreen
+  cp #0
+  ret z
 
-    ld hl, (#m_back_tileMap)
-    push hl
-    pop iy
-
-
-    ;; Repintamos una columna, izquierda o derecha
-
-    ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
-    ld a, de_oldx(ix)    ;; X
-    ld c, scroll(iy)
-    sub c
-    ld c, a
-
-    ld B, de_oldy(ix)  ;; Y
+  ld hl, (#m_back_tileMap)
+  push hl
+  pop iy
 
 
-    ld E, de_w(ix)  ;; W
-    ld D, de_h(ix)  ;; W
+  ;; Repintamos una columna, izquierda o derecha
+
+  ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
+  ld a, de_oldx(ix)    ;; X
+  ld c, scroll(iy)
+  sub c
+  ld c, a
+
+  ld B, de_oldy(ix)  ;; Y
 
 
-    ld A, #MAP_WIDTH ;; map_width
-
-    
-    ld h, pTilemap+1(iy)
-    ld l, pTilemap(iy)
-    push hl
+  ld E, de_w(ix)  ;; W
+  ld D, de_h(ix)  ;; W
 
 
-    ld h, pVideo+1(iy)
-    ld l, pVideo(iy)
-    
-    push hl
+  ld A, #MAP_WIDTH ;; map_width
 
-    call cpct_etm_drawTileBox2x4_asm
+  
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
 
-  ret
 
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  
+  push hl
+
+  call cpct_etm_drawTileBox2x4_asm
+
+ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -388,7 +379,6 @@ pintar_vidas:
     ld  c, #8    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
 	ld  b, #12   ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
 	call cpct_drawSprite_asm
-
 
     
 	ld	a, (corazon)
