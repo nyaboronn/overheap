@@ -50,7 +50,7 @@
 ## Example firmware palette definition as variable in cpct_img2tileset format
 
 ## Firmware palette definition in cpct_img2tileset format
-PALETTE={ 0 6 13 10 12 3 9 18 26 15 25 1 14 }
+PALETTE={ 0 6 13 10 12 3 9 18 26 15 25 2 14 }
 
 ## Convert img/tiles.png into src/tiles.c and src/tiles.h
 ##   This is a mode 0 tileset, containing 16 4x4 pixel tiles, that are used
