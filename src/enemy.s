@@ -260,6 +260,9 @@ enm_update:
             ;; ELSE 
                 ;;Cambiar de estado?
                 ;; Animacion de muerte
+            call ren_DestroyEntity
+
+
 
     noDamage:
     noGolpeado:

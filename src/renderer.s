@@ -251,11 +251,8 @@ ret
 ren_DestroyEntity:
 
   ;; TODO, no borro la bala que se queda al final
-  call ren_DWisInScreen
-  cp #0
-  ret z
 
-  ld hl, (#m_back_tileMap)
+  ld hl, (#m_front_tileMap)
   push hl
   pop iy
 
