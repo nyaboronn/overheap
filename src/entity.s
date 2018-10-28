@@ -1,11 +1,6 @@
-.include "cpctelera.h.s"
 .include "tileManager.h.s"
-.include "main.h.s"
 .include "utils.h.s"
-
-.include "obstacle.h.s"
 .include "entity.h.s"
-.include "enemy.h.s"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;CONSTANTES
@@ -204,105 +199,7 @@ ent_update:
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MOVER UNA ENTIDAD
-;; REGISTROS DESTRUIDOS: af, hl,de
-;; ENTRADA: 
-;;          IX -> Puntero a entidad
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-ent_move:
-    ;;Sumamos velocidad X a posicion X
-    ;;Guardamos la X actual en oldX, para poder borrar desde el buffer sin problema
-    ld      a, de_x(ix)
-    add     e_vx(ix)
-    ld      de_x(ix), a
 
-    ;;Recogemos la coordenados y la cuerdamos en la pila,(variable local)
-    ld      h, e_tile_h(ix)
-    ld      l, e_tile_l(ix)
-    push hl
-
-    call CalcualteOFFSET
-
-    ;;Sumamos velocidad al tile,para cambiar
-    ld      e_tile_h(ix) , h
-    ld      e_tile_l(ix), l
-
-    ;;check if entity is in a solid tile
-    ;;Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
-    call    ent_is_solidTile ;; Devuelve en B true o false
-    jr z, checkY
-
-    ;; Check if entity has a collision with an obstacle
-    ;ld    iy, #obstacle1
-    ; Call to function
-    ;call	obstacle_checkCollision
-    ;If collide dont move (A == 0) exit function
-    ;Else revet changes in e_x and e_y
-    ;cp #0
-    ;jr z, exit
-
-    pop hl ;;para restaurar el puntero a la tile actual
-    push hl
-
-    ld      a, de_x(ix)
-    sub     e_vx(ix)
-    ld      de_x(ix), a
-
-    ;;restauramos puntero
-    ld      e_tile_h(ix) , h
-    ld      e_tile_l(ix), l
-
-    checkY:
-        pop hl
-        ;;; Sumamos velocidad Y a posicion Y, ademas añadimos una unidad a Y para simular una caida constante
-        ;ld      a, e_y(ix)
-        ;add     e_vy(ix)
-        ;inc a
-        ;ld      e_y(ix), a
-        ;; Recogemos la coordenados y la cuerdamos en la pila,(variable local)
-        ld h, e_tile_h(ix)
-        ld l, e_tile_l(ix)
-
-        push hl
-
-        call CalcualteOFFSET
-
-        ;; Sumamos velocidad al tile,para cambiar
-        ld  e_tile_h(ix) , h
-        ld  e_tile_l(ix), l
-
-        ;; check if entity is in a solid tile
-        ;; Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
-        call    ent_is_solidTile ;; Devuelve en B true o false
-        jr z,   exit
-
-        ;; Check if entity has a collision with an obstacle
-        ;ld    iy, #obstacle1
-        ; Call to function
-        ;call	obstacle_checkCollision
-        ;If collide dont move (A == 0) exit function
-        ;Else revet changes in e_x and e_y
-        ;cp #0
-        ;jr z, exit
-
-    resetY:
-        pop     hl ;; para restaurar el puntero a la tile actual
-        push    hl
-
-        ld       a, de_y(ix)
-        sub     e_vy(ix)
-        dec a
-        ld      de_y(ix), a
-
-        ;;restauramos puntero
-        ld      e_tile_h(ix) , h
-        ld      e_tile_l(ix), l
-
-    exit:
-        ;;pop ix
-        pop hl
-        ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Calculate the offset of the first tile of the box inside the tilemap and add it

@@ -16,10 +16,13 @@ de_sprite = 6
 
 .globl ren_clearEntity
 
+.globl ren_DestroyEntity
+.globl ren_drawEntityAlpha
 .globl ren_drawEntity
 .globl ren_switchBuffers
 .globl ren_initBuffers
 .globl ren_drawHud
+.globl ren_DWisInScreen
 
 .globl m_front_tileMap
 .globl m_back_tileMap

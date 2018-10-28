@@ -1,15 +1,13 @@
+
 .include "renderer.h.s"
 
-
-;###########################################################################
-;#### FICHERO: entity.h.s
-;###########################################################################
 .macro DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
-_name:
-DefineDrawableEntity _name'_dw, _x, _y,_oldx, _oldy, _w, _h, _col
-   .db   _vx, _vy     ;; VX, VY
-   .dw   _upd         ;; Update
-   .dw _tile
+
+    _name:
+        DefineDrawableEntity _name'_dw, _x, _y,_oldx, _oldy, _w, _h, _col
+        .db   _vx, _vy     ;; VX, VY
+        .dw   _upd         ;; Update
+        .dw _tile
 
 .endm
 
@@ -46,7 +44,7 @@ e_tile_h = 5 + e_de_size
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.globl ent_move
+
 .globl ent_draw
 .globl ent_clear
 .globl ent_update

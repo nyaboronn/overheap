@@ -3,7 +3,7 @@
 #define _IMG_NEWTILES_H_
 
 #include <types.h>
-extern const u8 g_palette[13];
+extern const u8 g_palette[16];
 
 extern u8* const g_tileset[256];
 

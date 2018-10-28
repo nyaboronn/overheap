@@ -23,3 +23,7 @@
 
 .globl cpct_drawSpriteMasked_asm
 .globl cpct_hflipSpriteMaskedM0_asm
+
+.globl cpct_akp_musicInit_asm
+.globl cpct_akp_musicPlay_asm
+.globl _song_ingame

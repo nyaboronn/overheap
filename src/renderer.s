@@ -1,9 +1,10 @@
 .include "renderer.h.s"
 .include "main.h.s"
 .include "tileManager.h.s"
+.include "hero.h.s"
+.include "sprite.h.s"
 
 
-.globl _G_sprite_EMR
 
 
 
@@ -13,7 +14,6 @@
 .area _DATA
 
 ;; Define one Zero-terminated string to be used later on
-string: .asciz "Menu";
 
 .area _CODE
 
@@ -38,6 +38,42 @@ ren_initBuffers:
 ret
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Comprueba si DrawableEntity esta dentro de la ventana
+;; REGISTROS DESTRUIDOS: A
+;; Parametro Entrada IX : DrawableEntity
+;; Return: A      A= 0 si no esta dentro de la ventana
+;;                A= 1 Si si esta dentro de la ventana
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ren_DWisInScreen:
+  ld iy, (#m_back_tileMap)
+
+  ;; 0 < Offset + WinSize - X(ix) +MAP_WIDTH  < winSize +MAP_WIDTH
+  ld a, scroll(iy)
+  ld b, #SCR_TILE_WIDTH
+  add a, b
+  ld b, de_x(ix)
+  sub a, b
+  ld b,#MAP_WIDTH
+  add a, b
+  cp #SCR_TILE_WIDTH + #MAP_WIDTH
+
+  jr c, pertenece
+  ld a, #0
+ret
+
+pertenece:
+
+  cp  #MAP_WIDTH + 4
+  jr nc, pertenece2
+  ld a, #0
+ret
+
+
+pertenece2:
+ld a,#1
+ret	
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Intercambiamos los buffer
@@ -71,12 +107,83 @@ ren_switchBuffers:
 ret
 
 
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_drawEntity:
+
+call ren_DWisInScreen
+cp #0
+ret z
+
+
+  ;;  ld de, #0xC000       ;;Comienzo memoria de video
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+    ld d, pVideo+1(iy)
+    ld e, #0 ;pVideo(iy)
+
+
+
+    ;; Convert de X tile in X in bytes
+    ld C, de_x(ix)    ;; X
+    ld A, de_x(ix)    ;; X
+    add a,c
+    ld c, a
+;; Convert de y tile in y in bytes
+    ld b, de_y(ix)    ;; y
+    ld A, de_y(ix)    ;; y
+    add a,b
+    add a,a
+    ld b, a
+
+ ;; ld     b, de_y(ix)         ;; B = Entity Y
+  call cpct_getScreenPtr_asm ;; RETURN IN HL
+ 
+  ex    de, hl   ;; DE = Puntero a memoria
+
+
+ld h, de_sprite+1(ix)
+ld l, de_sprite(ix)
+;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+                      ;;(2B DE) memory	Destination video memory pointer
+ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
+ld  a, de_w(ix)
+add a,c 
+ld c, a
+
+
+ld  b, de_h(ix)   ;; alto ;; ld b, #16             ;;(1B B ) height	Sprite Height in bytes (>0)
+ld  a, de_h(ix)
+add a,b
+add a,a 
+ld b, a
+
+call cpct_drawSprite_asm
+
+  ret
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DIBUJAR UNA ENTIDAD
+;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; ENTRADA: IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ren_drawEntityAlpha::
+
+call ren_DWisInScreen
+cp #0
+ret z
+
+
   ;;  ld de, #0xC000       ;;Comienzo memoria de video
     ld hl, (#m_back_tileMap)
     push hl
@@ -124,7 +231,7 @@ ren_drawEntity:
 
 ld h, de_sprite+1(ix)
 ld l, de_sprite(ix)
-;ld hl, #_G_sprite_EMR ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
                       ;;(2B DE) memory	Destination video memory pointer
 ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
 ld  a, de_w(ix)
@@ -144,6 +251,56 @@ call cpct_drawSpriteMasked_asm
 
 
 
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Destruir entidad, la diferencia con limpiar es que ay que llamar cuando 
+;; El objeto a sido destruido por una colision o algo asi
+;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
+;; ENTRADA: IX -> Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ren_DestroyEntity:
+
+;; TODO, no borro la bala que se queda al final
+call ren_DWisInScreen
+cp #0
+ret z
+
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+
+    ;; Repintamos una columna, izquierda o derecha
+
+    ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
+    ld a, de_x(ix)    ;; X
+    ld c, scroll(iy)
+    sub c
+    ld c, a
+
+    ld B, de_y(ix)  ;; Y
+
+
+    ld E, de_w(ix)  ;; W
+    ld D, de_h(ix)  ;; W
+
+
+    ld A, #MAP_WIDTH ;; map_width
+
+    
+    ld h, pTilemap+1(iy)
+    ld l, pTilemap(iy)
+    push hl
+
+
+    ld h, pVideo+1(iy)
+    ld l, pVideo(iy)
+    
+    push hl
+
+    call cpct_etm_drawTileBox2x4_asm
+
+  ret
+
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR UNA ENTIDAD
@@ -151,7 +308,12 @@ call cpct_drawSpriteMasked_asm
 ;; ENTRADA: IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_clearEntity:
- 
+
+;; TODO, no borro la bala que se queda al final
+call ren_DWisInScreen
+cp #0
+ret z
+
     ld hl, (#m_back_tileMap)
     push hl
     pop iy
@@ -196,7 +358,13 @@ ren_clearEntity:
 ;;;
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+corazon: .db #0
+
 ren_drawHud:
+	ld  a, hero_vida(ix)
+
+pintar_vidas:
+	push af		;;Guardo las vidas que tenía visitadas
 
     ld hl, (#m_back_tileMap)
     push hl
@@ -206,55 +374,32 @@ ren_drawHud:
     ld d, pVideo+1(iy) ;; memory pointer
     ld e, pVideo(iy)
 
-    ld c,#0  ;x
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Pintar el Corazón de la vida          ;;Hacer con el bucle
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; push de   ;;El valor del puntero se va a la pila
+    ld a, (corazon)
+    ld c, a ;x
     ld b,#4*MAP_HEIGHT - 16  ;y
     call cpct_getScreenPtr_asm ;; return in hl
-
+    
     ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
-    ld a,#0xFF ;;(1B A ) colour_pattern	1-byte colour pattern (in screen pixel format) to fill the box with
-    ld c, #64  ;;(1B C ) width	Box width in bytes [1-64] (Beware!  not in pixels!)
-    ld b, #16 ;;(1B B ) height	Box height in bytes (>0)
-
-    call cpct_drawSolidBox_asm
-
+	ld  hl, #_hearth_sp;;Imagen que voy a pintar
+    ld  c, #8    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+	ld  b, #12   ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+	call cpct_drawSprite_asm
 
 
+    
+	ld	a, (corazon)
+	add a, #8
+	ld (corazon), a
+	pop af		;;Devuelvo las vidas visitadas
+	
+	dec a		;;Vida pintada, decremento
+    cp #0
+    jp	nz, pintar_vidas
 
-   ;; Set up draw char colours before calling draw string
-   ld    h, #0         ;; D = Background PEN (0)
-   ld    l, #3         ;; E = Foreground PEN (3)
-
-   call cpct_setDrawCharM0_asm   ;; Set draw char colours
-
-   ;; Calculate a video-memory location for printing a string
-   ld   de, #0xC000 ;; DE = Pointer to start of the screen
-   ld    b, #24                  ;; B = y coordinate (24 = 0x18)
-   ld    c, #16                  ;; C = x coordinate (16 = 0x10)
-
-   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
-
-   ;; Print the string in video memory
-   ;; HL already points to video memory, as it is the return
-   ;; value from cpct_getScreenPtr_asm
-   ld   iy, #string    ;; IY = Pointer to the string 
-
-   call cpct_drawStringM0_asm  ;; Draw the string
-
-
-
-   ;; Calculate a video-memory location for printing a string
-   ld   de, #0x8000 ;; DE = Pointer to start of the screen
-   ld    b, #24                  ;; B = y coordinate (24 = 0x18)
-   ld    c, #16                  ;; C = x coordinate (16 = 0x10)
-
-   call cpct_getScreenPtr_asm    ;; Calculate video memory location and return it in HL
-
-   ;; Print the string in video memory
-   ;; HL already points to video memory, as it is the return
-   ;; value from cpct_getScreenPtr_asm
-   ld   iy, #string    ;; IY = Pointer to the string 
-
-   call cpct_drawStringM0_asm  ;; Draw the string
-
-
-ret
+	ld a, #0    ;;Resetamos el valor de la variable, para la siguiente ejecución
+	ld (corazon), a
+  ret

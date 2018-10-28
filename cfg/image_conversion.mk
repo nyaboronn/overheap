@@ -50,7 +50,16 @@
 ## Example firmware palette definition as variable in cpct_img2tileset format
 
 ## Firmware palette definition in cpct_img2tileset format
-PALETTE={ 0 6 13 10 12 3 9 18 26 15 25 1 14 }
+PALETTE=0 1 2 3 6 9 11 12 13 15 16 18 20 24 25 26
+
+$(eval $(call IMG2SP, SET_FOLDER, src/Sprites))
+$(eval $(call IMG2SP, SET_PALETTE_FW  , $(PALETTE)         ))
+$(eval $(call IMG2SP, CONVERT, img/menu/overHeap.png,84,47, overHeap_sp, overHeap_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/play.png,38,8, play_sp, play_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/jlga10.png,40,8, jlga10_sp, jlga10_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/jlq2.png,26,8, jlq2_sp, jlq2_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/ajah1.png,34,8, ajah1_sp, ajah1_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/hearth.png,16,12, hearth_sp, hearth_pal))
 
 ## Convert img/tiles.png into src/tiles.c and src/tiles.h
 ##   This is a mode 0 tileset, containing 16 4x4 pixel tiles, that are used
@@ -58,6 +67,11 @@ PALETTE={ 0 6 13 10 12 3 9 18 26 15 25 1 14 }
 ## called g_tiles{0-15} (g is prefix for _tiles) without interlaced mask. 
 ## Palette will also be converted to hardware values and outputed as a C-array
 ## named g_palette.
+PALETTE2={ 0 1 2 3 6 9 11 12 13 15 16 18 20 24 25 26 }
 
-$(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE),tileset,src/,hwpalette))
-$(eval $(call IMG2SPRITES,img/Xemnas.png,0,sprite,16,16,$(PALETTE),mask,src/))
+$(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE2),tileset,src/assets,hwpalette))
+$(eval $(call IMG2SPRITES,img/Xemnas.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
+$(eval $(call IMG2SPRITES,img/Skeleton.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
+$(eval $(call IMG2SPRITES,img/bala.png,0,sprite,4,4,$(PALETTE2),mask,src/assets))
+$(eval $(call IMG2SPRITES,img/coche.png,0,sprite,18,10,$(PALETTE2),mask,src/assets))
+
