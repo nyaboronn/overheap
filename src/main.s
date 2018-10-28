@@ -1,3 +1,5 @@
+
+
 .include "cpctelera.h.s"
 .include "entity.h.s"
 .include "tileManager.h.s"
@@ -8,9 +10,6 @@
 .include "hero.h.s"
  
 .area _DATA
-
-
-
 .area _CODE
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -20,51 +19,48 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 initialize_CPC:
 
-    call cpct_disableFirmware_asm
+  call cpct_disableFirmware_asm
 
-    ld C, #0x00 ;; Modo de video
-    call cpct_setVideoMode_asm
+  ld C, #0x00 ;; Modo de video
+  call cpct_setVideoMode_asm
 
-    ld hl, #_g_palette   ;; Paleta de colores
-    ld de, #13          ;;numero de colores a cambiar
-    call cpct_setPalette_asm
+  ld hl, #_g_palette   ;; Paleta de colores
+  ld de, #13          ;;numero de colores a cambiar
+  call cpct_setPalette_asm
 
-    ld l, #16       ;;Constante
-    ld h, #HW_BLACK
-    call cpct_setPALColour_asm   ;;Cambiar fondo negro
+  ld l, #16       ;;Constante
+  ld h, #HW_BLACK
+  call cpct_setPALColour_asm   ;;Cambiar fondo negro
 
-    ;;Tenemos que inicilizar EasyTileMap
-    ld hl, #_g_tileset      ;;Punteor al tilesetW
-    call cpct_etm_setTileset2x4_asm
+  ;;Tenemos que inicilizar EasyTileMap
+  ld hl, #_g_tileset      ;;Punteor al tilesetW
+  call cpct_etm_setTileset2x4_asm
 
 
-call ren_initBuffers
+  call ren_initBuffers
 
 
   ld bc, (#m_back_tileMap)
   push bc
   pop iy
 
+  ;;Ahora pintamos el mapa entero     
+  ld C, #0x00    ;; X
+  ld B, #0x00  ;; Y
+  ld E, #SCR_TILE_WIDTH  ;; W
+  ld D, #MAP_HEIGHT  ;; H
+  ld A, #MAP_WIDTH ;; map_width
+
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
+
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  push hl
 
 
-    ;;Ahora pintamos el mapa entero     
-    ld C, #0x00    ;; X
-    ld B, #0x00  ;; Y
-    ld E, #SCR_TILE_WIDTH  ;; W
-    ld D, #MAP_HEIGHT  ;; H
-    ld A, #MAP_WIDTH ;; map_width
-
-    ld h, pTilemap+1(iy)
-    ld l, pTilemap(iy)
-    push hl
-
-    ld h, pVideo+1(iy)
-    ld l, pVideo(iy)
-    push hl
-
-
-call cpct_etm_drawTileBox2x4_asm
-
+  call cpct_etm_drawTileBox2x4_asm
 
   call ren_switchBuffers
 
@@ -73,38 +69,32 @@ call cpct_etm_drawTileBox2x4_asm
   push bc
   pop iy
 
+  ;;Ahora pintamos el mapa entero     
+  ld C, #0x00    ;; X
+  ld B, #0x00  ;; Y
+  ld E, #SCR_TILE_WIDTH  ;; W
+  ld D, #MAP_HEIGHT  ;; H
+  ld A, #MAP_WIDTH ;; map_width
 
-    ;;Ahora pintamos el mapa entero     
-    ld C, #0x00    ;; X
-    ld B, #0x00  ;; Y
-    ld E, #SCR_TILE_WIDTH  ;; W
-    ld D, #MAP_HEIGHT  ;; H
-    ld A, #MAP_WIDTH ;; map_width
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
 
-    ld h, pTilemap+1(iy)
-    ld l, pTilemap(iy)
-    push hl
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  push hl
 
-    ld h, pVideo+1(iy)
-    ld l, pVideo(iy)
-    push hl
+  call cpct_etm_drawTileBox2x4_asm
 
+  call ent_initialTile
 
-call cpct_etm_drawTileBox2x4_asm
+  ld    ix, #hero_data
+  ld    e_tile_l(ix),l
+  ld    e_tile_h(ix),h
+  call ent_getActualTile
 
-call ent_initialTile
+  call ent_initialTile
 
-ld    ix, #hero_data
-ld    e_tile_l(ix),l
-ld    e_tile_h(ix),h
-call ent_getActualTile
-
-call ent_initialTile
-
-ld    ix, #eshoot
-ld    e_tile_l(ix),l
-ld    e_tile_h(ix),h
-call ent_getActualTile
 
 ret
 
@@ -115,17 +105,9 @@ _main::
 
   call initialize_CPC
 
-  ;;; Crear una nueva entidad
-  ;call ent_new
-  ;ex	de, hl
-  ;ld    hl,#hero_data
-  ;call ent_copy
-
   loop:
     ld ix, #hero_data
     call hero_clear
-    ld iy, #eshoot
-
     ld ix, #hero_data
     call hero_update
     ld ix, #hero_data
@@ -141,23 +123,9 @@ _main::
 ;call enm_doForAll
 
 
-;ld	ix, #eshoot
-;call enm_clear
-;
-;ld iy, #hero_data
-;ld	hl, #eshoot
-;call enm_update
-;
 
-;  ld	hl, #eshoot
-;call enm_draw
-
-
-
-    
     call ren_switchBuffers
     call cpct_waitVSYNC_asm
 
-
-  jp loop
+jp loop
 

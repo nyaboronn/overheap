@@ -1,51 +1,39 @@
 
 
+
 .include "enemy.h.s"
 .include "entity.h.s"
 .include "obstacle.h.s"
 
 
+;; SPRITE que usan los enemigos
 .globl _sprite_Skeleton
-;;;;;;;;;;;;;;;;;;; :)
-;; Enemy Data
-;;;;;;;;;;;;;;;;;;;;
 
-;;;
-;; _type = 0 => simple enm (enm_move0)
-;; _type = 1 => shoot enm  (enm_move1)
-;; _type = 2 => ....
+
 
 ListaEnemigos: 
-;              _name,    x,  y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct,_alpha, _health _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
-
-DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-;DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, _sprite_Skeleton, enm_move1, 0x0000, 0
-;DefineEnemyShoot eshoot, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020, 0, 1, 5, 0, .+4 , 5, 0, 34
-;DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, 1, 1, 5, 0, .+4 , 5, 0, 34
-;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, 0, 1, 5, 0, .+4 , 5, 0, 34
-;DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move1, 0x1020, 1, 5, 1, 0, .+4 , 5, 0, 34
-;;DefineEnemy enm_data, 20, 40, 20, 41, 0x00, 0x00, 0x02, 0x04, _sprite_Skeleton, enm_move1, 0x0000, 0
+    ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
+    ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
 
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;
-k_lim_der = #34         ;; Limite Derecho del movimiento
-k_lim_izq = #4          ;; Limite Izquierda del movimiento
-k_lim_detectar = #15    ;; Distancia maxima a la que detecta al hero
-k_total_enm = #4
-k_enm_size = #23 + 5*15 ; 5*obs + 14+9
+k_lim_der       = #34       ;; Limite Derecho del movimiento
+k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
+k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
+k_total_enm     = #2            ;; Total de enemigos en memoria
+k_enm_size      = #23 + 5*15 ; 5*obs + 14+9
 
-
+;; Numero de enemigos vivos en el MapX
+enm_map_alive: .db #2
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HORIZONTAL
-;; Detecta al hero a una distancia N Por el lado que
-;; marca el Byte de la direccion
+;; Detecta al hero a una distancia k_lim_detectar 
+;; indicado el por el Byte _direct
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DESTRUIDOS:
+;; DESTRUIDOS: H, A
 ;; ENTRADAS:
 ;;              IX => puntero al enemigo
 ;;              IY => puntero al hero
@@ -55,15 +43,15 @@ enm_move1:
 
     ;;; Cuando Hero y Enm estén en la misma 'Y' comprobar distancia ;;;;
     ;; h_y == e_y ?? => CALCULAR si lo detecta
-    ld  a, de_y(iy)  ;; A = hero_x
-    ld  h, de_y(ix)  ;; H = enm_x
-    cp  a, h        ;; A - H
-    jr  z, misma_y  ;; IF h_y == e_y THE    N detectar al hero   
+    ld  a, de_y(iy)             ;; A = hero_x
+    ld  h, de_y(ix)             ;; H = enm_x
+    cp  a, h                    ;; A - H
+    jr  z, misma_y              ;; IF h_y == e_y THE    N detectar al hero   
         ;; ELSE h_y != e_y. No detectarlo
         ret  
     misma_y:
 
-    ;;;; En que dirección hay que comprobar???
+    ;; Comprobar en que dirección buscar el Hero
     ld a, e_direct(ix)          ;; A = enemy_direction
     cp a, #-1                    
     jr z, busca_en_la_izquierda ;; IF enm_dict == 0 THEN detect left
@@ -73,29 +61,29 @@ enm_move1:
 
 
     busca_en_la_izquierda:
-    call buscar_izquierda   ;; H = buscar_izquierda
+    call buscar_izquierda       ;; H = buscar_izquierda
     jp aplicar
 
     busca_en_la_derecha:
-    call buscar_derecha     ;; H = busca_derecha
+    call buscar_derecha         ;; H = busca_derecha
 
 
     aplicar:
-    ld a, h                 ;; A = H
+    ld a, h                     ;; A = H
     cp #0
-    jr z, no_aplica         ;; IF A == 0 THEN ret
+    jr z, no_aplica             ;; IF A == 0 THEN ret
 
         call obs_new
         cp #0
         jr z, no_aplica
 
     no_aplica:
-    ret
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Busca al hero por la izquierda
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DESTRUIDOS: HL, AF, BC
+;; DESTRUIDOS: H, A
 ;; ENTRADAS:
 ;;              IX => puntero al enemigo
 ;;              IY => puntero al hero
@@ -121,12 +109,12 @@ buscar_izquierda:
 
     ;; ELSE no hay nada que hacer
     no_detectado:
-    ret
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Busca al hero por la derecha
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DESTRUIDOS: HL, AF, BC
+;; DESTRUIDOS: H, A
 ;; ENTRADAS:
 ;;              IX => puntero al enemigo
 ;;              IY => puntero al hero
@@ -151,42 +139,42 @@ buscar_derecha:
 
     ;; ELSE no hay nada que hacer
     no_detecta:
-    ret
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; HORIZONTAL
-;; Ida y Vuelta Sin Parar de un punto A a otro B
-;; DESTRUIDOS: todos
+;; Mover desde k_lim_der hastas k_lim_izq, en el eje X
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DESTRUIDOS: A, HL, BC
 ;; INPUT:
 ;;          IX => puntero a la entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move0:
     ;; Posicion
-    ld a, de_x(ix)       ;; \ A = e_x(IX)
+    ld a, de_x(ix)              ;; \ A = e_x(IX)
 
     ;; Actualizar El Valor del Sentido
-    cp a, #k_lim_der                  ;; A == lim_der value ???
-    jr z, cambiar_izq               ;; IF A==max left right limit. THEN  move left
+    cp a, #k_lim_der            ;; A == lim_der value ???
+    jr z, cambiar_izq           ;; IF A==max left right limit. THEN  move left
 
         ;; Comprueba si está en el límite izquierdo
-        cp a, #k_lim_izq              ;; A == lim_izq value ???
-        jr z, cambiar_der           ;; IF A==lim_izq THEN move right
-        jp aplicar_sentido          ;; Aplicar el nuevo sentido a la X del enemigo
+        cp a, #k_lim_izq        ;; A == lim_izq value ???
+        jr z, cambiar_der       ;; IF A==lim_izq THEN move right
+        jp aplicar_sentido      ;; Aplicar el nuevo sentido a la X del enemigo
 
     cambiar_izq:
     ld e_direct(ix), #-1
-    jp aplicar_sentido              ;; Aplicar el nuevo sentido a la X del enemigo
+    jp aplicar_sentido          ;; Aplicar el nuevo sentido a la X del enemigo
 
     cambiar_der:
     ld e_direct(ix), #1
 
     ;; Aplica El Sentido Obtenido
     aplicar_sentido:
-    ld a, e_direct(ix)              ;; A = B
-    cp a, #-1                        ;; A == #-1 ??
-    jr z, mover_izq                 ;; IF A == -1 THEN move lef side
+    ld a, e_direct(ix)          ;; A = B
+    cp a, #-1                   ;; A == #-1 ??
+    jr z, mover_izq             ;; IF A == -1 THEN move lef side
 
-        ;; mover_der
+        ;; ELSE: mover_der
         ld e_vx(ix), #1
         jp update_x             ;; Update the new A value
 
@@ -194,16 +182,46 @@ enm_move0:
     ld e_vx(ix), #-1
 
     update_x:
-    call obs_move                   ;; Call func ent_move for applay new x value
+    call obs_move               ;; Call func ent_move for applay new x value
 
-    ret
+ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CARGA EL SIGUIENTE MAPA / GAME OVER cuando el número
+;; de enemigos vivos en el mapa llega a 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REGISTROS DESTRUIDOS: A
+;; ENTRADA: 
+;;          IX -> Puntero a entidad, enemy
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+siguiente_mapa:
+    ;; Cuando Un Enemigo Llega a Heal = 0, 
+    ;; Decrementar enm_map_alive. Si este valor
+    ;; llega a 0, no quedan enemigos por matar y acaba el mapa
+    ;; Comprobar si el enemigo sigue con vida
+    ld  a,  e_health(ix)  ;; A = e_health
+    cp  #0
+    jr  nz, seguir_el_mapa   ;; IF A == 0 THEN jump inc_contadores
 
+        ;; ELSE decrementar enm_map_alive
+        ld  a, (enm_map_alive)
+        dec a
+        ld  (enm_map_alive), a
+
+        ;; Quedan enemigos vivos???
+        cp a, #0
+        jr nz, seguir_el_mapa
+
+            ;; ELSE CARGAR SIGUIENTE MAPA
+            jr .
+
+    seguir_el_mapa:
+ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; REGISTROS DESTRUIDOS: TODOS
+;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
 ;; ENTRADA: 
 ;;          IX -> Puntero a entidad, enemy
 ;;          IY -> Puntero a hero
@@ -214,58 +232,61 @@ enm_update:
     push ix
     push iy 
 
-;; intercambiamos registros
+    ;; EXCHANGE IY IX
     push iy 
     push ix 
-    pop iy
-    pop ix
+    pop iy                              ;; IY -> Puntero a entidad, enemy
+    pop ix                              ;; IX -> Puntero a hero
+    
+    ;; Comprobar las colisiones con las balas
+    ld      hl,  #obs_checkCollision
+    call    obs_doForAllBool            ;; RETURN A = 0 Ò A = 1
 
-    ;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
-    ;;          ;;          IY -> Puntero a entidad, enemy
-;;                         IX -> Puntero a hero
-
-    ld hl, #obs_checkCollision
-    call obs_doForAllBool
-    ;;rescatamos
-    pop iy
-    pop ix
+    ;; Restaurar los punteros de ix, iy
+    pop iy                              ;; IY -> Puntero a entidad, enemy
+    pop ix                              ;; IX -> Puntero a hero
 
     cp #1
-    jr nz, #noGolpeado
-        ;;Cambiar estado?
+    jr nz, #noGolpeado                  ;; IF A != 0 THEN colisión no detectada
+
+        ;; ELSE: decrementar la vida al enemigo
+        ld  a, e_health(IX)
+        dec a
+        ld  e_health(IX),a
         
+        cp #0
+        jr nz, noDamage
 
-
-    ld a, e_health(IX)
-    dec a
-    ld e_health(IX),a
-    cp #0
-    jr nz, noDamage
-        ;;Cambiar de estado?
-        ;; Animacion de muerte
-        
-
+            ;; ELSE 
+                ;;Cambiar de estado?
+                ;; Animacion de muerte
 
     noDamage:
-
-
     noGolpeado:
 
-
-
+    ;; Guardar IX, IY
     push ix
     push iy
+
     ;Acutalizas las balas del enemigo
     ld	hl, #obs_update
     call	obs_doForAll
-    ;Actualizar el enemigo
+    
+    ;; Recuperar IX, IY destruidos por el call
     pop iy
     pop ix
+
+
+    ;; Comprobar si quedan enemigos vivos
+    ;; En caso contrario carga la siguiente pantalla
+    call siguiente_mapa
+
+    ;Actualizar el enemigo
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
     jp  (hl) ;; llamada al estado
-    ret
 
+ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -280,20 +301,22 @@ enm_clear:
     call	obs_doForAll
     ;; Borras enemigos
     call ent_clear 
-    ret
+ret
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DIBUJAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; DIBUJAR ENEMIGO CON T
-;; ENTRADA: 
-;;          IX -> Puntero a entidad
+;; DIBUJAR ENEMIGO CON TRANSPARENCIA
+;; ENTRADA: IX -> Puntero a entidad
+;; DESTRUIDOS:  A, BC, DE, HL, IY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_draw:
     ;; Comprobar si necesita tranparencia
     ld	a,  #0
     cp  e_alpha(ix)
     jr  nz,  dibujar_con_transparencia
-    
+
         ;; ELSE No necesita Transparencia
         call    ren_drawEntity
         jp	    tiene_balas
@@ -304,56 +327,53 @@ enm_draw:
     tiene_balas:
     ld	hl, #obs_draw
     call	obs_doForAll
-    ret
-
+ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
-;; EXPLOTA: AF, BC, DE, HL
-;; ENTRADA:
-;;          HL -> PUNTERO AL MÉTODO A EJECUTAR
+;; DESTRUIDOS: A, BC, DE, HL, IY, IX
+;; ENTRADA: HL -> PUNTERO AL MÉTODO A EJECUTAR
 ;;          
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enm_doForAll::
+enm_doForAll:
 
+    ld  a,  #k_total_enm ; Contador 
 
-    ld a,#k_total_enm ; Contador 
-    
-  ld iy, #ListaEnemigos
+    ld  iy, #ListaEnemigos
 
-  ld  (metodo), hl      ;; (meotodo) = HL
+    ld  (metodo), hl         ;; (meotodo) = HL
 
-  buc:
+    buc:
     ;; IF vivo == 0 THEN no aplicar la función.
-    push af                       ;; PUSH AF
-    ld  a, e_health(iy)            ;; A = obs_alive
+    push    af               ;; PUSH AF
+    ld      a, e_health(iy)  ;; A = obs_alive
     cp  #0          
-    jr  z,  inc_contadores        ;; IF A == 0 THEN jump inc_contadores
+    jr  z,  inc_contadores   ;; IF A == 0 THEN jump inc_contadores
 
-  ;Salvar
-        push ix
-        push iy 
+    ;Salvar
+    push    ix
+    push    iy 
 
-;; metemos EXchange
-      push iy 
-      push ix 
-      pop iy
-      pop ix
+    ;; metemos EXchange
+    push    iy 
+    push    ix 
+    pop     iy
+    pop     ix
 
-      ;; ELSE Apply Function
-      metodo  = . + 1             ;; | . + 1 es el call
-      call    ent_draw            ;; \ CALL metodo
+    ;; ELSE Apply Function
+    metodo  = . + 1           ;; | . + 1 es el call
+    call    ent_draw          ;; \ CALL metodo
 
-      pop iy
-      pop ix
+    pop     iy
+    pop     ix
 
     inc_contadores:
-    pop	af                      ;; | POP AF
-    ld c, #k_enm_size
-    ld b, #0
-    add iy, bc                  ;; | Iy += BC, Update pointer value
-    dec a                       ;; | A--
-    jr  nz, buc                 ;; \ IF A == 0 THEN stop Apply Function
+    pop	    af                ;; | POP AF
+    ld      c,  #k_enm_size   ;; | C = k_enm_size
+    ld      b,  #0            ;; | B = 0
+    add     iy, bc            ;; | Iy += BC, Update pointer value
+    dec     a                 ;; | A--
+    jr  nz, buc               ;; \ IF A == 0 THEN stop Apply Function
 
-    ret
+ret
