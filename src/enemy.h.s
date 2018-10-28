@@ -43,9 +43,9 @@ shot_array     = 9 + e_size
 
 
 
-.globl eshoot
-.globl eshoot2
-.globl eshoot3
+;.globl eshoot
+;.globl eshoot2
+;.globl eshoot3
 .globl eshoot4
 
 .globl enm_clear

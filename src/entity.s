@@ -117,7 +117,7 @@ ent_new:
     add     hl,     bc                  ;;Se cambia por las 2   sbc hl, bc
 ret
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COPIA LOS VALORES DE UNA ENTIDAD SOBRE OTRA
 ;; REGISTROS DESTRUIDOS:
 ;; ENTRADA: 
@@ -126,7 +126,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ent_copy:
     ld bc, #k_entity_size
-    ldir
+    
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -140,6 +140,7 @@ ent_doForAll:
     ld  (metodo), hl
  buc:
     push    af
+
     metodo  = . + 1     ;; . es la dir.mem en la que estoy si le sumo 1 es el call
     call    ent_draw
     pop     af

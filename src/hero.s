@@ -18,15 +18,24 @@
 
 ;; Hero Jump Table
 hero_jumptable:
-    .db #-5, #-3, #-3, #-3
-    .db #-3, #01, #01, #01
-    .db #0, #0, #0, #0
+    .db #-6, #-4, #-3, #-2
+    .db #-1, #-1, #6, #4
+    .db #3, #2, #1, #1
     .db #0x80                   ;; #0x80 marca el último byte
 
-    
-;; Hero Data
-DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1, 1, 0, .+4 , 1, 0, 32
+;; Hero Jump Table (puede volar)
+;hero_jumptable:
+;    .db #-5, #-3, #-3, #-3
+;    .db #-3, #01, #01, #01
+;    .db #0, #0, #0, #0
+;    .db #0x80                   ;; #0x80 marca el último byte
 
+time:     .db 0
+firerate = #8
+
+;; Hero Data
+DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 10, 1, 5, 0, .+4 , 5, 0, 32
+;_name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -113,6 +122,12 @@ ret
 ;;          IX -> Puntero a entidad hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_update:
+    ;; Update Shoot Timer
+    ld a, (time)
+    inc a
+    ld (time), a ;; TIMER += 1
+
+
     push ix
 
     ld hl, #hero_check_hit
@@ -282,8 +297,8 @@ hero_wait4KeyboardInput:
     ld      hl,     #Key_W
     call    cpct_isKeyPressed_asm
     jr      z,      w_no_pulsada           ;; IF KEY_W IS pressed: lest JUMP
-    call    hero_startJump                  ;; Call Jump Function
-    ld      h,      #0
+        call    hero_startJump                  ;; Call Jump Function
+        ld      h,      #0
 
     w_no_pulsada:
 
@@ -316,9 +331,18 @@ hero_wait4KeyboardInput:
     call  cpct_isKeyPressed_asm
     jr    z, p_no_pulsada      ;;P is pressed
 
-        ;; LLamada a la Función Para Disparar
-        call obs_new
-            ld h,#0
+        ;; Comprobar Timer del Disparo
+        ld a, (time)
+        cp a, #firerate
+        jr c, esperar_al_timer
+
+            ;; ELSE
+            ld a, #0            ;; El Timer ha llegado al máximo
+            ld (time), a        ;; Reset Timer
+            call obs_new        ;; Shoot
+
+        esperar_al_timer:
+        ld h,#0
 
     p_no_pulsada:
 

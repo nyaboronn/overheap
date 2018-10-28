@@ -95,10 +95,10 @@ initialize_CPC:
 
   call ent_initialTile
 
-  ld    ix, #eshoot
-  ld    e_tile_l(ix),l
-  ld    e_tile_h(ix),h
-  call ent_getActualTile
+  ;ld    ix, #eshoot
+  ;ld    e_tile_l(ix),l
+  ;ld    e_tile_h(ix),h
+  ;call ent_getActualTile
 
 ret
 
@@ -112,8 +112,6 @@ _main::
   loop:
     ld ix, #hero_data
     call hero_clear
-    ld iy, #eshoot
-
     ld ix, #hero_data
     call hero_update
     ld ix, #hero_data
