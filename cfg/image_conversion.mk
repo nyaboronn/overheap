@@ -60,6 +60,9 @@ $(eval $(call IMG2SP, CONVERT, img/menu/jlga10.png,40,8, jlga10_sp, jlga10_pal))
 $(eval $(call IMG2SP, CONVERT, img/menu/jlq2.png,26,8, jlq2_sp, jlq2_pal))
 $(eval $(call IMG2SP, CONVERT, img/menu/ajah1.png,34,8, ajah1_sp, ajah1_pal))
 $(eval $(call IMG2SP, CONVERT, img/menu/hearth.png,16,12, hearth_sp, hearth_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/Restart.png,59,8, Restart_sp, Restart_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/youLost.png,54,8, youLost_sp, youLost_pal))
+
 
 ## Convert img/tiles.png into src/tiles.c and src/tiles.h
 ##   This is a mode 0 tileset, containing 16 4x4 pixel tiles, that are used
@@ -73,5 +76,4 @@ $(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE2),tileset,src/asset
 $(eval $(call IMG2SPRITES,img/Xemnas.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
 $(eval $(call IMG2SPRITES,img/Skeleton.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
 $(eval $(call IMG2SPRITES,img/bala.png,0,sprite,4,4,$(PALETTE2),mask,src/assets))
-$(eval $(call IMG2SPRITES,img/coche.png,0,sprite,18,10,$(PALETTE2),mask,src/assets))
 

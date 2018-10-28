@@ -131,7 +131,7 @@ _main::
     call cpct_akp_musicInit_asm
 
     call menu
-
+    ;;call end_game
   infinito:
   	ld	a, (fps)
     halt
@@ -145,10 +145,7 @@ _main::
 	  jr	z, infinito
     call cpct_akp_musicPlay_asm
     call pulsada  ;;Comprueba los botones del menu
-    ;;ld  de, #0xC04B ;;4 bloque pos de memoria
-    ;;ld  hl, #_menuPrueba_sp_3;; Cojo la cuarta parte
-    ;;call pintar_sprite
-    ;;jr .
+    
   jp infinito
 
   game:
@@ -192,20 +189,20 @@ call enm_doForAll
 ;  ld	hl, #eshoot
 ;call enm_draw
 
-call  cpct_scanKeyboard_asm
-    ld    hl, #Key_P
-    call  cpct_isKeyPressed_asm
-    jr    z, no_press_p
-    
-  	ld a, hero_vida(ix)
-
-  	cp #1
-  	jr	z,no
-  	dec a
-no:
-  	ld hero_vida(ix), a
-
-no_press_p:
+;;call  cpct_scanKeyboard_asm
+;;    ld    hl, #Key_P
+;;    call  cpct_isKeyPressed_asm
+;;    jr    z, no_press_p
+;;    
+;;  	ld a, hero_vida(ix)
+;;
+;;  	cp #1
+;;  	jr	z,no
+;;  	dec a
+;;no:
+;;  	ld hero_vida(ix), a
+;;
+;;no_press_p:
 
 call ren_drawHud  ;;HUD
 

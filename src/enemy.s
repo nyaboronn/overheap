@@ -38,6 +38,9 @@ k_lim_detectar = #15    ;; Distancia maxima a la que detecta al hero
 k_total_enm = #4
 k_enm_size = #23 + 5*15 ; 5*obs + 14+9
 
+;; Numero de enemigos vivos en el MapX
+enm_map_alive: .db #2
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -200,6 +203,8 @@ enm_move0:
 
 
 
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACTUALIZAR ENEMIGO QUE PUEDE DISPARAR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -255,6 +260,9 @@ enm_update:
 
     push ix
     push iy
+
+   
+
     ;Acutalizas las balas del enemigo
     ld	hl, #obs_update
     call	obs_doForAll

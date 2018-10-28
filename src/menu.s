@@ -6,6 +6,7 @@
 .include "sprite.h.s"
 
 .globl _overHeap_pal
+.globl _youLost_pal
 
 menu:
 
@@ -13,7 +14,7 @@ menu:
     ld  de,  #16      
     call cpct_setPalette_asm   
     
-    call fondo_negro
+    ;;call fondo_negro
 
             ;D80F
     ld  de, #0xE0B4 ;;1 bloque pos de memoria
@@ -57,5 +58,27 @@ pulsada:
 
 no_press_1:
 
+
+ret
+
+end_game:
+
+    ld  hl,  #_youLost_pal
+    ld  de,  #16      
+    call cpct_setPalette_asm   
+    
+        ;;call fondo_negro
+
+        ld  de, #0xE0BA ;;1 bloque pos de memoria
+        ld  hl, #_youLost_sp;; Cojo la segunda parte
+        ld  c, #27    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+        ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+        call cpct_drawSprite_asm
+
+        ld  de, #0xC428 ;;1 bloque pos de memoria
+        ld  hl, #_Restart_sp;; Cojo la segunda parte
+        ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+        ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+        call cpct_drawSprite_asm
 
 ret

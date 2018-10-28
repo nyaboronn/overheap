@@ -48,6 +48,7 @@ shot_array     = 9 + e_size
 .globl enm_update
 .globl enm_draw
 .globl enm_doForAll
+
 ;.globl enm_data
 ;;;;;;;;;;;;;;; Temporal
 .globl enm_move1
