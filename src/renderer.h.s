@@ -32,3 +32,4 @@ de_sprite = 6
 
 .globl next_stage
 .globl final_stage
+.globl rondas_stage

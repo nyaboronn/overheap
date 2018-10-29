@@ -11,6 +11,8 @@
 .globl end_game
 .globl pulsada
 .globl cpct_akp_stop_asm
+.globl ronda
+.globl fin_rondas
 
 
 

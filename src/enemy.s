@@ -29,7 +29,7 @@ CurrentEnemyIt: .db 0x00 ;; Iterator
 k_lim_der       = #34       ;; Limite Derecho del movimiento
 k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
-k_total_enm     = #3           ;; Total de enemigos en memoria
+k_total_enm     = #2           ;; Total de enemigos en memoria
 k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX

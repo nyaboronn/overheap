@@ -12,6 +12,7 @@
 .globl _youLost_pal
 
 fps2: .db #1
+ronda: .db #2
 
 menu:
 
@@ -111,6 +112,7 @@ no_press_Z:
     call  cpct_isKeyPressed_asm
     jr    z, no_press_X
     
+   
     ;;Todo cambiar por los sigueitnes enemigos
     call scroll_default
 
@@ -119,7 +121,16 @@ no_press_Z:
     call enemy_improve
     call hero_default_no_vida
 
+     ld a, (ronda)
+     inc a
+     ld (ronda), a
+
 ;;Generamos los siguientes enemigos para la siguiente ronda-----------------------------------------------------------------------------------------------------------------
+    
+    cp #3
+    jr nz, no_fin
+    call fin_rondas
+    no_fin:
 
     jp game
 no_press_X:
@@ -149,6 +160,46 @@ full_no_press_Z:
 
 ret
 
+end_reinicio:
+    call  cpct_scanKeyboard_asm
+    ld    hl, #Key_Z
+    call  cpct_isKeyPressed_asm
+    jr    z, end_no_press_Z
+    ;;Saltamos y reiniciamos el vídeogame
+    
+   ; call enemy_default
+    call scroll_default
+     call enemy_default
+    call hero_default
+    
+    ;;jp game
+    call llamada_menu
+    ;;jp principio
+end_no_press_Z:
+
+
+
+ret
+
+
+fin_rondas:
+     ld  hl,  #_youLost_pal
+    ld  de,  #16      
+    call cpct_setPalette_asm
+
+    call scroll_default
+    call ren_initBuffers
+    call rondas_stage
+
+
+    inf4:
+       
+    
+    call end_reinicio
+
+    jp  inf4
+
+ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Carga final del mapa         
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -175,6 +226,8 @@ llamada_menu:
     call ren_initBuffers
     call menu
     call ren_switchBuffers
+    ld a, #2
+    ld (ronda), a
 inf3:	
 
     ld	a, (fps2)
