@@ -34,6 +34,14 @@ ren_initBuffers:
   ld de, #0x8000 + 1
   ld bc, #0x4000 - 1
   ldir
+
+  ld hl, #0xC000
+  ld (hl), #0
+  ld de, #0xC000 + 1
+  ld bc, #0x4000 - 1
+  ldir
+
+
 ret
 
 
@@ -389,7 +397,7 @@ ret
 corazon: .db #0
 
 ren_drawHud:
-	ld  a, hero_vida(ix)
+	  ld  a, hero_vida(ix)
 
 pintar_vidas:
 	push af		;;Guardo las vidas que tenía visitadas
@@ -403,9 +411,9 @@ pintar_vidas:
     ld e, pVideo(iy)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  Pintar el Corazón de la vida          ;;Hacer con el bucle
+;;  Pintar el Corazón de la vida          
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   ;; push de   ;;El valor del puntero se va a la pila
+   
     ld a, (corazon)
     ld c, a ;x
     ld b,#4*MAP_HEIGHT - 16  ;y
@@ -420,7 +428,7 @@ pintar_vidas:
     
 	ld	a, (corazon)
 	add a, #8
-	ld (corazon), a
+  	ld (corazon), a
 	pop af		;;Devuelvo las vidas visitadas
 	
 	dec a		;;Vida pintada, decremento
@@ -430,8 +438,120 @@ pintar_vidas:
 	ld a, #0    ;;Resetamos el valor de la variable, para la siguiente ejecución
 	ld (corazon), a
 
-  call ren_clearHeart
-  ret
+ call ren_clearHeart
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Carga sieguiente mapa        
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+next_stage:
+;;1
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+    ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+	ld c, #25 ;x    
+	ld b, #5 ;y
+    call cpct_getScreenPtr_asm ;; return in hl
+
+	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+	ld  hl, #_round_sp;; Cojo la segunda parte
+    ld  c, #32    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+    call cpct_drawSprite_asm
+;;2
+	 ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+    ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+	ld c, #3 ;x    
+	ld b, #100;y
+    call cpct_getScreenPtr_asm ;; return in hl
+
+	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+	ld  hl, #_Restart_sp;; Cojo la segunda parte
+    ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+    call cpct_drawSprite_asm
+;;3
+ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+    ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+	ld c, #60 ;x    
+	ld b, #100;y
+    call cpct_getScreenPtr_asm ;; return in hl
+
+	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+	ld  hl, #_Next_sp;; Cojo la segunda parte
+    ld  c, #18    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+    call cpct_drawSprite_asm
+
+;;Cambio el buffer	
+	call ren_switchBuffers
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Carga pantalla final      
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+final_stage:
+
+
+;;1
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+    ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+	ld c, #25 ;x    
+	ld b, #5 ;y
+    call cpct_getScreenPtr_asm ;; return in hl
+
+	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+	ld  hl, #_youLost_sp;; Cojo la segunda parte
+    ld  c, #27    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+    call cpct_drawSprite_asm
+;2
+	 ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+    ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+	ld c, #25 ;x    
+	ld b, #100;y
+    call cpct_getScreenPtr_asm ;; return in hl
+
+	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+	ld  hl, #_Restart_sp;; Cojo la segunda parte
+    ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+    call cpct_drawSprite_asm
+
+	;;Cambio el buffer	;;Posible cambio en un futuro
+	call ren_switchBuffers
+
+ret
+ 
 
 
 

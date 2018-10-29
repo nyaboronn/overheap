@@ -3,7 +3,7 @@
 .include "utils.h.s"
 .include "main.h.s"
 
- .include "renderer.h.s"
+.include "renderer.h.s"
 
 ;;Structure 
 
@@ -15,7 +15,84 @@ TScreenTilemapBack: .dw #0xC000
                 .dw #_g_tilemap
                 .db 0x0000
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;    ;;LLAMAR SIEMPRE *ANTES* DE LA LLAMADA A HERO_DEFAULT
+;; Devuelve al Scroll a valores default
+;; 
+;; Registros destruidos: IX
+;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+scroll_default:
+    ld ix, #TScreenTilemapFront
+    ld pVideo(ix), #0x8000
+    ld pTilemap(ix), #_g_tilemap
+    ld scroll(ix), #0x0000
 
+    ld ix, #TScreenTilemapBack
+    ld pVideo(ix), #0xC000
+    ld pTilemap(ix), #_g_tilemap
+    ld scroll(ix), #0x0000
+
+;call ren_switchBuffers
+
+
+
+
+     ;;Tenemos que inicilizar EasyTileMap
+  ld hl, #_g_tileset      ;;Punteor al tilesetW
+  call cpct_etm_setTileset2x4_asm
+
+
+  call ren_initBuffers
+
+
+  ld bc, (#m_back_tileMap)
+  push bc
+  pop iy
+
+  ;;Ahora pintamos el mapa entero     
+  ld C, #0x00    ;; X
+  ld B, #0x00  ;; Y
+  ld E, #SCR_TILE_WIDTH  ;; W
+  ld D, #MAP_HEIGHT  ;; H
+  ld A, #MAP_WIDTH ;; map_width
+
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
+
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  push hl
+
+
+  call cpct_etm_drawTileBox2x4_asm
+
+  call ren_switchBuffers
+
+  ;; LOAD in IY the new tileMAP
+  ld bc, (#m_back_tileMap)
+  push bc
+  pop iy
+
+  ;;Ahora pintamos el mapa entero     
+  ld C, #0x00    ;; X
+  ld B, #0x00  ;; Y
+  ld E, #SCR_TILE_WIDTH  ;; W
+  ld D, #MAP_HEIGHT  ;; H
+  ld A, #MAP_WIDTH ;; map_width
+
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
+
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  push hl
+
+  call cpct_etm_drawTileBox2x4_asm
+
+  
+ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DEVUELVE EL VALOR DE UN TILE, DADO UNA  COLUMNA Y FILA
 ;; REGISTROS DESTRUIDOS: AF, BC, DE, HL
