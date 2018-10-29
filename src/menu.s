@@ -66,28 +66,17 @@ no_press_1:
 
 ret
 
+
+;;Muestra por pantalla Z para reiniciar y X para siguiente
 next_game:
 
     ld  hl,  #_youLost_pal
     ld  de,  #16      
     call cpct_setPalette_asm   
-    
-        ;;call fondo_negro
+    call scroll_default
+    call ren_initBuffers
+    call next_stage
 
-        ;;ld  de, #0xE0BA ;;1 bloque pos de memoria
-        ;;ld  hl, #_youLost_sp;; Cojo la segunda parte
-        ;;ld  c, #27    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
-        ;;ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
-        ;;call cpct_drawSprite_asm
-
-        ;;ld  de, #0xC428 ;;1 bloque pos de memoria
-        ;;ld  hl, #_Restart_sp;; Cojo la segunda parte
-        ;;ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
-        ;;ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
-        ;;call cpct_drawSprite_asm
-        call scroll_default
-        call ren_initBuffers
-        call next_stage
     inf:
         call reinicio
     jp  inf
@@ -97,16 +86,24 @@ ret
 ;;Reincia el juego dandolo a la Z y a la X siguiente ronda
 ;;;;;;;;;;
 reinicio:
+
+
+
     call  cpct_scanKeyboard_asm
     ld    hl, #Key_Z
     call  cpct_isKeyPressed_asm
     jr    z, no_press_Z
     ;;Saltamos y reiniciamos el vídeogame
-    
+
     call scroll_default
+    
+    
+    call enemy_default
     call hero_default
+
     ;;jp principio
-    call llamada_menu
+    jp game
+    ;;call llamada_menu
 no_press_Z:
 
     call  cpct_scanKeyboard_asm
@@ -114,9 +111,14 @@ no_press_Z:
     call  cpct_isKeyPressed_asm
     jr    z, no_press_X
     
-    call enemy_default
+    ;;Todo cambiar por los sigueitnes enemigos
     call scroll_default
+
+    ;; call improve_enemies
+   ;; call enemy_default
+    call enemy_improve
     call hero_default_no_vida
+
 ;;Generamos los siguientes enemigos para la siguiente ronda-----------------------------------------------------------------------------------------------------------------
 
     jp game
@@ -133,14 +135,18 @@ full_reinicio:
     jr    z, full_no_press_Z
     ;;Saltamos y reiniciamos el vídeogame
     
-    call enemy_default
+   ; call enemy_default
     call scroll_default
+     call enemy_default
     call hero_default
     
-    ;;jp game
-    call llamada_menu
+    jp game
+    ;;call llamada_menu
     ;;jp principio
 full_no_press_Z:
+
+
+
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -152,9 +158,9 @@ end_game:
     ld  de,  #16      
     call cpct_setPalette_asm 
 
-    ;;call scroll_default
+    call scroll_default
     call ren_initBuffers
-    call final_stage
+    call final_stage ;; Pintar por pantalla
 
     full_inf:
         call full_reinicio
