@@ -11,12 +11,13 @@
 .globl coche
 
 
-ListaEnemigos: 
-    ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move0, 0x1020, -1,  1,  10, 1, 0, .+4 , 1, 0, 34
-    ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 1, 0, .+4 , 1, 0, 34
-    DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
+ListaEnemigos: ;                                                                       
+    ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move1, 1,  1,  10
+    DefineEnemyShoot eshoot2, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3
+    ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  10
+    DefineEnemyShoot eshoot4, 6, 37,   0x04, 0x04,  _sprite_Skeleton,     enm_move0, 1, 1,  3
+    DefineEnemyShoot car, 105,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  10
+    DefineEnemyShoot eshoot3, 40, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3
 
 
 
@@ -29,13 +30,15 @@ CurrentEnemyIt: .db 0x00 ;; Iterator
 k_lim_der       = #34       ;; Limite Derecho del movimiento
 k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
-k_total_enm     = #3            ;; Total de enemigos en memoria
-k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
+k_total_enm     = #3           ;; Total de enemigos en memoria
+k_enm_size      = #23 + k_max_balas*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX
 enm_map_alive: .db #k_total_enm
 
+enemies: .db #k_total_enm
 
+life: .db 0x03
 
 
 
@@ -89,7 +92,9 @@ doForCurrentEnemy:
     nextEnemy:
 
     ld a, (#CurrentEnemyIt)
-    cp #k_total_enm-1
+    ld hl, (#enemies)
+    dec l
+    cp l
     jr z, resetCurrent
 
 
@@ -135,13 +140,13 @@ ret
 ;; Devuelve a la vida a los esqueletos
 ;; LLAMAR SIEMPRE ANTES DE HERO_DEFAULT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enemy_default:
+enemy_default::
 
-    ;;ld	hl, #enm_map_alive
-    ;;ld (hl), #k_total_enm
-;;
-    ;;ld hl, #reset_enemy
-    ;;call enm_doForAll
+    ld	hl, #enm_map_alive
+    ld (hl), #2;;enemies
+
+    ld hl, #reset_enemy
+    call enm_doForAllForDead
 
     
 ret
@@ -150,12 +155,38 @@ ret
 ;; Resetea los bits del enemy
 ;; Entrada IX -> Enemy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-reset_enemy:
+reset_enemy::
     ;;ld de_x(ix), #60
     ;;ld de_y(ix), #37
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
-    ld e_health(iy), #10
+   
+    ld e_health(ix), #3
+
+ret
+
+enemy_improve::
+
+
+
+    ld a, (enemies)
+    inc a
+    ld (enemies), a
+    ld (enm_map_alive), a
+   
+
+    ld hl, #increase_life
+    call enm_doForAllForDead
+
+    
+ret
+
+increase_life:
+
+    ld a, (life)
+    add a, a
+    ld (life), a
+    ld e_health(ix),a
 
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -391,9 +422,11 @@ enm_update:
             ;; ELSE 
                 ;;Cambiar de estado?
                 ;; Animacion de muerte
-            call ren_DestroyEntity
+              ;  call ren_clearEntity
+             call ren_DestroyEntity
+            
 
-
+             
 
     noDamage:
     noGolpeado:
@@ -472,7 +505,9 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAll:
 
-    ld  a,  #k_total_enm ; Contador 
+  ;;  ld  a,  #k_total_enm ; Contador 
+    ld a, (#enm_map_alive)
+
 
     ld  iy, #ListaEnemigos
 
@@ -511,3 +546,53 @@ enm_doForAll:
     jr  nz, buc               ;; \ IF A == 0 THEN stop Apply Function
 
 ret
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
+;; DESTRUIDOS: A, BC, DE, HL, IY, IX
+;; ENTRADA: HL -> PUNTERO AL MÉTODO A EJECUTAR
+;;          
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enm_doForAllForDead:
+
+    ld  a,  (enm_map_alive) ; Contador 
+
+    ld  iy, #ListaEnemigos
+
+    ld  (metodoDead), hl         ;; (meotodo) = HL
+
+    bucle:
+    ;; IF vivo == 0 THEN no aplicar la función.
+    push    af               ;; PUSH AF
+
+
+    ;Salvar
+    push    ix
+    push    iy 
+
+    ;; metemos EXchange
+    push    iy 
+    push    ix 
+    pop     iy
+    pop     ix
+
+    ;; ELSE Apply Function
+    metodoDead  = . + 1           ;; | . + 1 es el call
+    call    ent_draw          ;; \ CALL metodo
+
+    pop     iy
+    pop     ix
+
+   
+    pop	    af                ;; | POP AF
+    ld      c,  #k_enm_size   ;; | C = k_enm_size
+    ld      b,  #0            ;; | B = 0
+    add     iy, bc            ;; | Iy += BC, Update pointer value
+    dec     a                 ;; | A--
+    jr  nz, bucle               ;; \ IF A == 0 THEN stop Apply Function
+
+ret
+
+

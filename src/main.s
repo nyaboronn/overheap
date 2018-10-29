@@ -43,14 +43,12 @@ initialize_CPC:
 
 call scroll_default
 
-  call ent_initialTile
 
   ld    ix, #hero_data
   ld    e_tile_l(ix),l
   ld    e_tile_h(ix),h
   call ent_getActualTile
 
-  call ent_initialTile
 
 
 ret
@@ -149,6 +147,8 @@ call enm_doForAll
 ;;  	ld hero_vida(ix), a
 ;;
 ;;no_press_p:
+
+  
 
 call ren_drawHud  ;;HUD
 
