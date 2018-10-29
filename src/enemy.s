@@ -16,7 +16,7 @@ ListaEnemigos:
     DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move0, 0x1020, -1,  1,  10, 1, 0, .+4 , 1, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
     DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 1, 0, .+4 , 1, 0, 34
-    DefineEnemyShoot car, 10, 37, 10, 37, 1, 0, 0x08, 0x06, coche,   enm_iddle, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
 
 ;;;;;;;;;;;;;;;;
 ;; Constantes
