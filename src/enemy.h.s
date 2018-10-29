@@ -2,9 +2,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MACRO PARA DEFINIR UN ENEMIGO A  PARTIR DE UNA ENTIDAD
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEnemy _name, _x, _y, _w, _h, _sprite, _upd, _tile, _direct, _alpha, _health
+.macro DefineEnemy _name, _x, _y, _w, _h, _sprite, _upd, _direct, _alpha, _health
 
-    DefineEntity _name, _x, _y,  _w, _h, _sprite, _upd, _tile
+    DefineEntity _name, _x, _y,  _w, _h, _sprite, _upd
     .db  _direct    ;; 0 => left 1 => right
     .db  _alpha     ;; 0 => no necesita transparencia, 1 => usa transparencia
     .db _health     ;; Vida del enemigo
@@ -14,9 +14,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MACRO PARA DEFINIR UN ENEMIGO CON UN ARRAY DE BALAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEnemyShoot _name, _x, _y, _w, _h, _sprite, _upd, _tile, _direct,_alpha, _health, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+.macro DefineEnemyShoot _name, _x, _y, _w, _h, _sprite, _upd, _direct,_alpha, _health, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
-    DefineEnemy _name, _x, _y, _w, _h, _sprite, _upd, _tile, _direct, _alpha, _health
+    DefineEnemy _name, _x, _y, _w, _h, _sprite, _upd, _direct, _alpha, _health
 
     .db _k_max_num_obs   ;; Maximo de balas a usar 
     .db _m_num_obs       ;; Número de obs creados

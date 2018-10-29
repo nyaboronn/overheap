@@ -34,7 +34,7 @@ time:     .db 0
 firerate = #8
 
 ;; Hero Data
-DefineHeroShot hero_data, 5, 32,  0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, 1, 3, 1, 5, 0, .+4 , 5, 0, 32
+DefineHeroShot hero_data, 5, 32,  0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 1, 3, 1, 5, 0, .+4 , 5, 0, 32
 ;_name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
