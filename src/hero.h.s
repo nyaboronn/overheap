@@ -59,3 +59,5 @@ shot_array     = 9 + e_size
 .globl hero_move
 
 .globl hero_check_hit
+
+.globl hero_default

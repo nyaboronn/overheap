@@ -29,3 +29,5 @@ de_sprite = 6
 
 .globl m_front_tileMap
 .globl m_back_tileMap
+
+.globl final_stage

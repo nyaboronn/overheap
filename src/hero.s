@@ -37,7 +37,23 @@ firerate = #8
 DefineHeroShot hero_data, 5, 30, 5, 30, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 3, 1, 5, 0, .+4 , 5, 0, 32
 ;_name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve al Hero a valores default
+;; 
+;; Registros destruidos: IX
+;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_default:
+    ld	ix, #hero_data  ;;Cargamos el valor de hero en ix
+    ld de_x(ix), #5    ;x
+    ld de_y(ix), #30   ;y
+    ld de_oldx(ix), #5    ;old x
+    ld de_oldy(ix), #30   ;old y
+    ld hero_jump(ix), #1 ;;jump
+    ld hero_vida(ix), #3 ;;Vida
+    ld hero_direct(ix), #-1 ;;Direct
 
+ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comprueba direccion y hace flip al sprite
 ;; Entradas: IX -> Puntero a hero 

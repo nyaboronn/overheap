@@ -4,6 +4,8 @@
 .include "main.h.s"
 .include "renderer.h.s"
 .include "sprite.h.s"
+.include "hero.h.s"
+.include "tileManager.h.s"
 
 .globl _overHeap_pal
 .globl _youLost_pal
@@ -69,16 +71,34 @@ end_game:
     
         ;;call fondo_negro
 
-        ld  de, #0xE0BA ;;1 bloque pos de memoria
-        ld  hl, #_youLost_sp;; Cojo la segunda parte
-        ld  c, #27    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
-        ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
-        call cpct_drawSprite_asm
+        ;;ld  de, #0xE0BA ;;1 bloque pos de memoria
+        ;;ld  hl, #_youLost_sp;; Cojo la segunda parte
+        ;;ld  c, #27    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+        ;;ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+        ;;call cpct_drawSprite_asm
 
-        ld  de, #0xC428 ;;1 bloque pos de memoria
-        ld  hl, #_Restart_sp;; Cojo la segunda parte
-        ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
-        ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
-        call cpct_drawSprite_asm
+        ;;ld  de, #0xC428 ;;1 bloque pos de memoria
+        ;;ld  hl, #_Restart_sp;; Cojo la segunda parte
+        ;;ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+        ;;ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+        ;;call cpct_drawSprite_asm
+        call final_stage
+    inf:
+        call reinicio
+    jp  inf
 
 ret
+
+reinicio:
+    call  cpct_scanKeyboard_asm
+    ld    hl, #Key_Z
+    call  cpct_isKeyPressed_asm
+    jr    z, no_press_Z
+    ;;Saltamos y reiniciamos el vídeogame
+    
+    call scroll_default
+    call hero_default
+    ;;jp principio
+    jp game
+no_press_Z:
+ret	

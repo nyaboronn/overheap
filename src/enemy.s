@@ -4,7 +4,7 @@
 .include "enemy.h.s"
 .include "entity.h.s"
 .include "obstacle.h.s"
-
+.include "menu.h.s"
 
 ;; SPRITE que usan los enemigos
 .globl _sprite_Skeleton
@@ -15,7 +15,7 @@ ListaEnemigos:
     ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
     DefineEnemyShoot eshoot2, 60, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot eshoot4, 20, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
 
 ;;;;;;;;;;;;;;;;
 ;; Constantes
@@ -213,7 +213,8 @@ siguiente_mapa:
         jr nz, seguir_el_mapa
 
             ;; ELSE CARGAR SIGUIENTE MAPA
-            jr .
+            ;;jr .
+            call end_game
 
     seguir_el_mapa:
 ret
