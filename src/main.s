@@ -165,9 +165,12 @@ _main::
 
 ld	hl, #enm_clear
 call enm_doForAll
+
 ld iy, #hero_data
 ld	hl, #enm_update
-call enm_doForAll
+call doForCurrentEnemy
+
+
   ld	hl, #enm_draw
 call enm_doForAll
 

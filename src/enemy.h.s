@@ -51,6 +51,7 @@ shot_array     = 9 + e_size
 .globl enm_clear
 .globl enm_update
 .globl enm_draw
+.globl doForCurrentEnemy
 
 .globl enm_move0
 .globl enm_move1

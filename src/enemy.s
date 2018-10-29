@@ -18,6 +18,11 @@ ListaEnemigos:
     DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 1, 0, .+4 , 1, 0, 34
     DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
 
+
+
+CurrentEnemy: .dw ListaEnemigos
+CurrentEnemyIt: .db 0x00 ;; Iterator
+
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;
@@ -31,14 +36,99 @@ k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
 enm_map_alive: .db #k_total_enm
 
 
+
+
+
+
+;Ejecutar hl para CurrentEnemy
+;Comprobar si emos llegado al final de los ListaEnemigos
+;    si- > Resetar puntero a ListaEnemigos
+;    no-> Sumar offset
+    
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Ejecuta la un metodo para el enemigo actual
+;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; DESTRUIDOS: H, A
+;; ENTRADAS:
+;;   
+;; SALIDAS: 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+doForCurrentEnemy:
+
+
+
+    ld  iy, (#CurrentEnemy)
+
+    ld  (metodoActual), hl         ;; (meotodo) = HL
+
+
+    ;; IF vivo == 0 THEN no aplicar la función.
+    ld      a, e_health(iy)  ;; A = obs_alive
+    cp  #0          
+    jr  z,  nextEnemy   ;; IF A == 0 THEN jump inc_contadores
+
+    ;Salvar
+    push    ix
+    push    iy 
+
+    ;; metemos EXchange
+    push    iy 
+    push    ix 
+    pop     iy
+    pop     ix
+
+    ;; ELSE Apply Function
+    metodoActual  = . + 1           ;; | . + 1 es el call
+    call    ent_draw          ;; \ CALL metodo
+
+    pop     iy
+    pop     ix
+
+    nextEnemy:
+
+    ld a, (#CurrentEnemyIt)
+    cp #k_total_enm-1
+    jr z, resetCurrent
+
+
+    ld  iy, (#CurrentEnemy)
+	
+    
+    ld      c,  #k_enm_size   ;; | C = k_enm_size
+    ld      b,  #0            ;; | B = 0
+    add     iy, bc            ;; | Iy += BC, Update pointer value
+    ld (#CurrentEnemy),iy
+    
+    
+    ld a, (#CurrentEnemyIt)
+    inc a
+    ld (#CurrentEnemyIt),a
+
+
+ret
+    resetCurrent:
+
+    ld  hl, #ListaEnemigos
+    ld (#CurrentEnemy),hl
+
+
+    ld a, #0x00
+    ld (#CurrentEnemyIt),a
+
+
+
+ret	
+
+
 ;;;;;;;;;;;;;;;;;;;
 ;;Enemigo no hace nada
 ;;
 ;;;;;;;;;;;;;;;;;;;;
 
 enm_iddle:
-
-ret;
+ret
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
