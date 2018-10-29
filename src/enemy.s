@@ -15,8 +15,8 @@ ListaEnemigos: ;
     ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move1, 1,  1,  10
     DefineEnemyShoot eshoot2, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3
     ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  10
-    DefineEnemyShoot eshoot4, 6, 37,   0x04, 0x04,  _sprite_Skeleton,     enm_move0,  1, 1,  3
-    DefineEnemyShoot car, 105,   37,   0x08, 0x06, coche,   enm_move1,                -1, 0,  10
+    DefineEnemyShoot eshoot4, 6, 37,   0x04, 0x04,  _sprite_Skeleton,     enm_move0, 1, 1,  3
+    DefineEnemyShoot car, 105,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  10
 
 
 
