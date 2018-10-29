@@ -85,6 +85,7 @@ next_game:
         ;;ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
         ;;ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
         ;;call cpct_drawSprite_asm
+        call scroll_default
         call ren_initBuffers
         call next_stage
     inf:
@@ -113,6 +114,7 @@ no_press_Z:
     call  cpct_isKeyPressed_asm
     jr    z, no_press_X
     
+    call enemy_default
     call scroll_default
     call hero_default_no_vida
 ;;Generamos los siguientes enemigos para la siguiente ronda-----------------------------------------------------------------------------------------------------------------
@@ -131,6 +133,7 @@ full_reinicio:
     jr    z, full_no_press_Z
     ;;Saltamos y reiniciamos el vídeogame
     
+    call enemy_default
     call scroll_default
     call hero_default
     
@@ -149,6 +152,7 @@ end_game:
     ld  de,  #16      
     call cpct_setPalette_asm 
 
+    ;;call scroll_default
     call ren_initBuffers
     call final_stage
 
@@ -164,7 +168,7 @@ ret
 llamada_menu:
     call ren_initBuffers
     call menu
-    ;;call ren_switchBuffers
+    call ren_switchBuffers
 inf3:	
 
     ld	a, (fps2)

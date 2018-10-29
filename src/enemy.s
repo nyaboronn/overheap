@@ -30,6 +30,33 @@ k_enm_size      = #23 + 5*15 ; 5*obs + 14+9
 enm_map_alive: .db #2
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve a la vida a los esqueletos
+;; LLAMAR SIEMPRE ANTES DE HERO_DEFAULT
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enemy_default:
+
+    ;;ld	hl, #enm_map_alive
+    ;;ld (hl), #k_total_enm
+;;
+    ;;ld hl, #reset_enemy
+    ;;call enm_doForAll
+
+    
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resetea los bits del enemy
+;; Entrada IX -> Enemy
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reset_enemy:
+    ;;ld de_x(ix), #60
+    ;;ld de_y(ix), #37
+    ;;ld de_oldx(ix), #60
+    ;;ld de_oldy(ix), #37
+    ld e_health(iy), #10
+
+ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Detecta al hero a una distancia k_lim_detectar 
 ;; indicado el por el Byte _direct
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
