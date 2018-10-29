@@ -35,7 +35,9 @@ k_enm_size      = #23 + k_max_balas*15 ; 5*obs + 14+9
 ;; Numero de enemigos vivos en el MapX
 enm_map_alive: .db #k_total_enm
 
-life: .db 0x05
+enemies: .db #k_total_enm
+
+life: .db 0x03
 
 
 
@@ -89,7 +91,9 @@ doForCurrentEnemy:
     nextEnemy:
 
     ld a, (#CurrentEnemyIt)
-    cp #k_total_enm-1
+    ld hl, (#enemies)
+    dec l
+    cp l
     jr z, resetCurrent
 
 
@@ -138,7 +142,7 @@ ret
 enemy_default::
 
     ld	hl, #enm_map_alive
-    ld (hl), #k_total_enm
+    ld (hl), #2;;enemies
 
     ld hl, #reset_enemy
     call enm_doForAllForDead
@@ -156,14 +160,19 @@ reset_enemy::
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
    
-    ld e_health(ix), #5
+    ld e_health(ix), #3
 
 ret
 
 enemy_improve::
 
-    ld	hl, #enm_map_alive
-    ld (hl), #k_total_enm
+
+
+    ld a, (enemies)
+    inc a
+    ld (enemies), a
+    ld (enm_map_alive), a
+   
 
     ld hl, #increase_life
     call enm_doForAllForDead
@@ -547,7 +556,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAllForDead:
 
-    ld  a,  #k_total_enm ; Contador 
+    ld  a,  (enm_map_alive) ; Contador 
 
     ld  iy, #ListaEnemigos
 
