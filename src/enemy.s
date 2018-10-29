@@ -12,11 +12,11 @@
 
 
 ListaEnemigos: 
-    ;DefineEnemyShoot eshoot, 10, 37,  0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot2, 70, 37,  1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  5,5 , 0, .+4 , 5, 0, 34
-    ;DefineEnemyShoot eshoot3, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 6, 37,  1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  5, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot car, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 5, 0, .+4 , 5, 0, 34
+    ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot eshoot2, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  5,5 , 0, .+4 , 5, 0, 34
+    ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot eshoot4, 6, 37,   0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  5, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot car, 105, 37,   0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 5, 0, .+4 , 5, 0, 34
 
 
 
