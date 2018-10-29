@@ -97,11 +97,13 @@ reinicio:
 
     call scroll_default
     
+    
     call enemy_default
     call hero_default
 
     ;;jp principio
-    call llamada_menu
+    jp game
+    ;;call llamada_menu
 no_press_Z:
 
     call  cpct_scanKeyboard_asm
@@ -111,10 +113,10 @@ no_press_Z:
     
     ;;Todo cambiar por los sigueitnes enemigos
     call scroll_default
-    
-    ;; call improve_enemies
-    call enemy_default
 
+    ;; call improve_enemies
+   ;; call enemy_default
+    call enemy_improve
     call hero_default_no_vida
 
 ;;Generamos los siguientes enemigos para la siguiente ronda-----------------------------------------------------------------------------------------------------------------

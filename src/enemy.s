@@ -13,9 +13,9 @@
 
 ListaEnemigos: 
     ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  3, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  5, 1, 0, .+4 , 1, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  3, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  5, 1, 0, .+4 , 1, 0, 34
     DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
 
 
@@ -35,7 +35,7 @@ k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
 ;; Numero de enemigos vivos en el MapX
 enm_map_alive: .db #k_total_enm
 
-
+life: .db 0x05
 
 
 
@@ -155,7 +155,28 @@ reset_enemy::
     ;;ld de_y(ix), #37
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
-    ld e_health(ix), #10
+   
+    ld e_health(ix), #5
+
+ret
+
+enemy_improve::
+
+    ld	hl, #enm_map_alive
+    ld (hl), #k_total_enm
+
+    ld hl, #increase_life
+    call enm_doForAllForDead
+
+    
+ret
+
+increase_life:
+
+    ld a, (life)
+    add a, a
+    ld (life), a
+    ld e_health(ix),a
 
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
