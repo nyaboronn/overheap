@@ -1,7 +1,7 @@
 #include "newtiles.h"
 // Data created with Img2CPC - (c) Retroworks - 2007-2017
 // Palette uses hardware values.
-const u8 g_palette[16] = { 0x54, 0x44, 0x55, 0x5c, 0x4c, 0x56, 0x57, 0x5e, 0x40, 0x4e, 0x47, 0x52, 0x53, 0x4a, 0x43, 0x4b };
+const u8 g_palette[16] = { 0x54, 0x5c, 0x44, 0x55, 0x57, 0x53, 0x5c, 0x4c, 0x4e, 0x47, 0x4a, 0x40, 0x56, 0x52, 0x46, 0x4b };
 
 u8* const g_tileset[256] = { 
 	g_newtiles_000, g_newtiles_001, g_newtiles_002, g_newtiles_003, g_newtiles_004, g_newtiles_005, g_newtiles_006, g_newtiles_007, g_newtiles_008, g_newtiles_009, g_newtiles_010, g_newtiles_011, g_newtiles_012, g_newtiles_013, g_newtiles_014, g_newtiles_015, g_newtiles_016, g_newtiles_017, g_newtiles_018, g_newtiles_019, g_newtiles_020, g_newtiles_021, g_newtiles_022, g_newtiles_023, g_newtiles_024, g_newtiles_025, g_newtiles_026, g_newtiles_027, g_newtiles_028, g_newtiles_029, g_newtiles_030, g_newtiles_031, g_newtiles_032, g_newtiles_033, g_newtiles_034, g_newtiles_035, g_newtiles_036, g_newtiles_037, g_newtiles_038, g_newtiles_039, g_newtiles_040, g_newtiles_041, g_newtiles_042, g_newtiles_043, g_newtiles_044, g_newtiles_045, g_newtiles_046, g_newtiles_047, g_newtiles_048, g_newtiles_049, g_newtiles_050, g_newtiles_051, g_newtiles_052, g_newtiles_053, g_newtiles_054, g_newtiles_055, g_newtiles_056, g_newtiles_057, g_newtiles_058, g_newtiles_059, g_newtiles_060, g_newtiles_061, g_newtiles_062, g_newtiles_063, g_newtiles_064, g_newtiles_065, g_newtiles_066, g_newtiles_067, g_newtiles_068, g_newtiles_069, g_newtiles_070, g_newtiles_071, g_newtiles_072, g_newtiles_073, g_newtiles_074, g_newtiles_075, g_newtiles_076, g_newtiles_077, g_newtiles_078, g_newtiles_079, g_newtiles_080, g_newtiles_081, g_newtiles_082, g_newtiles_083, g_newtiles_084, g_newtiles_085, g_newtiles_086, g_newtiles_087, g_newtiles_088, g_newtiles_089, g_newtiles_090, g_newtiles_091, g_newtiles_092, g_newtiles_093, g_newtiles_094, g_newtiles_095, g_newtiles_096, g_newtiles_097, g_newtiles_098, g_newtiles_099, g_newtiles_100, g_newtiles_101, g_newtiles_102, g_newtiles_103, g_newtiles_104, g_newtiles_105, g_newtiles_106, g_newtiles_107, g_newtiles_108, g_newtiles_109, g_newtiles_110, g_newtiles_111, g_newtiles_112, g_newtiles_113, g_newtiles_114, g_newtiles_115, g_newtiles_116, g_newtiles_117, g_newtiles_118, g_newtiles_119, g_newtiles_120, g_newtiles_121, g_newtiles_122, g_newtiles_123, g_newtiles_124, g_newtiles_125, g_newtiles_126, g_newtiles_127, g_newtiles_128, g_newtiles_129, g_newtiles_130, g_newtiles_131, g_newtiles_132, g_newtiles_133, g_newtiles_134, g_newtiles_135, g_newtiles_136, g_newtiles_137, g_newtiles_138, g_newtiles_139, g_newtiles_140, g_newtiles_141, g_newtiles_142, g_newtiles_143, g_newtiles_144, g_newtiles_145, g_newtiles_146, g_newtiles_147, g_newtiles_148, g_newtiles_149, g_newtiles_150, g_newtiles_151, g_newtiles_152, g_newtiles_153, g_newtiles_154, g_newtiles_155, g_newtiles_156, g_newtiles_157, g_newtiles_158, g_newtiles_159, g_newtiles_160, g_newtiles_161, g_newtiles_162, g_newtiles_163, g_newtiles_164, g_newtiles_165, g_newtiles_166, g_newtiles_167, g_newtiles_168, g_newtiles_169, g_newtiles_170, g_newtiles_171, g_newtiles_172, g_newtiles_173, g_newtiles_174, g_newtiles_175, g_newtiles_176, g_newtiles_177, g_newtiles_178, g_newtiles_179, g_newtiles_180, g_newtiles_181, g_newtiles_182, g_newtiles_183, g_newtiles_184, g_newtiles_185, g_newtiles_186, g_newtiles_187, g_newtiles_188, g_newtiles_189, g_newtiles_190, g_newtiles_191, g_newtiles_192, g_newtiles_193, g_newtiles_194, g_newtiles_195, g_newtiles_196, g_newtiles_197, g_newtiles_198, g_newtiles_199, g_newtiles_200, g_newtiles_201, g_newtiles_202, g_newtiles_203, g_newtiles_204, g_newtiles_205, g_newtiles_206, g_newtiles_207, g_newtiles_208, g_newtiles_209, g_newtiles_210, g_newtiles_211, g_newtiles_212, g_newtiles_213, g_newtiles_214, g_newtiles_215, g_newtiles_216, g_newtiles_217, g_newtiles_218, g_newtiles_219, g_newtiles_220, g_newtiles_221, g_newtiles_222, g_newtiles_223, g_newtiles_224, g_newtiles_225, g_newtiles_226, g_newtiles_227, g_newtiles_228, g_newtiles_229, g_newtiles_230, g_newtiles_231, g_newtiles_232, g_newtiles_233, g_newtiles_234, g_newtiles_235, g_newtiles_236, g_newtiles_237, g_newtiles_238, g_newtiles_239, g_newtiles_240, g_newtiles_241, g_newtiles_242, g_newtiles_243, g_newtiles_244, g_newtiles_245, g_newtiles_246, g_newtiles_247, g_newtiles_248, g_newtiles_249, g_newtiles_250, g_newtiles_251, g_newtiles_252, g_newtiles_253, g_newtiles_254, g_newtiles_255
@@ -24,10 +24,10 @@ const u8 g_newtiles_001[2 * 4] = {
 
 // Tile g_newtiles_002: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_002[2 * 4] = {
-	0xb2, 0x71,
-	0xf3, 0xb2,
-	0x71, 0xb2,
-	0x71, 0xf3
+	0x5e, 0xad,
+	0x0f, 0x5e,
+	0xad, 0x5e,
+	0xad, 0x0f
 };
 
 // Tile g_newtiles_003: 4x4 pixels, 2x4 bytes.
@@ -64,50 +64,50 @@ const u8 g_newtiles_006[2 * 4] = {
 
 // Tile g_newtiles_007: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_007[2 * 4] = {
-	0x00, 0x0c,
-	0x04, 0x0c,
-	0x04, 0x0c,
-	0x04, 0x0c
+	0x00, 0xcc,
+	0x44, 0xcc,
+	0x44, 0xcc,
+	0x44, 0xcc
 };
 
 // Tile g_newtiles_008: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_008[2 * 4] = {
-	0x0c, 0x0c,
-	0x0c, 0x0c,
-	0x0c, 0x0c,
-	0x0c, 0x0c
+	0xcc, 0xcc,
+	0xcc, 0xcc,
+	0xcc, 0xcc,
+	0xcc, 0xcc
 };
 
 // Tile g_newtiles_009: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_009[2 * 4] = {
-	0x0c, 0x00,
-	0x0c, 0x08,
-	0x0c, 0x08,
-	0x0c, 0x08
+	0xcc, 0x00,
+	0xcc, 0x88,
+	0xcc, 0x88,
+	0xcc, 0x88
 };
 
 // Tile g_newtiles_010: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_010[2 * 4] = {
-	0x00, 0xcf,
-	0x04, 0xcf,
-	0x04, 0xcf,
-	0x04, 0xcf
+	0x00, 0xf3,
+	0x44, 0xf3,
+	0x44, 0xf3,
+	0x44, 0xf3
 };
 
 // Tile g_newtiles_011: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_011[2 * 4] = {
-	0xcf, 0xcf,
-	0xcf, 0xcf,
-	0xcf, 0xcf,
-	0xcf, 0xcf
+	0xf3, 0xf3,
+	0xf3, 0xf3,
+	0xf3, 0xf3,
+	0xf3, 0xf3
 };
 
 // Tile g_newtiles_012: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_012[2 * 4] = {
-	0xcf, 0x00,
-	0xcf, 0x08,
-	0xcf, 0x08,
-	0xcf, 0x08
+	0xf3, 0x00,
+	0xf3, 0x88,
+	0xf3, 0x88,
+	0xf3, 0x88
 };
 
 // Tile g_newtiles_013: 4x4 pixels, 2x4 bytes.
@@ -152,10 +152,10 @@ const u8 g_newtiles_017[2 * 4] = {
 
 // Tile g_newtiles_018: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_018[2 * 4] = {
-	0xb2, 0x71,
-	0xb2, 0xb2,
-	0xf3, 0xb2,
-	0x30, 0xb2
+	0x5e, 0xad,
+	0x5e, 0x5e,
+	0x0f, 0x5e,
+	0xfc, 0x5e
 };
 
 // Tile g_newtiles_019: 4x4 pixels, 2x4 bytes.
@@ -192,39 +192,39 @@ const u8 g_newtiles_022[2 * 4] = {
 
 // Tile g_newtiles_023: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_023[2 * 4] = {
-	0x04, 0x0c,
-	0x04, 0x04,
-	0x00, 0x08,
+	0x44, 0xcc,
+	0x44, 0x44,
+	0x00, 0x88,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_024: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_024[2 * 4] = {
-	0x0c, 0x0c,
-	0x04, 0x08,
-	0x0c, 0x04,
+	0xcc, 0xcc,
+	0x44, 0x88,
+	0xcc, 0x44,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_025: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_025[2 * 4] = {
-	0x0c, 0x08,
-	0x0c, 0x04,
-	0x08, 0x08,
+	0xcc, 0x88,
+	0xcc, 0x44,
+	0x88, 0x88,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_026: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_026[2 * 4] = {
-	0x04, 0xcf,
-	0x04, 0xcf,
-	0x00, 0x8a,
+	0x44, 0xf3,
+	0x44, 0xf3,
+	0x00, 0xa2,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_027: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_027[2 * 4] = {
-	0x8a, 0x45,
+	0xa2, 0x51,
 	0x00, 0x00,
 	0x00, 0x00,
 	0x00, 0x00
@@ -232,9 +232,9 @@ const u8 g_newtiles_027[2 * 4] = {
 
 // Tile g_newtiles_028: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_028[2 * 4] = {
-	0xcf, 0x08,
-	0xcf, 0x04,
-	0x45, 0x08,
+	0xf3, 0x88,
+	0xf3, 0x44,
+	0x51, 0x88,
 	0x00, 0x00
 };
 
@@ -520,10 +520,10 @@ const u8 g_newtiles_063[2 * 4] = {
 
 // Tile g_newtiles_064: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_064[2 * 4] = {
-	0xfc, 0xfc,
-	0xfc, 0xfc,
-	0xfc, 0x00,
-	0xfc, 0x00
+	0xc0, 0xc0,
+	0xc0, 0xc0,
+	0xc0, 0x00,
+	0xc0, 0x00
 };
 
 // Tile g_newtiles_065: 4x4 pixels, 2x4 bytes.
@@ -576,33 +576,33 @@ const u8 g_newtiles_070[2 * 4] = {
 
 // Tile g_newtiles_071: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_071[2 * 4] = {
-	0x00, 0x0c,
-	0x04, 0x0c,
-	0x04, 0x0c,
+	0x00, 0xcc,
+	0x44, 0xcc,
+	0x44, 0xcc,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_072: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_072[2 * 4] = {
-	0x0c, 0x0c,
-	0x0c, 0x0c,
-	0x0c, 0x0c,
+	0xcc, 0xcc,
+	0xcc, 0xcc,
+	0xcc, 0xcc,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_073: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_073[2 * 4] = {
-	0x0c, 0x0c,
-	0x0c, 0x0c,
-	0x0c, 0x0c,
+	0xcc, 0xcc,
+	0xcc, 0xcc,
+	0xcc, 0xcc,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_074: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_074[2 * 4] = {
-	0x0c, 0x00,
-	0x0c, 0x08,
-	0x0c, 0x08,
+	0xcc, 0x00,
+	0xcc, 0x88,
+	0xcc, 0x88,
 	0x00, 0x00
 };
 
@@ -648,10 +648,10 @@ const u8 g_newtiles_079[2 * 4] = {
 
 // Tile g_newtiles_080: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_080[2 * 4] = {
-	0xfc, 0x00,
-	0xfc, 0x00,
-	0xfc, 0x00,
-	0xfc, 0x00
+	0xc0, 0x00,
+	0xc0, 0x00,
+	0xc0, 0x00,
+	0xc0, 0x00
 };
 
 // Tile g_newtiles_081: 4x4 pixels, 2x4 bytes.
@@ -704,18 +704,18 @@ const u8 g_newtiles_086[2 * 4] = {
 
 // Tile g_newtiles_087: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_087[2 * 4] = {
-	0x04, 0x0c,
-	0x04, 0x0c,
-	0x04, 0x0c,
-	0x04, 0x0c
+	0x44, 0xcc,
+	0x44, 0xcc,
+	0x44, 0xcc,
+	0x44, 0xcc
 };
 
 // Tile g_newtiles_088: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_088[2 * 4] = {
-	0x0c, 0x00,
-	0x08, 0x08,
-	0x0c, 0x00,
-	0x08, 0x08
+	0xcc, 0x00,
+	0x88, 0x88,
+	0xcc, 0x00,
+	0x88, 0x88
 };
 
 // Tile g_newtiles_089: 4x4 pixels, 2x4 bytes.
@@ -784,18 +784,18 @@ const u8 g_newtiles_096[2 * 4] = {
 
 // Tile g_newtiles_097: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_097[2 * 4] = {
-	0x0c, 0x0c,
-	0x0c, 0x0c,
-	0x0c, 0x0c,
-	0x0c, 0x09
+	0xcc, 0xcc,
+	0xcc, 0xcc,
+	0xcc, 0xcc,
+	0xcc, 0xcd
 };
 
 // Tile g_newtiles_098: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_098[2 * 4] = {
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03,
-	0xab, 0x03
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xef, 0xcf
 };
 
 // Tile g_newtiles_099: 4x4 pixels, 2x4 bytes.
@@ -912,26 +912,26 @@ const u8 g_newtiles_112[2 * 4] = {
 
 // Tile g_newtiles_113: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_113[2 * 4] = {
-	0x0c, 0x09,
-	0x08, 0x09,
-	0x04, 0x09,
-	0x00, 0x01
+	0xcc, 0xcd,
+	0x88, 0xcd,
+	0x44, 0xcd,
+	0x00, 0x45
 };
 
 // Tile g_newtiles_114: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_114[2 * 4] = {
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf
 };
 
 // Tile g_newtiles_115: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_115[2 * 4] = {
-	0xff, 0x03,
-	0x57, 0xab,
-	0x03, 0xff,
-	0x03, 0x57
+	0xff, 0xcf,
+	0xdf, 0xef,
+	0xcf, 0xff,
+	0xcf, 0xdf
 };
 
 // Tile g_newtiles_116: 4x4 pixels, 2x4 bytes.
@@ -944,26 +944,26 @@ const u8 g_newtiles_116[2 * 4] = {
 
 // Tile g_newtiles_117: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_117[2 * 4] = {
-	0x0c, 0x0c,
-	0x08, 0x08,
-	0x04, 0x01,
-	0x00, 0x01
+	0xcc, 0xcc,
+	0x88, 0x88,
+	0x44, 0x45,
+	0x00, 0x45
 };
 
 // Tile g_newtiles_118: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_118[2 * 4] = {
-	0x09, 0x06,
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03
+	0xcd, 0xce,
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf
 };
 
 // Tile g_newtiles_119: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_119[2 * 4] = {
-	0x0c, 0x0c,
-	0x0c, 0x04,
-	0x02, 0x08,
-	0x02, 0x00
+	0xcc, 0xcc,
+	0xcc, 0x44,
+	0x8a, 0x88,
+	0x8a, 0x00
 };
 
 // Tile g_newtiles_120: 4x4 pixels, 2x4 bytes.
@@ -1048,50 +1048,50 @@ const u8 g_newtiles_129[2 * 4] = {
 
 // Tile g_newtiles_130: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_130[2 * 4] = {
-	0x0c, 0xfc,
-	0x0c, 0xec,
-	0x0c, 0xdc,
-	0x0c, 0xdc
+	0xcc, 0xc0,
+	0xcc, 0xc0,
+	0xcc, 0xc0,
+	0xcc, 0xc0
 };
 
 // Tile g_newtiles_131: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_131[2 * 4] = {
-	0x0c, 0xfc,
-	0x08, 0xec,
-	0x08, 0xdc,
-	0x0c, 0xdc
+	0xcc, 0xc0,
+	0x88, 0xc0,
+	0x88, 0xc0,
+	0xcc, 0xc0
 };
 
 // Tile g_newtiles_132: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_132[2 * 4] = {
-	0x5d, 0xff,
+	0xdd, 0xff,
 	0x55, 0xff,
 	0x55, 0xff,
-	0x5d, 0xff
+	0xdd, 0xff
 };
 
 // Tile g_newtiles_133: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_133[2 * 4] = {
-	0x0c, 0x09,
-	0x0c, 0x03,
-	0x09, 0x03,
-	0x03, 0x09
+	0xcc, 0xcd,
+	0xcc, 0xcf,
+	0xcd, 0xcf,
+	0xcf, 0xcd
 };
 
 // Tile g_newtiles_134: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_134[2 * 4] = {
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf
 };
 
 // Tile g_newtiles_135: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_135[2 * 4] = {
-	0x06, 0x0c,
-	0x03, 0x0c,
-	0x03, 0x06,
-	0x06, 0x03
+	0xce, 0xcc,
+	0xcf, 0xcc,
+	0xcf, 0xce,
+	0xce, 0xcf
 };
 
 // Tile g_newtiles_136: 4x4 pixels, 2x4 bytes.
@@ -1176,10 +1176,10 @@ const u8 g_newtiles_145[2 * 4] = {
 
 // Tile g_newtiles_146: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_146[2 * 4] = {
-	0x0c, 0xfc,
-	0x08, 0xec,
-	0x04, 0xdc,
-	0x00, 0xdc
+	0xcc, 0xc0,
+	0x88, 0xc0,
+	0x44, 0xc0,
+	0x00, 0xc0
 };
 
 // Tile g_newtiles_147: 4x4 pixels, 2x4 bytes.
@@ -1200,25 +1200,25 @@ const u8 g_newtiles_148[2 * 4] = {
 
 // Tile g_newtiles_149: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_149[2 * 4] = {
-	0x03, 0x09,
-	0x03, 0x09,
-	0x04, 0x01,
+	0xcf, 0xcd,
+	0xcf, 0xcd,
+	0x44, 0x45,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_150: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_150[2 * 4] = {
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03,
-	0x03, 0x03
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf,
+	0xcf, 0xcf
 };
 
 // Tile g_newtiles_151: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_151[2 * 4] = {
-	0x06, 0x03,
-	0x06, 0x03,
-	0x02, 0x08,
+	0xce, 0xcf,
+	0xce, 0xcf,
+	0x8a, 0x88,
 	0x00, 0x00
 };
 
@@ -1336,10 +1336,10 @@ const u8 g_newtiles_165[2 * 4] = {
 
 // Tile g_newtiles_166: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_166[2 * 4] = {
-	0x09, 0x06,
-	0x5c, 0xac,
-	0x4c, 0x8c,
-	0x4c, 0xac
+	0xcd, 0xce,
+	0xc8, 0xc4,
+	0xc8, 0xc4,
+	0xc8, 0xc4
 };
 
 // Tile g_newtiles_167: 4x4 pixels, 2x4 bytes.
@@ -1456,18 +1456,18 @@ const u8 g_newtiles_180[2 * 4] = {
 
 // Tile g_newtiles_181: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_181[2 * 4] = {
-	0x5c, 0xac,
-	0x5c, 0x8c,
-	0x4c, 0xac,
-	0x4c, 0xac
+	0xc8, 0xc4,
+	0xc8, 0xc4,
+	0xc8, 0xc4,
+	0xc8, 0xc4
 };
 
 // Tile g_newtiles_182: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_182[2 * 4] = {
-	0x5c, 0xac,
-	0x54, 0x8c,
-	0x4c, 0xac,
-	0x44, 0xa8
+	0xc8, 0xc4,
+	0x40, 0xc4,
+	0xc8, 0xc4,
+	0x40, 0x80
 };
 
 // Tile g_newtiles_183: 4x4 pixels, 2x4 bytes.
@@ -1592,10 +1592,10 @@ const u8 g_newtiles_197[2 * 4] = {
 
 // Tile g_newtiles_198: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_198[2 * 4] = {
-	0x09, 0x06,
-	0x54, 0xac,
-	0x5c, 0xac,
-	0x01, 0x02
+	0xcd, 0xce,
+	0x40, 0xc4,
+	0xc8, 0xc4,
+	0x45, 0x8a
 };
 
 // Tile g_newtiles_199: 4x4 pixels, 2x4 bytes.
@@ -1904,26 +1904,26 @@ const u8 g_newtiles_236[2 * 4] = {
 
 // Tile g_newtiles_237: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_237[2 * 4] = {
-	0x00, 0x57,
-	0x55, 0x03,
-	0x01, 0x03,
-	0x01, 0x03
+	0x00, 0xdf,
+	0x55, 0xcf,
+	0x45, 0xcf,
+	0x45, 0xcf
 };
 
 // Tile g_newtiles_238: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_238[2 * 4] = {
-	0x57, 0xab,
-	0xab, 0x57,
-	0x03, 0x03,
-	0x03, 0x03
+	0xdf, 0xef,
+	0xef, 0xdf,
+	0xcf, 0xcf,
+	0xcf, 0xcf
 };
 
 // Tile g_newtiles_239: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_239[2 * 4] = {
 	0xff, 0x00,
-	0x03, 0xaa,
-	0x03, 0x02,
-	0x03, 0x02
+	0xcf, 0xaa,
+	0xcf, 0x8a,
+	0xcf, 0x8a
 };
 
 // Tile g_newtiles_240: 4x4 pixels, 2x4 bytes.
@@ -2032,25 +2032,25 @@ const u8 g_newtiles_252[2 * 4] = {
 
 // Tile g_newtiles_253: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_253[2 * 4] = {
-	0x01, 0x03,
-	0x01, 0x01,
-	0x00, 0x02,
+	0x45, 0xcf,
+	0x45, 0x45,
+	0x00, 0x8a,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_254: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_254[2 * 4] = {
-	0x03, 0x03,
-	0x01, 0x02,
-	0x03, 0x01,
+	0xcf, 0xcf,
+	0x45, 0x8a,
+	0xcf, 0x45,
 	0x00, 0x00
 };
 
 // Tile g_newtiles_255: 4x4 pixels, 2x4 bytes.
 const u8 g_newtiles_255[2 * 4] = {
-	0x03, 0x02,
-	0x03, 0x01,
-	0x02, 0x02,
+	0xcf, 0x8a,
+	0xcf, 0x45,
+	0x8a, 0x8a,
 	0x00, 0x00
 };
 

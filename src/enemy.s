@@ -8,7 +8,7 @@
 
 ;; SPRITE que usan los enemigos
 .globl _sprite_Skeleton
-
+.globl coche
 
 
 ListaEnemigos: 
@@ -16,6 +16,7 @@ ListaEnemigos:
     DefineEnemyShoot eshoot2, 70, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 1, 0, .+4 , 1, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
     DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot car, 10, 37, 10, 37, 1, 0, 0x08, 0x06, coche,   enm_iddle, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
 
 ;;;;;;;;;;;;;;;;
 ;; Constantes
@@ -23,11 +24,22 @@ ListaEnemigos:
 k_lim_der       = #34       ;; Limite Derecho del movimiento
 k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
-k_total_enm     = #2            ;; Total de enemigos en memoria
+k_total_enm     = #3            ;; Total de enemigos en memoria
 k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX
-enm_map_alive: .db #2
+enm_map_alive: .db #k_total_enm
+
+
+;;;;;;;;;;;;;;;;;;;
+;;Enemigo no hace nada
+;;
+;;;;;;;;;;;;;;;;;;;;
+
+enm_iddle:
+
+ret;
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Detecta al hero a una distancia k_lim_detectar 
