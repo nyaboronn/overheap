@@ -13,10 +13,10 @@
 
 ListaEnemigos: 
     ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  5, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  5,5 , 0, .+4 , 5, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  5, 1, 0, .+4 , 1, 0, 34
-    DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot4, 6, 37, 6, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  5, 5, 0, .+4 , 5, 0, 34
+    DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 5, 0, .+4 , 5, 0, 34
 
 
 
@@ -30,7 +30,7 @@ k_lim_der       = #34       ;; Limite Derecho del movimiento
 k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
 k_total_enm     = #3           ;; Total de enemigos en memoria
-k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
+k_enm_size      = #23 + 5*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX
 enm_map_alive: .db #k_total_enm
@@ -412,9 +412,11 @@ enm_update:
             ;; ELSE 
                 ;;Cambiar de estado?
                 ;; Animacion de muerte
-            call ren_DestroyEntity
+              ;  call ren_clearEntity
+             call ren_DestroyEntity
+            
 
-
+            ret 
 
     noDamage:
     noGolpeado:
@@ -493,7 +495,9 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAll:
 
-    ld  a,  #k_total_enm ; Contador 
+  ;;  ld  a,  #k_total_enm ; Contador 
+    ld a, (#enm_map_alive)
+
 
     ld  iy, #ListaEnemigos
 

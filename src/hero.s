@@ -17,18 +17,18 @@
 .globl _sprite_Xemnas
 
 ;; Hero Jump Table
-hero_jumptable:
-    .db #-6, #-4, #-3, #-2
-    .db #-1, #-1, #5, #3
-    .db #2, #2, #1, #1
-    .db #0x80                   ;; #0x80 marca el último byte
+; hero_jumptable:
+;     .db #-6, #-4, #-3, #-2
+;     .db #-1, #-1, #5, #3
+;     .db #2, #2, #1, #1
+;     .db #0x80                   ;; #0x80 marca el último byte
 
 ;; Hero Jump Table (puede volar)
-;hero_jumptable:
-;    .db #-5, #-3, #-3, #-3
-;    .db #-3, #01, #01, #01
-;    .db #0, #0, #0, #0
-;    .db #0x80                   ;; #0x80 marca el último byte
+hero_jumptable:
+    .db #-5, #-3, #-3, #-3
+    .db #-3, #01, #01, #01
+    .db #0, #0, #0, #0
+    .db #0x80                   ;; #0x80 marca el último byte
 
 time:     .db 0
 firerate = #8
