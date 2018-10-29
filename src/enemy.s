@@ -13,10 +13,11 @@
 
 ListaEnemigos: 
     ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  5, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  3, 1, 0, .+4 , 1, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  5, 1, 0, .+4 , 1, 0, 34
-    DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  3, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot car, 100, 37, 100, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  3, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  3, 5, 0, .+4 , 5, 0, 34
 
 
 
@@ -35,7 +36,9 @@ k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
 ;; Numero de enemigos vivos en el MapX
 enm_map_alive: .db #k_total_enm
 
-life: .db 0x05
+enemies: .db #k_total_enm
+
+life: .db 0x03
 
 
 
@@ -89,7 +92,9 @@ doForCurrentEnemy:
     nextEnemy:
 
     ld a, (#CurrentEnemyIt)
-    cp #k_total_enm-1
+    ld hl, (#enemies)
+    dec l
+    cp l
     jr z, resetCurrent
 
 
@@ -138,7 +143,7 @@ ret
 enemy_default::
 
     ld	hl, #enm_map_alive
-    ld (hl), #k_total_enm
+    ld (hl), #2;;enemies
 
     ld hl, #reset_enemy
     call enm_doForAllForDead
@@ -156,14 +161,19 @@ reset_enemy::
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
    
-    ld e_health(ix), #5
+    ld e_health(ix), #3
 
 ret
 
 enemy_improve::
 
-    ld	hl, #enm_map_alive
-    ld (hl), #k_total_enm
+
+
+    ld a, (enemies)
+    inc a
+    ld (enemies), a
+    ld (enm_map_alive), a
+   
 
     ld hl, #increase_life
     call enm_doForAllForDead
@@ -493,7 +503,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAll:
 
-    ld  a,  #k_total_enm ; Contador 
+    ld  a,  (enm_map_alive) ; Contador 
 
     ld  iy, #ListaEnemigos
 
@@ -543,7 +553,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAllForDead:
 
-    ld  a,  #k_total_enm ; Contador 
+    ld  a,  (enm_map_alive) ; Contador 
 
     ld  iy, #ListaEnemigos
 
