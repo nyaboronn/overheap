@@ -39,7 +39,7 @@ ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comprueba si DrawableEntity esta dentro de la ventana
-;; REGISTROS DESTRUIDOS: A
+;; REGISTROS DESTRUIDOS: A,b
 ;; Parametro Entrada IX : DrawableEntity
 ;; Return: A      A= 0 si no esta dentro de la ventana
 ;;                A= 1 Si si esta dentro de la ventana
@@ -55,7 +55,7 @@ ren_DWisInScreen:
   sub a, b
   ld b,#MAP_WIDTH
   add a, b
-  cp #SCR_TILE_WIDTH + #MAP_WIDTH
+  cp #SCR_TILE_WIDTH + #MAP_WIDTH 
 
   jr c, pertenece
   ld a, #0
@@ -70,6 +70,37 @@ ren_DWisInScreen:
 
 
   pertenece2:
+  ld a,#1
+ret	
+
+
+
+ren_DWisInScreenDelete:
+  ld iy, (#m_back_tileMap)
+
+  ;; 0 < Offset + WinSize - X(ix) +MAP_WIDTH  < winSize +MAP_WIDTH
+  ld a, scroll(iy)
+  ld b, #SCR_TILE_WIDTH
+  add a, b
+  ld b, de_oldx(ix)
+  sub a, b
+  ld b,#MAP_WIDTH
+  add a, b
+  cp #SCR_TILE_WIDTH + #MAP_WIDTH + 1
+
+  jr c, pertenecee
+  ld a, #0
+  ret
+
+  pertenecee:
+
+  cp  #MAP_WIDTH + 4 -1
+  jr nc, pertenece22
+  ld a, #0
+  ret
+
+
+  pertenece22:
   ld a,#1
 ret	
 
@@ -302,9 +333,15 @@ ret
 ren_clearEntity:
 
   ;; TODO, no borro la bala que se queda al final
-  call ren_DWisInScreen
+  call ren_DWisInScreenDelete
   cp #0
-  ret z
+  jr nz, nodestroy
+
+;
+ret
+  nodestroy:
+
+  
 
   ld hl, (#m_back_tileMap)
   push hl
