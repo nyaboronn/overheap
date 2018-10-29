@@ -14,7 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MACRO PARA DEFINIR UN ENEMIGO CON UN ARRAY DE BALAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEnemyShoot _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct,_alpha, _health _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+.macro DefineEnemyShoot _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct,_alpha, _health, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
 
     DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct, _alpha, _health
 
