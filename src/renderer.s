@@ -413,8 +413,8 @@ final_stage:
     ld d, pVideo+1(iy) ;; memory pointer
     ld e, pVideo(iy)
 
-	ld c, #0 ;x    
-	ld b,#4*MAP_HEIGHT - 16  ;y
+	ld c, #28 ;x    
+	ld b, #5 ;y
     call cpct_getScreenPtr_asm ;; return in hl
 
 	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
@@ -422,5 +422,5 @@ final_stage:
     ld  c, #27    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
     ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
     call cpct_drawSprite_asm
-
+	call ren_switchBuffers
 ret

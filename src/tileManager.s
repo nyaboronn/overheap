@@ -32,9 +32,9 @@ scroll_default:
     ld pTilemap(ix), #_g_tilemap
     ld scroll(ix), #0x0000
 
-call ren_switchBuffers
+;call ren_switchBuffers
 
-call ren_initBuffers
+
 
 
      ;;Tenemos que inicilizar EasyTileMap

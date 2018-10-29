@@ -82,6 +82,7 @@ end_game:
         ;;ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
         ;;ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
         ;;call cpct_drawSprite_asm
+        call ren_initBuffers
         call final_stage
     inf:
         call reinicio
