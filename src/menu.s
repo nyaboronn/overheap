@@ -6,6 +6,7 @@
 .include "sprite.h.s"
 .include "hero.h.s"
 .include "tileManager.h.s"
+.include "enemy.h.s"
 
 .globl _overHeap_pal
 .globl _youLost_pal
@@ -63,7 +64,7 @@ no_press_1:
 
 ret
 
-end_game:
+next_game:
 
     ld  hl,  #_youLost_pal
     ld  de,  #16      
@@ -83,7 +84,7 @@ end_game:
         ;;ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
         ;;call cpct_drawSprite_asm
         call ren_initBuffers
-        call final_stage
+        call next_stage
     inf:
         call reinicio
     jp  inf
@@ -102,4 +103,17 @@ reinicio:
     ;;jp principio
     jp game
 no_press_Z:
+
+    call  cpct_scanKeyboard_asm
+    ld    hl, #Key_X
+    call  cpct_isKeyPressed_asm
+    jr    z, no_press_X
+    
+    call scroll_default
+    call hero_default_no_vida
+;;Generamos los siguientes enemigos para la siguiente ronda-----------------------------------------------------------------------------------------------------------------
+
+    jp game
+no_press_X:
+
 ret	

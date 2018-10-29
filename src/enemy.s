@@ -214,9 +214,10 @@ siguiente_mapa:
 
             ;; ELSE CARGAR SIGUIENTE MAPA
             ;;jr .
-            call end_game
+            call next_game
 
     seguir_el_mapa:
+
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

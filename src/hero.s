@@ -55,6 +55,23 @@ hero_default:
 
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve al Hero a valores default menos al vida
+;; 
+;; Registros destruidos: IX
+;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hero_default_no_vida:
+    ld	ix, #hero_data  ;;Cargamos el valor de hero en ix
+    ld de_x(ix), #5    ;x
+    ld de_y(ix), #30   ;y
+    ld de_oldx(ix), #5    ;old x
+    ld de_oldy(ix), #30   ;old y
+    ld hero_jump(ix), #1 ;;jump
+    ld hero_direct(ix), #-1 ;;Direct
+
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comprueba direccion y hace flip al sprite
 ;; Entradas: IX -> Puntero a hero 
 ;;    
