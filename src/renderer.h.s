@@ -1,9 +1,9 @@
 
 
-.macro DefineDrawableEntity _name, _x, _y, _oldx, _oldy, _w, _h, _sprite
+.macro DefineDrawableEntity _name, _x, _y, _w, _h, _sprite
     _name:
     .db    _x, _y       ;; X, Y
-    .db    _oldx, _oldy ;; X, Y
+    .db    _x, _y ;; X, Y
     .db    _w, _h       ;; W, H
     .dw   _sprite       ;; Sprite
     _name'_size = . - _name
