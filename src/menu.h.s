@@ -7,6 +7,7 @@
 .globl cpct_setVideoMode_asm
 .globl menu
 .globl game
+.globl next_game
 .globl end_game
 .globl pulsada
 .globl cpct_akp_stop_asm

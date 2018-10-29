@@ -57,4 +57,7 @@ shot_array     = 9 + e_size
 
 .globl enm_doForAll
 
+.globl enemy_default
+
 .globl siguiente_mapa
+

@@ -5,7 +5,11 @@
 .globl _ajah1_sp
 .globl _hearth_sp
 .globl _youLost_sp
+.globl _win_sp
+.globl _round_sp
 .globl _Restart_sp
+.globl _Next_sp
+
 .globl fondo_negro
 
 

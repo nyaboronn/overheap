@@ -60,8 +60,11 @@ $(eval $(call IMG2SP, CONVERT, img/menu/jlga10.png,40,8, jlga10_sp, jlga10_pal))
 $(eval $(call IMG2SP, CONVERT, img/menu/jlq2.png,26,8, jlq2_sp, jlq2_pal))
 $(eval $(call IMG2SP, CONVERT, img/menu/ajah1.png,34,8, ajah1_sp, ajah1_pal))
 $(eval $(call IMG2SP, CONVERT, img/menu/hearth.png,16,12, hearth_sp, hearth_pal))
-$(eval $(call IMG2SP, CONVERT, img/menu/Restart.png,59,8, Restart_sp, Restart_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/Restart.png,58,8, Restart_sp, Restart_pal))
 $(eval $(call IMG2SP, CONVERT, img/menu/youLost.png,54,8, youLost_sp, youLost_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/round.png,64,8, round_sp, round_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/win.png,46,8, win_sp, win_pal))
+$(eval $(call IMG2SP, CONVERT, img/menu/Next.png,36,8, Next_sp, Next_pal))
 
 
 ## Convert img/tiles.png into src/tiles.c and src/tiles.h

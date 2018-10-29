@@ -27,3 +27,4 @@ InputHL: .dw #0x0000
 
 .globl TScreenTilemapFront
 .globl TScreenTilemapBack
+.globl scroll_default

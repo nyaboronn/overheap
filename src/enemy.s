@@ -4,7 +4,7 @@
 .include "enemy.h.s"
 .include "entity.h.s"
 .include "obstacle.h.s"
-
+.include "menu.h.s"
 
 ;; SPRITE que usan los enemigos
 .globl _sprite_Skeleton
@@ -15,7 +15,7 @@ ListaEnemigos:
     ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
     DefineEnemyShoot eshoot2, 70, 37, 60, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 1, 0, .+4 , 1, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 0, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot4, 20, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
 
 ;;;;;;;;;;;;;;;;
 ;; Constantes
@@ -29,6 +29,33 @@ k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
 ;; Numero de enemigos vivos en el MapX
 enm_map_alive: .db #2
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Devuelve a la vida a los esqueletos
+;; LLAMAR SIEMPRE ANTES DE HERO_DEFAULT
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enemy_default:
+
+    ;;ld	hl, #enm_map_alive
+    ;;ld (hl), #k_total_enm
+;;
+    ;;ld hl, #reset_enemy
+    ;;call enm_doForAll
+
+    
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resetea los bits del enemy
+;; Entrada IX -> Enemy
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reset_enemy:
+    ;;ld de_x(ix), #60
+    ;;ld de_y(ix), #37
+    ;;ld de_oldx(ix), #60
+    ;;ld de_oldy(ix), #37
+    ld e_health(iy), #10
+
+ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Detecta al hero a una distancia k_lim_detectar 
 ;; indicado el por el Byte _direct
@@ -213,9 +240,11 @@ siguiente_mapa:
         jr nz, seguir_el_mapa
 
             ;; ELSE CARGAR SIGUIENTE MAPA
-            jr .
+            ;;jr .
+            call next_game
 
     seguir_el_mapa:
+
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
