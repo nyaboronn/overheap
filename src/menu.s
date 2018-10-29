@@ -11,6 +11,8 @@
 .globl _overHeap_pal
 .globl _youLost_pal
 
+fps2: .db #1
+
 menu:
 
     ld  hl,  #_overHeap_pal
@@ -90,7 +92,9 @@ next_game:
     jp  inf
 
 ret
-
+;;;;;;;;;;;
+;;Reincia el juego dandolo a la Z y a la X siguiente ronda
+;;;;;;;;;;
 reinicio:
     call  cpct_scanKeyboard_asm
     ld    hl, #Key_Z
@@ -101,7 +105,7 @@ reinicio:
     call scroll_default
     call hero_default
     ;;jp principio
-    jp game
+    call llamada_menu
 no_press_Z:
 
     call  cpct_scanKeyboard_asm
@@ -117,3 +121,69 @@ no_press_Z:
 no_press_X:
 
 ret	
+;;;;;;;;;;;;;;;;;;;;;
+;;Reincia el juego dandolo a la Z
+;;;;;;;;;;;;;;;;;;;;;
+full_reinicio:
+    call  cpct_scanKeyboard_asm
+    ld    hl, #Key_Z
+    call  cpct_isKeyPressed_asm
+    jr    z, full_no_press_Z
+    ;;Saltamos y reiniciamos el vídeogame
+    
+    call scroll_default
+    call hero_default
+    
+    ;;jp game
+    call llamada_menu
+    ;;jp principio
+full_no_press_Z:
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Carga final del mapa         
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+end_game:
+
+    ld  hl,  #_youLost_pal
+    ld  de,  #16      
+    call cpct_setPalette_asm 
+
+    call ren_initBuffers
+    call final_stage
+
+    full_inf:
+        call full_reinicio
+    jp  full_inf
+
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Se encarga de limpar el buffer y de llamar al menu y controlar las opciones del menu
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+llamada_menu:
+    call ren_initBuffers
+    call menu
+    ;;call ren_switchBuffers
+inf3:	
+
+    ld	a, (fps2)
+    halt
+    halt
+    halt
+    halt
+    halt
+    
+    xor	#1
+	ld	(fps2), a
+	jr	z, inf3
+
+    call cpct_akp_musicPlay_asm
+    call pulsada
+
+jp inf3
+
+ret
+
+
+

@@ -10,7 +10,7 @@
 .include "main.h.s"
 .include "tileManager.h.s"
 .include "utils.h.s"
-
+.globl end_game
 
 
 ;; SPRITE usado por el Hero
@@ -70,7 +70,18 @@ hero_default_no_vida:
     ld hero_direct(ix), #-1 ;;Direct
 
 ret
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Comprueba si nos hemos quedado sin vidas
+;;;; Registros destruidos: A
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;no_lifes:
+;;    ld a, hero_vida(ix)
+;;    cp #0
+;;    jr nz, alive
+;;    call end_game
+;;    ;;jr .
+;;alive:
+;;ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Comprueba direccion y hace flip al sprite
 ;; Entradas: IX -> Puntero a hero 
@@ -141,7 +152,8 @@ hero_check_hit:
     jr  nz, noDamage
     ;;Cambiar de estado?
     ;; Animacion de muerte
-    jr .
+    ;;jr .
+    call end_game
 
     noDamage:
     noGolpeado:
