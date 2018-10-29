@@ -33,6 +33,29 @@ ent_is_solidTile:
     ret nz
 
 
+
+    ld  a,  de_x(ix)
+    add #3
+    ld  de_x(ix),   a
+    ld  a,  de_y(ix)
+    add #3
+    ld  de_y(ix),   a
+
+    call CalcualteOFFSET
+
+    ld  a,  de_y(ix)
+    sub #3
+    ld  de_y(ix),   a
+    ld  a,  de_x(ix)
+    sub #3
+    ld  de_x(ix),   a
+
+    ld  A,  (hl)
+    bit #7, a
+    ld  a,  #0  ;;Esto es necesario=
+    ret nz
+
+
     ld  a,  de_y(ix)
     ;;inc a
     add #2

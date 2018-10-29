@@ -13,6 +13,11 @@
 .include "hero.h.s"
  
 .area _DATA
+
+palette:
+.db #0x54,#0x54,#0x44,#0x55,#0x57,#0x53,#0x5C,#0x4C,#0x4E,#0x47,#0x4A,#0x40,#0x56,#0x52,#0x46,#0x4B
+
+
 .area _CODE
 fps: .db #1
 
@@ -109,9 +114,12 @@ principio:
 
 ld	hl, #enm_clear
 call enm_doForAll
+
 ld iy, #hero_data
 ld	hl, #enm_update
-call enm_doForAll
+call doForCurrentEnemy
+
+
   ld	hl, #enm_draw
 call enm_doForAll
 
