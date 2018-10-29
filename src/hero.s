@@ -51,7 +51,7 @@ hero_default:
     ld de_oldy(ix), #30   ;old y
     ld hero_jump(ix), #1 ;;jump
     ld hero_vida(ix), #3 ;;Vida
-    ld hero_direct(ix), #-1 ;;Direct
+    ;;ld hero_direct(ix), #-1 ;;Direct
 
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -401,6 +401,7 @@ pintar_vidas:
 	ld a, #0    ;;Resetamos el valor de la variable, para la siguiente ejecución
 	ld (corazon), a
 
+ call ren_clearHeart
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -513,3 +514,98 @@ final_stage:
 	call ren_switchBuffers
 
 ret
+ 
+
+
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Borramos el ultimo corazon
+;;;
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+ren_clearHeart:
+	ld  a, hero_vida(ix)
+
+
+;;bucle sumando la X
+
+;;cuando la X este listo salimos del bucle, y se borra
+
+pintar_vidasc:
+
+  cp #0
+  jp	z, clearHeart
+
+	push af		;;Guardo las vidas que tenía visitadas
+
+
+    
+	ld	a, (corazon)
+	add a, #4
+	ld (corazon), a
+	pop af		;;Devuelvo las vidas visitadas
+  
+  dec a
+
+  jr pintar_vidasc
+
+
+  clearHeart:
+
+   ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+  ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Pintar el Corazón de la vida          ;;Hacer con el bucle
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; push de   ;;El valor del puntero se va a la pila
+
+    ld a, (corazon)
+
+    ld c, a
+
+   
+  ld b,#42   ;y
+    
+
+  ld E, #4  ;; W
+  ld D, #3  ;; h 
+
+
+  ld A, #MAP_WIDTH ;; map_width
+
+  
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
+
+
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  
+  push hl
+
+
+
+
+
+  call cpct_etm_drawTileBox2x4_asm
+
+
+
+
+	ld a, #0    ;;Resetamos el valor de la variable, para la siguiente ejecución
+	ld (corazon), a
+
+
+  ret
+
+

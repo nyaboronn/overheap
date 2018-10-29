@@ -233,6 +233,8 @@ obs_doForAllBool:
   cp  #0                    ;; A - 0
   ret z                     ;; IF A == 0 THEN ret
 
+  push ix
+
   ;; ELSE Apply Function
   push hl                   ;; Guardar HL 
   push ix                   ;; 
@@ -243,6 +245,7 @@ obs_doForAllBool:
   add   hl,   de            ;; HL += DE
   
   ;; Guardar IY && IX = IY
+  
   push  iy
   pop   ix
 
@@ -277,7 +280,7 @@ obs_doForAllBool:
       metodoo  = . + 1            ;; | . + 1 es el call
       call    0X0000              ;; \ CALL metodo  ;; ix seria la bala, iy hero
 
-      ;Salvar IX, IY
+      ;recuperar IX, IY
       pop iy
       pop ix
 
@@ -285,6 +288,19 @@ obs_doForAllBool:
       jr  nz, inc_contadoress     ;; | IF A != 0  
       pop	af                      ;; | POP AF
       ld  a,  #1                  ;; | A = 1
+
+      ;;Tenemos que destruir la bala para que deje de colisionar con nosotros
+  ; Borrarlo e incrementar m_murieron_obs
+    ld    o_alive(iy), #0         ;; o_alive(ix) = 0
+    ;; Incrementar contador de muertos
+
+    pop ix ;; recuperamos el owner de la bala
+    ld    b, m_murieron_obs(ix)   ;; A = m_murieron_obs(ix) value
+    inc   b                       ;; A++
+    ld    m_murieron_obs(ix), b   ;; m_murieron_obs(ix)value = A
+
+    ;Tenemos que limpiar la imagen porque acabas de morir
+    ;; call ren_DestroyEntity
       ret                         ;; \ Return si A = 1
 
     ;; Comprobar si el bucle debe seguir
@@ -298,6 +314,8 @@ obs_doForAllBool:
     jr  nz, bucc                  ;; \ IF A == 0 THEN stop Apply Function
 
     ld a, #0                      ;; A = 0
+
+    pop ix;; limpiamos variable local
     ret
 
 
