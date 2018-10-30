@@ -13,9 +13,9 @@
 
 ListaEnemigos: 
     ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  5, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot2, 20, 37, 20, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move0, 0x1020, -1,  1,  5, 1, 0, .+4 , 1, 0, 34
     ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  5, 1, 0, .+4 , 1, 0, 34
+    DefineEnemyShoot eshoot4, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  -1,  1,  5, 1, 0, .+4 , 1, 0, 34
     DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
 
 
@@ -26,8 +26,8 @@ CurrentEnemyIt: .db 0x00 ;; Iterator
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;
-k_lim_der       = #34       ;; Limite Derecho del movimiento
-k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
+k_lim_der       = #30       ;; Limite Derecho del movimiento
+k_lim_izq       = #0        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
 k_total_enm     = #2           ;; Total de enemigos en memoria
 k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
@@ -296,13 +296,26 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DESTRUIDOS: A, HL, BC
 ;; INPUT:
-;;          IX => puntero a la entidad
+;;          IX => puntero a la entidad enemiga
+;;          IY => puntero al hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move0:
+
+    ;; Comprobar colisión
+    call obs_checkCollision
+    cp a, #1
+    jr nz, seguir_movimiento
+
+        ;; Invertir Sentido Enemy
+        ld a, e_direct(ix)
+        cp a, #-1
+        jr z, cambiar_der
+        jr cambiar_izq
+
+    seguir_movimiento:
+
     ;; Posicion
     ld a, de_x(ix)              ;; \ A = e_x(IX)
-
-    ;; Actualizar El Valor del Sentido
     cp a, #k_lim_der            ;; A == lim_der value ???
     jr z, cambiar_izq           ;; IF A==max left right limit. THEN  move left
 
