@@ -49,10 +49,10 @@ shot_array     = 10 + e_size
 
 
 
-;.globl eshoot
+.globl eshoot
 ;.globl eshoot2
 ;.globl eshoot3
-.globl eshoot4
+;.globl eshoot4
 
 .globl enm_clear
 .globl enm_update

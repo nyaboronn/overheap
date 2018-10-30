@@ -492,13 +492,13 @@ hero_move:
         ld de_oldx(ix), #3
         ;jr checkY
     no_llega_al_margen_izq:
-    cp a, #124
-    jr c, seguir_move   ;; IF de_x < 1 Obligar al margen izquierdo
-        ;; ELSE Llega al margen izq, setear a cero la X
-        ld de_x(ix), #124
-        ld de_oldx(ix), #124
-
-    seguir_move:
+    ;cp a, #124
+    ;jr c, seguir_move   ;; IF de_x < 1 Obligar al margen izquierdo
+    ;    ;; ELSE Llega al margen izq, setear a cero la X
+    ;    ld de_x(ix), #124
+    ;    ld de_oldx(ix), #124
+;
+    ;seguir_move:
     ;;Sumamos velocidad X a posicion X
     ld      a, de_x(ix)
     ld       de_oldx(ix), a
