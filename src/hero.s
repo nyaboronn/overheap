@@ -11,6 +11,7 @@
 .include "tileManager.h.s"
 .include "utils.h.s"
 .globl end_game
+.include "menu.h.s"
 
 
 ;; SPRITE usado por el Hero
@@ -165,6 +166,7 @@ hero_check_hit:
     ;;Cambiar de estado?
     ;; Animacion de muerte
     ;;jr .
+    ;;call check_rondas
     call end_game
 
     noDamage:
