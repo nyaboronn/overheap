@@ -14,7 +14,7 @@
 
 
 ListaEnemigos: ;                                                                       
-    DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move0, 1,  1,  10
+    DefineEnemyShoot eshoot, 110, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move0, 1,  1,  10
     ;DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
     ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  10
     ;DefineEnemyShoot eshoot4, 2, 37,   0x04, 0x04,  _sprite_vampiro,     enm_jump, 1, 1,  3
@@ -29,8 +29,8 @@ CurrentEnemyIt: .db 0x00 ;; Iterator
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;
-k_lim_der       = #30       ;; Limite Derecho del movimiento
-k_lim_izq       = #0        ;; Limite Izquierdo del movimiento
+k_lim_der       = #124       ;; Limite Derecho del movimiento
+k_lim_izq       = #80        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
 k_total_enm     = #1           ;; Total de enemigos en memoria
 k_enm_size      = #24 + k_max_balas*15 ; 5*obs + 14+9
@@ -544,7 +544,7 @@ enm_move0:
     ;; Primero empujar al hero y cambiar la dirección
     emp_hero_izq:
     ld a, de_x(iy)
-    add a, #5   ;; Empujar hero hacia la izquierda
+    add a, #3   ;; Empujar hero hacia la izquierda
     ld de_x(iy), a
 
     cambiar_izq:
@@ -553,7 +553,7 @@ enm_move0:
 
     emp_hero_der:
     ld a, de_x(iy)
-    add a, #-5   ;; Empujar hero hacia la izquierda
+    add a, #-3   ;; Empujar hero hacia la izquierda
     ld de_x(iy), a
 
     cambiar_der:
