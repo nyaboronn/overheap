@@ -459,7 +459,7 @@ next_stage:
     ld d, pVideo+1(iy) ;; memory pointer
     ld e, pVideo(iy)
 
-	ld c, #25 ;x    
+	ld c, #23 ;x    
 	ld b, #5 ;y
     call cpct_getScreenPtr_asm ;; return in hl
 
@@ -468,24 +468,24 @@ next_stage:
     ld  c, #32    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
     ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
     call cpct_drawSprite_asm
-;;2
-	 ld hl, (#m_back_tileMap)
-    push hl
-    pop iy
-
-    ;; pointer to screen
-    ld d, pVideo+1(iy) ;; memory pointer
-    ld e, pVideo(iy)
-
-	ld c, #3 ;x    
-	ld b, #100;y
-    call cpct_getScreenPtr_asm ;; return in hl
-
-	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
-	ld  hl, #_Restart_sp;; Cojo la segunda parte
-    ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
-    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
-    call cpct_drawSprite_asm
+;;;;2
+;;	 ld hl, (#m_back_tileMap)
+;;    push hl
+;;    pop iy
+;;
+;;    ;; pointer to screen
+;;    ld d, pVideo+1(iy) ;; memory pointer
+;;    ld e, pVideo(iy)
+;;
+;;	ld c, #3 ;x    
+;;	ld b, #100;y
+;;    call cpct_getScreenPtr_asm ;; return in hl
+;;
+;;	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+;;	ld  hl, #_Restart_sp;; Cojo la segunda parte
+;;    ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+;;    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+;;    call cpct_drawSprite_asm
 ;;3
 ld hl, (#m_back_tileMap)
     push hl
@@ -495,7 +495,7 @@ ld hl, (#m_back_tileMap)
     ld d, pVideo+1(iy) ;; memory pointer
     ld e, pVideo(iy)
 
-	ld c, #60 ;x    
+	ld c, #29 ;x    
 	ld b, #100;y
     call cpct_getScreenPtr_asm ;; return in hl
 
@@ -595,7 +595,7 @@ rondas_stage:
     ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
     ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
     call cpct_drawSprite_asm
-    
+
 	call ren_switchBuffers
 
 ret

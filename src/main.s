@@ -100,7 +100,7 @@ principio:
   ;ex	de, hl
   ;ld    hl,#hero_data
   ;call ent_copy
-
+  
   loop:
     ld ix, #hero_data
     call hero_clear
@@ -115,7 +115,8 @@ call enm_doForAll
 
 ld iy, #hero_data
 ld	hl, #enm_update
-call doForCurrentEnemy
+;call doForCurrentEnemy
+call enm_doForAll
 
 
   ld	hl, #enm_draw
