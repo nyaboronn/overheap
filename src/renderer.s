@@ -300,7 +300,6 @@ ren_DestroyEntity:
   pop iy
 
 
-  ;; Repintamos una columna, izquierda o derecha
 
   ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
   ld a, de_x(ix)    ;; X
@@ -308,11 +307,12 @@ ren_DestroyEntity:
   sub c
   ld c, a
 
+
   ld B, de_y(ix)  ;; Y
 
 
   ld E, de_w(ix)  ;; W
-  ld D, de_h(ix)  ;; W
+  ld D, de_h(ix)  ;; h
 
 
   ld A, #MAP_WIDTH ;; map_width
@@ -329,6 +329,8 @@ ren_DestroyEntity:
   push hl
 
   call cpct_etm_drawTileBox2x4_asm
+
+
 
 ret
 
@@ -360,15 +362,18 @@ ret
 
   ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
   ld a, de_oldx(ix)    ;; X
+  dec a
   ld c, scroll(iy)
   sub c
   ld c, a
+  
 
   ld B, de_oldy(ix)  ;; Y
 
 
   ld E, de_w(ix)  ;; W
-  ld D, de_h(ix)  ;; W
+  inc e
+  ld D, de_h(ix)  ;; h
 
 
   ld A, #MAP_WIDTH ;; map_width
@@ -552,7 +557,48 @@ final_stage:
 
 ret
  
+rondas_stage:
+;;1
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
 
+    ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+	ld c, #25 ;x    
+	ld b, #5 ;y
+    call cpct_getScreenPtr_asm ;; return in hl
+
+	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+	ld  hl, #_win_sp;; Cojo la segunda parte
+    ld  c, #23    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+    call cpct_drawSprite_asm
+    ;;Cambio el buffer	;;Posible cambio en un futuro
+
+    ld hl, (#m_back_tileMap)
+    push hl
+    pop iy
+
+    ;; pointer to screen
+    ld d, pVideo+1(iy) ;; memory pointer
+    ld e, pVideo(iy)
+
+	ld c, #25 ;x    
+	ld b, #100;y
+    call cpct_getScreenPtr_asm ;; return in hl
+
+	ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
+	ld  hl, #_Restart_sp;; Cojo la segunda parte
+    ld  c, #29    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
+    ld  b, #8 ;;#160    ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
+    call cpct_drawSprite_asm
+    
+	call ren_switchBuffers
+
+ret
 
 
 

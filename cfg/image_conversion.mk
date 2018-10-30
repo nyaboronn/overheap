@@ -50,7 +50,7 @@
 ## Example firmware palette definition as variable in cpct_img2tileset format
 
 ## Firmware palette definition in cpct_img2tileset format
-PALETTE=0 3 1 2 11 20 3 6  15 16 24 13 9  18 10 26
+PALETTE=26 3 1 2 11 4 3 6  15 16 24 13 9  18 10 0
 
 
 $(eval $(call IMG2SP, SET_FOLDER, src/Sprites))
@@ -74,10 +74,11 @@ $(eval $(call IMG2SP, CONVERT, img/menu/Next.png,36,8, Next_sp, Next_pal))
 ## called g_tiles{0-15} (g is prefix for _tiles) without interlaced mask. 
 ## Palette will also be converted to hardware values and outputed as a C-array
 ## named g_palette.
-PALETTE2={  0 3 1 2 11 20 3 6  15 16 24 13 9  18 10 26 }
+PALETTE2={  26 3 1 2 11 4 3 6  15 16 24 13 9  18 10 0 }
 
 $(eval $(call IMG2SPRITES,img/newtiles.png,0,g,4,4,$(PALETTE2),tileset,src/assets,hwpalette))
 $(eval $(call IMG2SPRITES,img/Xemnas.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
 $(eval $(call IMG2SPRITES,img/Skeleton.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
+$(eval $(call IMG2SPRITES,img/vampiro.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
 $(eval $(call IMG2SPRITES,img/bala.png,0,sprite,4,4,$(PALETTE2),mask,src/assets))
 

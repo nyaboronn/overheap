@@ -8,15 +8,18 @@
 
 ;; SPRITE que usan los enemigos
 .globl _sprite_Skeleton
+.globl _sprite_vampiro
+
 .globl coche
 
 
-ListaEnemigos: 
-    ;DefineEnemyShoot eshoot, 10, 37, 10, 37, 0, 0, 0x04, 0x04, _sprite_Skeleton,    enm_move1, 0x1020,  1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot2, 70, 37, 70, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move0, 0x1020, -1,  1,  10, 1, 0, .+4 , 1, 0, 34
-    ;DefineEnemyShoot eshoot3, 10, 37, 10, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,   enm_move1, 0x1020, -1,  1,  10, 5, 0, .+4 , 5, 0, 34
-    DefineEnemyShoot eshoot4, 6, 37, 0, 37, 1, 0, 0x04, 0x04, _sprite_Skeleton,     enm_move0, 0x1020,  1,  1,  10, 1, 0, .+4 , 1, 0, 34
-    DefineEnemyShoot car, 105, 37, 105, 37, 1, 0, 0x08, 0x06, coche,   enm_move1, 0x1020, -1,  0,  10, 1, 0, .+4 , 1, 0, 34
+ListaEnemigos: ;                                                                       
+    ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move1, 1,  1,  10
+    DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  -1,  3
+    ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  10
+   DefineEnemyShoot eshoot4, 2, 37,   0x04, 0x04,  _sprite_Skeleton,     enm_iddle, 1, 1,  3
+    DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  10
+    DefineEnemyShoot eshoot3, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  1,  3
 
 
 
@@ -26,16 +29,145 @@ CurrentEnemyIt: .db 0x00 ;; Iterator
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;
-k_lim_der       = #34       ;; Limite Derecho del movimiento
-k_lim_izq       = #4        ;; Limite Izquierdo del movimiento
+k_lim_der       = #30       ;; Limite Derecho del movimiento
+k_lim_izq       = #0        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
-k_total_enm     = #3            ;; Total de enemigos en memoria
-k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
+k_total_enm     = #2          ;; Total de enemigos en memoria
+k_enm_size      = #24 + k_max_balas*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX
 enm_map_alive: .db #k_total_enm
 
+enemies: .db #k_total_enm
 
+life: .db 0x03
+
+
+
+;; enm Jump Table (puede volar)
+enm_jumptable: ;; -17 
+     .db #-4, #-3, #-3, #-2
+     .db #-1, #-1, #5, #2
+     .db #3, #2, #1, #1
+     .db #0x80     
+
+
+
+;Unsigned
+;If A == N, then Z flag is set.
+;If A != N, then Z flag is reset.
+;If A < N, then C flag is set.
+;If A >= N, then C flag is reset.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;     Maquina de estados finitos 
+;;; El metodo de update se ocupa de ejecutar el metodo/estado en el que se encuentra
+;;; Ademas comprobara si existe un evento de entrada para cambiar el estado
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+FSM1:
+
+    ld a, e_health(ix);
+    cp #2
+    jr nc, #nosalta
+        ld hl, #jumpAndMove
+        ;Actualizar el enemigo
+        ld  e_up_h(ix), h 
+        ld  e_up_l(ix), l
+    ret 
+    nosalta:
+
+
+    ld a, e_health(ix);
+    cp #3
+    jr nc, #nodispara
+
+        ld hl, #enm_move1
+        ;Actualizar el enemigo
+        ld  e_up_h(ix), h 
+        ld  e_up_l(ix), l
+    ret 
+    nodispara:
+
+
+
+
+    ;; Si la vida > 2 disprar
+    ;; Si la vida < 2 Saltar y mover
+
+ret
+
+
+
+
+jumpAndMove:
+    ld  a,  e_jump(ix)  ;; A = hero_jumpstate
+    cp  #-1             ;; A == -1? 
+    jr  nz , skip             ;; A != 0. Jump is no activate, lest do
+
+    ;; Jump is inactive, active it
+        ld  e_jump(ix), #0
+          ;;Cambiar por sentido
+    ld  e_vx(ix), #-2
+
+skip:
+  
+
+
+    call enm_jumpControl
+    call enm_move
+
+
+ret	
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CONTROLA EL SALTO DE LA ENTIDAD
+;; REGISTROS DESTRUIDOS: A, BC, HL
+;; ENTRADAS:
+;;          IX => Puntero a entidad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enm_jumpControl:
+
+    ;; Check if we are jumping right now
+    ld  a,  e_jump(ix)      ;; A = hero_jumpstate status
+    cp  #-2                 ;; A == -2?
+    ret z                   ;; A == 0. Cant activate. Entity is falling
+    cp  #-1                 ;; A == -1? (-1 is not jumping)
+    ret z                   ;; If  A == -1, not jumping
+
+    ;; Move Hero
+    ld  hl, #enm_jumptable ;; HL = Primer Valor de JumpTable
+    ld  c,  a               ;; | C = Índice a acceder
+    ld  b,  #0              ;; | 
+    add hl, bc              ;; \ HL += BC
+
+    ;; Check End of jumping && Store in A jump value
+    ld  a,  (hl)            ;; A = jump movement
+    cp  #0x80               ;; Jump value == 0
+    jr  z,  end_of_jump     ;; if 0x80, end of jump
+
+    ;; Do jump movement (HL = Posición de memoria con el dato de jumpTable)
+    ld  b,  a               ;; B = valor del salto
+    ld  a,  e_vy(ix)        ;; A = Coordenada X de la entidad
+    add b                   ;; B += A (Sumar al valor del salto la X)
+    ld  e_vy(ix), a         ;; e_x = Calculo de la nueva X 
+
+    ;;call hero_move
+
+    ;; Increment hero_jumpstate Index
+    ld  a,  e_jump(ix)      ;; A = hero_jumpstate
+    inc a                   ;; | 
+    ld  e_jump(ix), a       ;; \ hero_jumpstate++
+    ret
+
+    ;; Put -1 in the jump index when jump ends
+    end_of_jump:
+        ld  a, #-1           ;; |
+        ld  e_jump(ix), a    ;; \ hero_jumpstate = -1
+ret
 
 
 
@@ -89,7 +221,9 @@ doForCurrentEnemy:
     nextEnemy:
 
     ld a, (#CurrentEnemyIt)
-    cp #k_total_enm-1
+    ld hl, (#enemies)
+    dec l
+    cp l
     jr z, resetCurrent
 
 
@@ -122,11 +256,42 @@ ret
 ret	
 
 
+
+
+enm_move:
+
+  ld    a,  de_x(ix)      ;;  A = de_x
+  ld    de_oldx(ix), a    ;;  oldx = A
+  add   e_vx(ix)          ;;  A += e_vx
+  ld    de_x(ix), a       ;;  de_x = A
+
+
+  ld    a,  de_y(ix)      ;;  A = de_x
+  ld    de_oldy(ix), a    ;;  oldx = A
+  add   e_vy(ix)          ;;  A += e_vx
+  ld    de_y(ix), a       ;;  de_x = A
+
+      ld e_vx(ix), #0
+    ld  e_vy(ix), #0
+ret 
+
+
 ;;;;;;;;;;;;;;;;;;;
 ;;Enemigo no hace nada
 ;;
 ;;;;;;;;;;;;;;;;;;;;
+enm_jump:
+call enm_jumpControl
+call enm_move
+ret
 
+
+
+
+;;;;;;;;;;;;;;;;;;;
+;;Enemigo no hace nada
+;;
+;;;;;;;;;;;;;;;;;;;;
 enm_iddle:
 ret
 
@@ -135,13 +300,13 @@ ret
 ;; Devuelve a la vida a los esqueletos
 ;; LLAMAR SIEMPRE ANTES DE HERO_DEFAULT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-enemy_default:
+enemy_default::
 
-    ;;ld	hl, #enm_map_alive
-    ;;ld (hl), #k_total_enm
-;;
-    ;;ld hl, #reset_enemy
-    ;;call enm_doForAll
+    ld	hl, #enm_map_alive
+    ld (hl), #2;;enemies
+
+    ld hl, #reset_enemy
+    call enm_doForAllForDead
 
     
 ret
@@ -150,12 +315,38 @@ ret
 ;; Resetea los bits del enemy
 ;; Entrada IX -> Enemy
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-reset_enemy:
+reset_enemy::
     ;;ld de_x(ix), #60
     ;;ld de_y(ix), #37
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
-    ld e_health(iy), #10
+   
+    ld e_health(ix), #3
+
+ret
+
+enemy_improve::
+
+
+
+    ld a, (enemies)
+    inc a
+    ld (enemies), a
+    ld (enm_map_alive), a
+   
+
+    ld hl, #increase_life
+    call enm_doForAllForDead
+
+    
+ret
+
+increase_life:
+
+    ld a, (life)
+    add a, a
+    ld (life), a
+    ld e_health(ix),a
 
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -275,13 +466,26 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DESTRUIDOS: A, HL, BC
 ;; INPUT:
-;;          IX => puntero a la entidad
+;;          IX => puntero a la entidad enemiga
+;;          IY => puntero al hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move0:
+
+    ;; Comprobar colisión
+    call obs_checkCollision
+    cp a, #1
+    jr nz, seguir_movimiento
+
+        ;; Invertir Sentido Enemy
+        ld a, e_direct(ix)
+        cp a, #-1
+        jr z, cambiar_der
+        jr cambiar_izq
+
+    seguir_movimiento:
+
     ;; Posicion
     ld a, de_x(ix)              ;; \ A = e_x(IX)
-
-    ;; Actualizar El Valor del Sentido
     cp a, #k_lim_der            ;; A == lim_der value ???
     jr z, cambiar_izq           ;; IF A==max left right limit. THEN  move left
 
@@ -391,9 +595,21 @@ enm_update:
             ;; ELSE 
                 ;;Cambiar de estado?
                 ;; Animacion de muerte
-            call ren_DestroyEntity
+      
+            ;;Fuerzo la limpieza del enm
+             call ren_DestroyEntity
+            
+            ;;Fuerzo la limpieza de las balas
+            ld	hl, #ren_DestroyEntity
+            call	obs_doForAll
 
 
+
+            
+             
+            ;; Comprobar si quedan enemigos vivos
+            ;; En caso contrario carga la siguiente pantalla
+             call siguiente_mapa
 
     noDamage:
     noGolpeado:
@@ -411,10 +627,8 @@ enm_update:
     pop ix
 
 
-    ;; Comprobar si quedan enemigos vivos
-    ;; En caso contrario carga la siguiente pantalla
-    call siguiente_mapa
 
+  ;;  call FSM1
     ;Actualizar el enemigo
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
@@ -472,7 +686,9 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAll:
 
-    ld  a,  #k_total_enm ; Contador 
+  ;;  ld  a,  #k_total_enm ; Contador 
+    ld a, (#enm_map_alive)
+
 
     ld  iy, #ListaEnemigos
 
@@ -511,3 +727,53 @@ enm_doForAll:
     jr  nz, buc               ;; \ IF A == 0 THEN stop Apply Function
 
 ret
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; EJECUTA EL METODO PASADO EN HL SOLO PARA LOS OBS VIVOS
+;; DESTRUIDOS: A, BC, DE, HL, IY, IX
+;; ENTRADA: HL -> PUNTERO AL MÉTODO A EJECUTAR
+;;          
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enm_doForAllForDead:
+
+    ld  a,  (enm_map_alive) ; Contador 
+
+    ld  iy, #ListaEnemigos
+
+    ld  (metodoDead), hl         ;; (meotodo) = HL
+
+    bucle:
+    ;; IF vivo == 0 THEN no aplicar la función.
+    push    af               ;; PUSH AF
+
+
+    ;Salvar
+    push    ix
+    push    iy 
+
+    ;; metemos EXchange
+    push    iy 
+    push    ix 
+    pop     iy
+    pop     ix
+
+    ;; ELSE Apply Function
+    metodoDead  = . + 1           ;; | . + 1 es el call
+    call    ent_draw          ;; \ CALL metodo
+
+    pop     iy
+    pop     ix
+
+   
+    pop	    af                ;; | POP AF
+    ld      c,  #k_enm_size   ;; | C = k_enm_size
+    ld      b,  #0            ;; | B = 0
+    add     iy, bc            ;; | Iy += BC, Update pointer value
+    dec     a                 ;; | A--
+    jr  nz, bucle               ;; \ IF A == 0 THEN stop Apply Function
+
+ret
+
+

@@ -9,11 +9,11 @@
 
 TScreenTilemapFront: .dw #0x8000
                 .dw #_g_tilemap
-                .db 0x0000
+                .db 0x00
 
 TScreenTilemapBack: .dw #0xC000
                 .dw #_g_tilemap
-                .db 0x0000
+                .db 0x00
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;    ;;LLAMAR SIEMPRE *ANTES* DE LA LLAMADA A HERO_DEFAULT
 ;; Devuelve al Scroll a valores default
@@ -25,14 +25,14 @@ scroll_default:
     ld ix, #TScreenTilemapFront
     ld pVideo(ix), #0x8000
     ld pTilemap(ix), #_g_tilemap
-    ld scroll(ix), #0x0000
+    ld scroll(ix), #0x00
 
     ld ix, #TScreenTilemapBack
     ld pVideo(ix), #0xC000
     ld pTilemap(ix), #_g_tilemap
-    ld scroll(ix), #0x0000
+    ld scroll(ix), #0x00
 
-;call ren_switchBuffers
+
 
 
 
@@ -90,6 +90,7 @@ scroll_default:
   push hl
 
   call cpct_etm_drawTileBox2x4_asm
+call ren_switchBuffers
 
   
 ret

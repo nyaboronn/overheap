@@ -6,13 +6,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MACRO PARA DEFINIR UNA ENTIDAD A PARTIR DE DrawableEntity
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _col, _upd, _tile
+.macro DefineEntity _name, _x, _y, _w, _h, _col, _upd
 
     _name:
-        DefineDrawableEntity _name'_dw, _x, _y,_oldx, _oldy, _w, _h, _col
-        .db   _vx, _vy      ;; VX, VY
+        DefineDrawableEntity _name'_dw, _x, _y, _w, _h, _col
+        .db   0, 0      ;; VX, VY
         .dw   _upd          ;; Update
-        .dw _tile           ;; Tile
+        .dw  0x0000           ;; Tile
 
 .endm
 
@@ -21,7 +21,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 .macro DefineEntityDefault _name, _suf
 
-    DefineEntity _name'_suf, 0xAA, 0, 0xAA, 0, 0, 0, 0, 0, 0, 0xFFFF, 0x0000
+    DefineEntity _name'_suf, 0xAA, 0,  0, 0, 0, 0xFFFF
 
 .endm
 

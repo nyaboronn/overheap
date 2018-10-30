@@ -17,25 +17,24 @@
 .globl _sprite_Xemnas
 
 ;; Hero Jump Table
-hero_jumptable:
-    .db #-6, #-4, #-3, #-2
-    .db #-1, #-1, #5, #3
-    .db #2, #2, #1, #1
-    .db #0x80                   ;; #0x80 marca el último byte
+; hero_jumptable:
+;     .db #-6, #-4, #-3, #-2
+;     .db #-1, #-1, #5, #3
+;     .db #2, #2, #1, #1
+;     .db #0x80                   ;; #0x80 marca el último byte
 
 ;; Hero Jump Table (puede volar)
-;hero_jumptable:
-;    .db #-5, #-3, #-3, #-3
-;    .db #-3, #01, #01, #01
-;    .db #0, #0, #0, #0
-;    .db #0x80                   ;; #0x80 marca el último byte
+hero_jumptable:
+    .db #-5, #-3, #-3, #-3
+    .db #-3, #01, #01, #01
+    .db #0, #0, #0, #0
+    .db #0x80                   ;; #0x80 marca el último byte
 
 time:     .db 0
 firerate = #8
 
 ;; Hero Data
-DefineHeroShot hero_data, 5, 32, 5, 32, 0, 0, 0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 0x1020, -1, 3, 1, 5, 0, .+4 , 5, 0, 32
-;_name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+DefineHeroShot hero_data, 5, 32,  0x04, 0x04, _sprite_Xemnas, hero_moveKeyboard, 1, 3, 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve al Hero a valores default
@@ -51,7 +50,9 @@ hero_default:
     ld de_oldy(ix), #30   ;old y
     ld hero_jump(ix), #1 ;;jump
     ld hero_vida(ix), #3 ;;Vida
-    ;;ld hero_direct(ix), #-1 ;;Direct
+
+    ;call hero_directAndFlip;
+    ;ld hero_direct(ix), #1 ;;Direct
 
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -67,7 +68,7 @@ hero_default_no_vida:
     ld de_oldx(ix), #5    ;old x
     ld de_oldy(ix), #30   ;old y
     ld hero_jump(ix), #1 ;;jump
-    ld hero_direct(ix), #-1 ;;Direct
+    ;ld hero_direct(ix), #-1 ;;Direct
 
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -134,9 +135,20 @@ hero_check_hit:
     push ix     ;; IX -> Puntero a hero
     push iy     ;; IY -> Puntero a entidad, enemy
 
-    ;; HL -> PUNTERO AL MÉTODO A EJECUTAR
-    ld   hl, #obs_checkCollision
+    ;; SI Detecta colisión, empujar al hero
+    ;call obs_checkCollision
+    ;cp a, #1
+    ;jr nz, no_empujar_al_hero
+;
+    ;    ld a, de_x(iy)
+    ;    add a, #-3
+    ;    ld de_x(iy), a
+;
+    ;no_empujar_al_hero:
+    ;; Comprobar colisión con las balas enemigas
+    ld   hl, #obs_checkCollision    ;; HL = puntero a la función a ejecutar
     call obs_doForAllBool
+    
     ;;rescatamos
     pop iy
     pop ix
@@ -469,6 +481,24 @@ ret
 ;;          IX -> Puntero a entidad
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hero_move:
+
+
+    ;; Comprobar limite izquierdo y derecho
+    ld a, de_x(ix)
+    cp a, #3
+    jr nc, no_llega_al_margen_izq   ;; IF de_x < 1 Obligar al margen izquierdo
+        ;; ELSE Llega al margen izq, setear a cero la X
+        ld de_x(ix), #3
+        ld de_oldx(ix), #3
+        ;jr checkY
+    no_llega_al_margen_izq:
+    cp a, #124
+    jr c, seguir_move   ;; IF de_x < 1 Obligar al margen izquierdo
+        ;; ELSE Llega al margen izq, setear a cero la X
+        ld de_x(ix), #124
+        ld de_oldx(ix), #124
+
+    seguir_move:
     ;;Sumamos velocidad X a posicion X
     ld      a, de_x(ix)
     ld       de_oldx(ix), a
@@ -500,6 +530,7 @@ hero_move:
     ;Else revet changes in e_x and e_y
     ;cp #0
     ;jr z, exit
+
 
     pop hl ;;para restaurar el puntero a la tile actual
     push hl
