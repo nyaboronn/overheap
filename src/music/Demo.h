@@ -5,9 +5,9 @@
 ///
 
 /// Song 'song_ingame' metadata macros
-#define song_ingame_address  0x6B3E
+#define song_ingame_address  0x5800
 #define song_ingame_size     139
-#define song_ingame_end      0x6bc8
+#define song_ingame_end      0x588a
 
 /// Song 'song_ingame' array declaration
 extern void song_ingame[song_ingame_size];

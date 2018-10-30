@@ -15,6 +15,28 @@ TScreenTilemapBack: .dw #0xC000
                 .dw #_g_tilemap
                 .db 0x00
 
+
+RepeatRender: .db #0
+;;INPUT -> scroll= h
+;;         column = l
+
+InputHL: .dw #0x0000      
+
+
+
+
+reset_InputHL:
+    ld bc, #0x0000
+    ld (InputHL),bc
+ret
+
+reset_RepeatRender:
+    ld a , #0
+    ld (RepeatRender), a
+ret
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;    ;;LLAMAR SIEMPRE *ANTES* DE LA LLAMADA A HERO_DEFAULT
 ;; Devuelve al Scroll a valores default
 ;; 

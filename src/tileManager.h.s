@@ -10,14 +10,11 @@ scroll = 4
 
 
 
-RepeatRender: .db #0
-;;INPUT -> scroll= h
-;;         column = l
+.globl RepeatRender
+.globl InputHL
 
-InputHL: .dw #0x0000      
-
-
-
+.globl reset_RepeatRender
+.globl reset_InputHL
 
 .globl _g_tilemap
 .globl _g_palette

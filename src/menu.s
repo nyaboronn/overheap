@@ -13,7 +13,11 @@
 
 fps2: .db #1
 ronda: .db #0
+max_ronda: .db #3
 
+;;;;;;;;;;;;;;;;;
+;;Pinta Menu
+;;;;;;;;;;;;;;;;
 menu:
 
     ld  hl,  #_overHeap_pal
@@ -53,7 +57,9 @@ menu:
 ret	
 
 
-
+;;;;;;;;;;;;;;;;
+;;LLeva el control de los botones del menu y su flujo de programa
+;;;;;;;;;;;;;;;;
 pulsada:
     call  cpct_scanKeyboard_asm
     ld    hl, #Key_1
@@ -63,8 +69,6 @@ pulsada:
     jp game
 
 no_press_1:
-
-
 ret
 
 
@@ -76,6 +80,10 @@ next_game:
     call cpct_setPalette_asm   
     call scroll_default
     call ren_initBuffers
+
+    call inc_rondas
+    call check_rondas
+    
     call next_stage
 
     inf:
@@ -84,34 +92,11 @@ next_game:
 
 ret
 ;;;;;;;;;;;
-;;Reincia el juego dandolo a la Z y a la X siguiente ronda
+;; X siguiente ronda
 ;;
 ;; Entro si me lo paso
 ;;;;;;;;;;
 reinicio:
-
-
-
-    call  cpct_scanKeyboard_asm
-    ld    hl, #Key_Z
-    call  cpct_isKeyPressed_asm
-    jr    z, no_press_Z
-    ;;Saltamos y reiniciamos el vídeogame
-    ;;ld a, #2
-    ;;ld (enemies), a
-    call scroll_default
-    
-    
-    call enemy_default
-    call hero_default
-
-    call reinicio_rondas
-    call reinicio_enemies
-
-    ;;jp principio
-    jp game
-    ;;call llamada_menu
-no_press_Z:
 
     call  cpct_scanKeyboard_asm
     ld    hl, #Key_X
@@ -122,24 +107,18 @@ no_press_Z:
     ;;Todo cambiar por los sigueitnes enemigos
     call scroll_default
 
-    ;; call improve_enemies
-   ;; call enemy_default
     call enemy_improve
+    ;;call enemy_default
     call hero_default_no_vida
 
-    call inc_rondas
-
 ;;Generamos los siguientes enemigos para la siguiente ronda-----------------------------------------------------------------------------------------------------------------
-    
-    cp #3
-    jr nz, no_fin
-    call fin_rondas
-    no_fin:
+
 
     jp game
 no_press_X:
 
 ret	
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;;Reincia el juego dandolo a la Z
 ;;Entro si me matan
@@ -150,17 +129,15 @@ full_reinicio:
     call  cpct_isKeyPressed_asm
     jr    z, full_no_press_Z
     ;;Saltamos y reiniciamos el vídeogame
-    ;ld a, #2
-    ;ld (enemies), a
-   ; call enemy_default
     call scroll_default
-    
-    
-    call reinicio_rondas
-    call reinicio_enemies
 
-    call enemy_default
-    call hero_default
+   ;; call reiniciar_life
+   ;; call reinicio_rondas
+   ;; call reinicio_enemies
+;;
+   ;; call enemy_default
+   ;; call hero_default 
+   call restart_all
 
     jp game
     ;;call llamada_menu
@@ -170,25 +147,29 @@ full_no_press_Z:
 
 
 ret
-
-end_reinicio:
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Entro si me paso el juego
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+end_reinicio::
     call  cpct_scanKeyboard_asm
     ld    hl, #Key_Z
     call  cpct_isKeyPressed_asm
     jr    z, end_no_press_Z
     ;;Saltamos y reiniciamos el vídeogame
-    ;;ld a, #2
-    ;;ld (enemies), a
-   ; call enemy_default
     call scroll_default
-    call enemy_default
-    call hero_default
 
-    call reinicio_rondas
-    call reinicio_enemies
+    ;;call reiniciar_life
+    ;;call reinicio_rondas
+    ;;call reinicio_enemies
+;;
+    ;;call enemy_default
+    ;;call hero_default
+    call restart_all
+
     
-    ;;jp game
-    call llamada_menu
+    
+    jp game
+    ;;call llamada_menu
     ;;jp principio
 end_no_press_Z:
 
@@ -206,10 +187,10 @@ fin_rondas:
     call ren_initBuffers
     call rondas_stage
 
+    call restart_all
+
 
     inf4:
-       
-    
     call end_reinicio
 
     jp  inf4
@@ -228,12 +209,46 @@ end_game:
     call ren_initBuffers
     call final_stage ;; Pintar por pantalla
 
-    full_inf:
+    full_infw:
         call full_reinicio
-    jp  full_inf
+    jp  full_infw
 
 ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Reinicia todas las variables necesarias para default
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+restart_all:
+call reset_RepeatRender
+call reset_InputHL
+
+    call reiniciar_life     ;;Reinicia la variable Life
+    call reinicio_rondas    ;;Reinicia la variable ronda
+    call reinicio_enemies   ;;Reinicia la variable enemies
+    call reiniciar_enm_map_alive ;;Reinicia la variable enm_map_alive
+
+    call enemy_default
+    call hero_default
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Comprueba si se han ejecutado todas las rondas
+;;  Registros Destruidos A, B
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+check_rondas:
+
+    ld a, (max_ronda)    ;;Cojo el máximo de rondas
+    ld b, a              ;;Lo paso al registro b, para comprobar
+    ld a, (ronda)
+
+    cp b
+    jr nz, no_fin
+    call fin_rondas
+
+    ;call llamada_menu
+
+    no_fin:
+ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Incrementa en 1 la ronda
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -243,7 +258,7 @@ inc_rondas:
      ld (ronda), a
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  Reinicia la variable rondas
+;;  Reinicia la variable ronda
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 reinicio_rondas:
     ld a, #0
@@ -265,9 +280,9 @@ llamada_menu:
     call ren_initBuffers
     call menu
     call ren_switchBuffers
-    
-    call reinicio_rondas
-    call reinicio_enemies
+    call restart_all
+    ;;call reinicio_rondas
+    ;;call reinicio_enemies
 inf3:	
 
     ld	a, (fps2)

@@ -36,11 +36,11 @@ k_total_enm     = #1           ;; Total de enemigos en memoria
 k_enm_size      = #24 + k_max_balas*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX
-enm_map_alive: .db #k_total_enm
+enm_map_alive: .db #k_total_enm ;;Enemigos que vamos a tener en el mapa por ronda, y va decrementando
 
-enemies: .db #k_total_enm
+enemies: .db #k_total_enm   ;;Enemigos que vamos a tener por ronda, que se incrementa cada ronda
 
-life: .db 0x03
+life: .db 0x03      ;;Vidas de los enemigos que se van ingrementando
 
 
 
@@ -177,6 +177,23 @@ ret
 ;    si- > Resetar puntero a ListaEnemigos
 ;    no-> Sumar offset
     
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resetea las vidas que se van a incrementar de los
+;; enemigos
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reiniciar_life:
+    ld a, #0x03
+    ld (life), a
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resetea el valor de enm_map_alive deafult
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reiniciar_enm_map_alive:
+    ld a, #k_total_enm
+    ld (enm_map_alive), a
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ejecuta la un metodo para el enemigo actual
@@ -296,14 +313,21 @@ enm_iddle:
 ret
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve a la vida a los esqueletos
 ;; LLAMAR SIEMPRE ANTES DE HERO_DEFAULT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enemy_default::
 
-    ld	hl, #enm_map_alive
-    ld (hl), #2;;enemies
+   ; ld	hl, #enm_map_alive
+   ; ld (hl), #2;;enemies
+    ld hl, #CurrentEnemy
+    ld (hl), #ListaEnemigos
+    ld hl, #CurrentEnemyIt
+    ld (hl), #0x00
+
+    call reiniciar_enm_map_alive
 
     ld hl, #reset_enemy
     call enm_doForAllForDead
@@ -324,31 +348,54 @@ reset_enemy::
     ld e_health(ix), #3
 
 ret
-
-enemy_improve::
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Incrementa el núemro de enemigos en el mapa
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+increase_enemies:
 
     ld a, (enemies)
     inc a
     ld (enemies), a
     ld (enm_map_alive), a
-   
 
-    ld hl, #increase_life
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Se encarga de incrementar enemigos, vida y aplicar la vida a los enemigos
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enemy_improve::
+
+    call increase_enemies
+    ;;call reiniciar_enm_map_alive
+    call increase_life
+
+    ld hl, #aplica_life
     call enm_doForAllForDead
 
     
 ret
 
+
+;;;;;;;;;;;;;;;;;;;;
+;;Incrementa la vida del enemigo
+;;;;;;;;;;;;;;;;;;;;
 increase_life:
 
     ld a, (life)
-    add a, a
+    add a, #2
     ld (life), a
-    ld e_health(ix),a
 
 ret
+;;;;;;;;;;;;;;;;;;;;
+;;Aplica la vida incrementada a los enemigos
+;;;;;;;;;;;;;;;;;;;;
+aplica_life:
+    ld a, (life)
+    ld e_health(ix),a
+ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Detecta al hero a una distancia k_lim_detectar 
 ;; indicado el por el Byte _direct
@@ -640,7 +687,7 @@ enm_update:
 
 
 
-    call FSM1
+  ;;  call FSM1
     ;Actualizar el enemigo
     ld  h, e_up_h(ix)
     ld  l, e_up_l(ix)
@@ -698,9 +745,9 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAll:
 
-  ;;  ld  a,  #k_total_enm ; Contador 
-    ld a, (#enm_map_alive)
 
+
+    ld  a,  (enemies) ; Contador 
 
     ld  iy, #ListaEnemigos
 
@@ -750,7 +797,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAllForDead:
 
-    ld  a,  (enm_map_alive) ; Contador 
+    ld  a,  (enemies) ; Contador 
 
     ld  iy, #ListaEnemigos
 
