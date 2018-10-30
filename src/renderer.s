@@ -454,7 +454,7 @@ next_stage:
     ld d, pVideo+1(iy) ;; memory pointer
     ld e, pVideo(iy)
 
-	ld c, #25 ;x    
+	ld c, #23 ;x    
 	ld b, #5 ;y
     call cpct_getScreenPtr_asm ;; return in hl
 
@@ -490,7 +490,7 @@ ld hl, (#m_back_tileMap)
     ld d, pVideo+1(iy) ;; memory pointer
     ld e, pVideo(iy)
 
-	ld c, #25 ;x    
+	ld c, #29 ;x    
 	ld b, #100;y
     call cpct_getScreenPtr_asm ;; return in hl
 

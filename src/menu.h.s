@@ -13,7 +13,8 @@
 .globl cpct_akp_stop_asm
 .globl ronda
 .globl fin_rondas
-
+.globl check_rondas
+.globl inc_rondas
 
 
 

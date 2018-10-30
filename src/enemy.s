@@ -57,6 +57,14 @@ reiniciar_life:
     ld (life), a
 ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resetea el valor de enm_map_alive deafult
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reiniciar_enm_map_alive:
+    ld a, #k_total_enm
+    ld (enm_map_alive), a
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ejecuta la un metodo para el enemigo actual
@@ -145,6 +153,7 @@ enm_iddle:
 ret
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve a la vida a los esqueletos
 ;; LLAMAR SIEMPRE ANTES DE HERO_DEFAULT
@@ -153,9 +162,12 @@ enemy_default::
 
    ; ld	hl, #enm_map_alive
    ; ld (hl), #2;;enemies
+    ld hl, #CurrentEnemy
+    ld (hl), #ListaEnemigos
+    ld hl, #CurrentEnemyIt
+    ld (hl), #0x00
 
-    ld a, #0x02
-    ld (enm_map_alive), a
+    call reiniciar_enm_map_alive
 
     ld hl, #reset_enemy
     call enm_doForAllForDead
@@ -176,17 +188,27 @@ reset_enemy::
     ld e_health(ix), #3
 
 ret
-
-enemy_improve::
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Incrementa el núemro de enemigos en el mapa
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+increase_enemies:
 
     ld a, (enemies)
     inc a
     ld (enemies), a
     ld (enm_map_alive), a
-    
 
+ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Se encarga de incrementar enemigos, vida y aplicar la vida a los enemigos
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+enemy_improve::
+
+    call increase_enemies
+    ;;call reiniciar_enm_map_alive
     call increase_life
 
     ld hl, #aplica_life
@@ -213,6 +235,7 @@ aplica_life:
     ld a, (life)
     ld e_health(ix),a
 ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Detecta al hero a una distancia k_lim_detectar 
 ;; indicado el por el Byte _direct
@@ -527,7 +550,9 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAll:
 
-    ld  a,  (enm_map_alive) ; Contador 
+
+
+    ld  a,  (enemies) ; Contador 
 
     ld  iy, #ListaEnemigos
 
@@ -577,7 +602,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_doForAllForDead:
 
-    ld  a,  (enm_map_alive) ; Contador 
+    ld  a,  (enemies) ; Contador 
 
     ld  iy, #ListaEnemigos
 
