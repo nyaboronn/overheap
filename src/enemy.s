@@ -14,12 +14,12 @@
 
 
 ListaEnemigos: ;                                                                       
-    ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move1, 1,  1,  10
-    DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
-    ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  10
-   DefineEnemyShoot eshoot4, 2, 37,   0x04, 0x04,  _sprite_Skeleton,     FSM1, 1, 1,  5
-    DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  10
-    DefineEnemyShoot eshoot3, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3
+    ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_iddle, 1,  1,  10
+    DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  -1,  3
+    ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  1,  10
+   DefineEnemyShoot eshoot4, 2, 37,   0x04, 0x04,  _sprite_Skeleton,     FSM1, 1, 1,  3
+    DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_iddle,               -1, 0,  10
+    DefineEnemyShoot eshoot3, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  1,  3
 
 
 
@@ -66,22 +66,34 @@ enm_jumptable: ;; -17
 ;;; Es necesario cambiar la etiqueta fsm1Method
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 FSM1::
+    ;; Por defecto
+    ld a, e_health(ix);
+    ld bc, (#life)
+    cp c   ;; Evento, vida 2
+    jr nz, #noreset
+        ld hl, #enm_iddle ;; Cambiamos a estado JumpAndMove
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
+
+    noreset:
+
 
     ld a, e_health(ix);
     cp #2   ;; Evento, vida 2
-    jr z, #nosalta
+    jr nz, #nosalta
         ld hl, #jumpAndMove ;; Cambiamos a estado JumpAndMove
         ld  (fsm1Method), hl         ;; (meotodo) = HL
-
+        jr fsm1Method-1
 
     nosalta:
 
 
     ld a, e_health(ix);
     cp #3  ;; Evento, vida 3
-    jr z, #nodispara
+    jr nz, #nodispara
         ld hl, #enm_move1 ;; Cambiamos a estado JumpAndMove 
         ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
 
 
     nodispara:
@@ -90,8 +102,9 @@ FSM1::
 
     ;; ELSE Apply Function
     fsm1Method  = . + 1           ;; | . + 1 es el call
-    call    enm_iddle   
+    call    0x0000   
 
+    ;; Poder mover al enemigo
     call enm_move
 
 
