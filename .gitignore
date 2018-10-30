@@ -1,4 +1,7 @@
 obj/
+src/assets/
+src/Sprites/
+
 *.cdt
 *.dsk
 *.sna

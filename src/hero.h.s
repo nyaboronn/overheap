@@ -24,7 +24,7 @@ k_max_hero_balas = 5
     .db  _jump          ;; Jump State,    -1 if not jumping (can jump)
                         ;;                -2 if is falling  (cant jump)
     .db _vida           ;; Numero de Vidas
-
+    .db 0               ;; aux
 
     .db k_max_hero_balas   ;; Maximo de objetos
     .db 0       ;; Número de obs creados
@@ -40,13 +40,14 @@ e_size = 14
 hero_direct = 0 + e_size
 hero_jump   = 1 + e_size
 hero_vida   = 2 + e_size
+hero_aux    = 3 + e_size
 
-k_max_num_obs  = 3 + e_size
-m_num_obs      = 4 + e_size
-m_next_obs     = 5 + e_size
-m_alive_obs    = 7 + e_size 
-m_murieron_obs = 8 + e_size 
-shot_array     = 9 + e_size
+k_max_num_obs  = 4 + e_size
+m_num_obs      = 5 + e_size
+m_next_obs     = 6 + e_size
+m_alive_obs    = 8 + e_size 
+m_murieron_obs = 9 + e_size 
+shot_array     = 10 + e_size
 
 
 

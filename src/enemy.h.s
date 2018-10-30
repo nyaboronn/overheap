@@ -8,7 +8,7 @@
     .db  _direct    ;; 0 => left 1 => right
     .db  _alpha     ;; 0 => no necesita transparencia, 1 => usa transparencia
     .db _health     ;; Vida del enemigo
-                        
+    .db  -1      ;; _jump             
 .endm
 
 
@@ -37,12 +37,14 @@ e_size = 14              ;; Size En Bytes de un Enemigo
 e_direct            = 0 + e_size
 e_alpha             = 1 + e_size
 e_health            = 2 + e_size
-k_max_num_obs  = 3 + e_size
-m_num_obs      = 4 + e_size
-m_next_obs     = 5 + e_size
-m_alive_obs    = 7 + e_size 
-m_murieron_obs = 8 + e_size 
-shot_array     = 9 + e_size
+e_jump              = 3 + e_size    
+
+k_max_num_obs  = 4 + e_size
+m_num_obs      = 5 + e_size
+m_next_obs     = 6 + e_size
+m_alive_obs    = 8 + e_size 
+m_murieron_obs = 9 + e_size 
+shot_array     = 10 + e_size
 
 
 
