@@ -3,30 +3,36 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MACRO PARA DEFINIR UN HERO A PARTIR DE UNA ENTIDAD
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineHero _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct
+.macro DefineHero _name, _x, _y,  _w, _h, _sprite, _upd, _jump, _vida,_direct
 
-    DefineEntity _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile
+
+
+.endm
+
+
+k_max_hero_balas = 5
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MACRO PARA DEFINIR UN HERO QUE PUEDE DISPARAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+.macro DefineHeroShot _name, _x, _y,  _w, _h, _sprite, _upd, _jump, _vida,_direct
+
+    DefineEntity _name, _x, _y,  _w, _h, _sprite, _upd
     .db  _direct        ;; Donde apunta    0 => left
     .db  _jump          ;; Jump State,    -1 if not jumping (can jump)
                         ;;                -2 if is falling  (cant jump)
     .db _vida           ;; Numero de Vidas
 
-.endm
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; MACRO PARA DEFINIR UN HERO QUE PUEDE DISPARAR
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineHeroShot _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida,_direct, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
-
-    DefineHero _name, _x, _y,_oldx, _oldy, _vx, _vy, _w, _h, _sprite, _upd, _tile, _jump, _vida, _direct
-
-    .db _k_max_num_obs   ;; Maximo de objetos
-    .db _m_num_obs       ;; Número de obs creados
+    .db k_max_hero_balas   ;; Maximo de objetos
+    .db 0       ;; Número de obs creados
     .dw .+4              ;; Posicion actual en el array
-    .db _m_alive_obs     ;; Numero de Obs Usados
-    .db _m_murieron_obs  ;; Numero de Obs que colisionan
+    .db k_max_hero_balas     ;; Numero de Obs Usados
+    .db 0  ;; Numero de Obs que colisionan
 
-    DefineNObstacles _name'_suf, _k_max_num_obs
+    DefineNObstacles _name'_suf, k_max_hero_balas
 
 .endm
 

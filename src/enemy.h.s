@@ -2,30 +2,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MACRO PARA DEFINIR UN ENEMIGO A  PARTIR DE UNA ENTIDAD
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct, _alpha, _health
+.macro DefineEnemy _name, _x, _y, _w, _h, _sprite, _upd, _direct, _alpha, _health
 
-    DefineEntity _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile
+    DefineEntity _name, _x, _y,  _w, _h, _sprite, _upd
     .db  _direct    ;; 0 => left 1 => right
     .db  _alpha     ;; 0 => no necesita transparencia, 1 => usa transparencia
     .db _health     ;; Vida del enemigo
                         
 .endm
 
+
+k_max_balas = 5
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MACRO PARA DEFINIR UN ENEMIGO CON UN ARRAY DE BALAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-.macro DefineEnemyShoot _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct,_alpha, _health, _k_max_num_obs, _m_num_obs, _m_next_obs, _m_alive_obs, _m_murieron_obs, _suf
+.macro DefineEnemyShoot _name, _x, _y, _w, _h, _sprite, _upd, _direct,_alpha, _health
 
-    DefineEnemy _name, _x, _y,_oldx, _oldy _vx, _vy, _w, _h, _sprite, _upd, _tile, _direct, _alpha, _health
+    DefineEnemy _name, _x, _y, _w, _h, _sprite, _upd, _direct, _alpha, _health
 
-    .db _k_max_num_obs   ;; Maximo de balas a usar 
-    .db _m_num_obs       ;; Número de obs creados
+    .db k_max_balas   ;; Maximo de balas a usar 
+    .db 0       ;; Número de obs creados
     .dw .+4              ;; Puntero al array de balas
-    .db _m_alive_obs     ;; Numero de Obs en Pantalla
-    .db _m_murieron_obs  ;; Numero de Obs que han colisionado
+    .db k_max_balas     ;; Numero de Obs en Pantalla
+    .db 0  ;; Numero de Obs que han colisionado
     
     ;; Array de Obstaculo, que representan las balas
-    DefineNObstacles _name'_suf, _k_max_num_obs     
+    DefineNObstacles _name'_suf, k_max_balas     
 
 .endm
 
@@ -64,3 +68,6 @@ shot_array     = 9 + e_size
 
 .globl siguiente_mapa
 
+.globl enm_map_alive
+.globl enemies
+.globl k_total_enm
