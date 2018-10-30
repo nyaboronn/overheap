@@ -17,7 +17,7 @@ ListaEnemigos: ;
     ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_move1, 1,  1,  10
     DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
     ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  10
-   DefineEnemyShoot eshoot4, 2, 37,   0x04, 0x04,  _sprite_Skeleton,     enm_move1, 1, 1,  3
+   DefineEnemyShoot eshoot4, 2, 37,   0x04, 0x04,  _sprite_Skeleton,     FSM1, 1, 1,  5
     DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  10
     DefineEnemyShoot eshoot3, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3
 
@@ -63,37 +63,37 @@ enm_jumptable: ;; -17
 ;;;     Maquina de estados finitos 
 ;;; El metodo de update se ocupa de ejecutar el metodo/estado en el que se encuentra
 ;;; Ademas comprobara si existe un evento de entrada para cambiar el estado
-;;;
+;;; Es necesario cambiar la etiqueta fsm1Method
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-FSM1:
+FSM1::
 
     ld a, e_health(ix);
-    cp #2
-    jr nc, #nosalta
-        ld hl, #jumpAndMove
-        ;Actualizar el enemigo
-        ld  e_up_h(ix), h 
-        ld  e_up_l(ix), l
-    ret 
+    cp #2   ;; Evento, vida 2
+    jr z, #nosalta
+        ld hl, #jumpAndMove ;; Cambiamos a estado JumpAndMove
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+
+
     nosalta:
 
 
     ld a, e_health(ix);
-    cp #3
-    jr nc, #nodispara
+    cp #3  ;; Evento, vida 3
+    jr z, #nodispara
+        ld hl, #enm_move1 ;; Cambiamos a estado JumpAndMove 
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
 
-        ld hl, #enm_move1
-        ;Actualizar el enemigo
-        ld  e_up_h(ix), h 
-        ld  e_up_l(ix), l
-    ret 
+
     nodispara:
 
 
 
+    ;; ELSE Apply Function
+    fsm1Method  = . + 1           ;; | . + 1 es el call
+    call    enm_iddle   
 
-    ;; Si la vida > 2 disprar
-    ;; Si la vida < 2 Saltar y mover
+    call enm_move
+
 
 ret
 
@@ -106,16 +106,17 @@ jumpAndMove:
     jr  nz , skip             ;; A != 0. Jump is no activate, lest do
 
     ;; Jump is inactive, active it
+    
         ld  e_jump(ix), #0
           ;;Cambiar por sentido
-    ld  e_vx(ix), #-2
+    ld  e_vx(ix), #2
 
 skip:
   
 
 
     call enm_jumpControl
-    call enm_move
+
 
 
 ret	
