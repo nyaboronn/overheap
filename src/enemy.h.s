@@ -67,3 +67,4 @@ shot_array     = 9 + e_size
 .globl enm_map_alive
 .globl enemies
 .globl k_total_enm
+.globl reiniciar_life

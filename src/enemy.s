@@ -34,11 +34,11 @@ k_total_enm     = #2           ;; Total de enemigos en memoria
 k_enm_size      = #23 + 1*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX
-enm_map_alive: .db #k_total_enm
+enm_map_alive: .db #k_total_enm ;;Enemigos que vamos a tener en el mapa por ronda, y va decrementando
 
-enemies: .db #k_total_enm
+enemies: .db #k_total_enm   ;;Enemigos que vamos a tener por ronda, que se incrementa cada ronda
 
-life: .db 0x03
+life: .db 0x03      ;;Vidas de los enemigos que se van ingrementando
 
 
 
@@ -48,6 +48,15 @@ life: .db 0x03
 ;    si- > Resetar puntero a ListaEnemigos
 ;    no-> Sumar offset
     
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resetea las vidas que se van a incrementar de los
+;; enemigos
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reiniciar_life:
+    ld a, #0x03
+    ld (life), a
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Ejecuta la un metodo para el enemigo actual
@@ -142,8 +151,11 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enemy_default::
 
-    ld	hl, #enm_map_alive
-    ld (hl), #2;;enemies
+   ; ld	hl, #enm_map_alive
+   ; ld (hl), #2;;enemies
+
+    ld a, #0x02
+    ld (enm_map_alive), a
 
     ld hl, #reset_enemy
     call enm_doForAllForDead
@@ -173,21 +185,33 @@ enemy_improve::
     inc a
     ld (enemies), a
     ld (enm_map_alive), a
-   
+    
 
-    ld hl, #increase_life
+    call increase_life
+
+    ld hl, #aplica_life
     call enm_doForAllForDead
 
     
 ret
 
+
+;;;;;;;;;;;;;;;;;;;;
+;;Incrementa la vida del enemigo
+;;;;;;;;;;;;;;;;;;;;
 increase_life:
 
     ld a, (life)
-    add a, a
+    add a, #2
     ld (life), a
-    ld e_health(ix),a
 
+ret
+;;;;;;;;;;;;;;;;;;;;
+;;Aplica la vida incrementada a los enemigos
+;;;;;;;;;;;;;;;;;;;;
+aplica_life:
+    ld a, (life)
+    ld e_health(ix),a
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Detecta al hero a una distancia k_lim_detectar 
