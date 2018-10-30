@@ -219,6 +219,8 @@ ret
 ;;  Reinicia todas las variables necesarias para default
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 restart_all:
+call reset_RepeatRender
+call reset_InputHL
 
     call reiniciar_life     ;;Reinicia la variable Life
     call reinicio_rondas    ;;Reinicia la variable ronda

@@ -13,7 +13,8 @@ scroll = 4
 .globl RepeatRender
 .globl InputHL
 
-
+.globl reset_RepeatRender
+.globl reset_InputHL
 
 .globl _g_tilemap
 .globl _g_palette
