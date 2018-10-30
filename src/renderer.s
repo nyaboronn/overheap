@@ -300,7 +300,6 @@ ren_DestroyEntity:
   pop iy
 
 
-  ;; Repintamos una columna, izquierda o derecha
 
   ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
   ld a, de_x(ix)    ;; X
@@ -308,11 +307,12 @@ ren_DestroyEntity:
   sub c
   ld c, a
 
+
   ld B, de_y(ix)  ;; Y
 
 
   ld E, de_w(ix)  ;; W
-  ld D, de_h(ix)  ;; W
+  ld D, de_h(ix)  ;; h
 
 
   ld A, #MAP_WIDTH ;; map_width
@@ -329,6 +329,8 @@ ren_DestroyEntity:
   push hl
 
   call cpct_etm_drawTileBox2x4_asm
+
+
 
 ret
 
@@ -360,15 +362,18 @@ ret
 
   ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
   ld a, de_oldx(ix)    ;; X
+  dec a
   ld c, scroll(iy)
   sub c
   ld c, a
+  
 
   ld B, de_oldy(ix)  ;; Y
 
 
   ld E, de_w(ix)  ;; W
-  ld D, de_h(ix)  ;; W
+  inc e
+  ld D, de_h(ix)  ;; h
 
 
   ld A, #MAP_WIDTH ;; map_width

@@ -115,8 +115,8 @@ call enm_doForAll
 
 ld iy, #hero_data
 ld	hl, #enm_update
-call doForCurrentEnemy
-;;call enm_doForAll
+;call doForCurrentEnemy
+call enm_doForAll
 
 
   ld	hl, #enm_draw
