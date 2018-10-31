@@ -444,7 +444,7 @@ ret
 ;;    Input: Iy and IX swaped
 ;;         IY: Points to the Hero 
 ;;         IX: Points to the Obtacle
-;;        Delete Registers: IX, IY, A, C, B
+;;        Delete Registers: A, C, B
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 obs_checkCollision::
   ;;  X axis - Left Side
