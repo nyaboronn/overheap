@@ -188,7 +188,7 @@ hero_update:
 
     push ix
     ;Acutalizas las balas del enemigo
-    ld	hl, #obs_update
+    ld	hl, #obs_update_hero
     call	obs_doForAll
     ;Actualizar el enemigo
     pop ix

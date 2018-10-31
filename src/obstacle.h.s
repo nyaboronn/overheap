@@ -55,3 +55,4 @@ o_alive = 6 + e_de_size
 .globl obs_checkCollision
 .globl obs_no_collision
 
+.globl obs_update_hero

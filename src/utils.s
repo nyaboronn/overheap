@@ -10,4 +10,9 @@ AtoBCextendendsign:
 	ld b,a
 	ret
 
-
+;;http://z80-heaven.wikidot.com/math#toc12
+absA:
+     or a
+     ret p
+     neg         ;or you can use      cpl \ inc a
+     ret

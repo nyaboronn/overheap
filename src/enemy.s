@@ -299,7 +299,7 @@ doForCurrentEnemy:
 
 
 
-    ld  iy, (#CurrentEnemy)
+    ld  iy, #CurrentEnemy
 
     ld  (metodoActual), hl         ;; (meotodo) = HL
 
@@ -351,6 +351,7 @@ doForCurrentEnemy:
 
 ret
     resetCurrent:
+
 
     ld  hl, #ListaEnemigos
     ld (#CurrentEnemy),hl
@@ -414,8 +415,13 @@ enemy_default::
    ; ld	hl, #enm_map_alive
    ; ld (hl), #2;;enemies
     call reset_posi
-    ld hl, #CurrentEnemy
-    ld (hl), #ListaEnemigos
+    
+    ld  hl, #ListaEnemigos
+    ld (#CurrentEnemy),hl
+
+
+
+
     ld hl, #CurrentEnemyIt
     ld (hl), #0x00
 
