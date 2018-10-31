@@ -792,13 +792,18 @@ enm_update:
 
         ;; ELSE: decrementar la vida al hero
         ld a, e_health(iy)
-        cp a, #0
-        jr c, seguir_update
+        cp #1
+        jr z, terminarPartida
 
             ;; ELSE: vida > 0, decrementarla
            dec a
            ld e_health(iy), a
+            jr seguir_update
+terminarPartida:
 
+               call end_game
+
+ret
     seguir_update:
 
     ;Salvamos ix e iy 
