@@ -34,7 +34,7 @@ initialize_CPC:
   call cpct_setVideoMode_asm
 
   ld hl, #_g_palette   ;; Paleta de colores
-  ld de, #13          ;;numero de colores a cambiar
+  ld de, #16         ;;numero de colores a cambiar
   call cpct_setPalette_asm
 
   ld l, #16       ;;Constante
@@ -64,6 +64,17 @@ principio:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Disable firmware to prevent it from interfering with string drawing
    call cpct_disableFirmware_asm
+
+
+  ld hl, #_g_palette   ;; Paleta de colores
+  ld de, #16         ;;numero de colores a cambiar
+  call cpct_setPalette_asm
+
+  ld l, #16       ;;Constante
+  ld h, #HW_BLACK
+  call cpct_setPALColour_asm   ;;Cambiar fondo negro
+  
+ ; call ren_initBuffers
 
     ld C, #0x00 ;; Modo de video
     call cpct_setVideoMode_asm  ;;Establece modo 0

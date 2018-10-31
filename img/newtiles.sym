@@ -1,0 +1,302 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  0 _g_newtiles_000                                                0000 GR
+  0 _g_newtiles_001                                                0008 GR
+  0 _g_newtiles_002                                                0010 GR
+  0 _g_newtiles_003                                                0018 GR
+  0 _g_newtiles_004                                                0020 GR
+  0 _g_newtiles_005                                                0028 GR
+  0 _g_newtiles_006                                                0030 GR
+  0 _g_newtiles_007                                                0038 GR
+  0 _g_newtiles_008                                                0040 GR
+  0 _g_newtiles_009                                                0048 GR
+  0 _g_newtiles_010                                                0050 GR
+  0 _g_newtiles_011                                                0058 GR
+  0 _g_newtiles_012                                                0060 GR
+  0 _g_newtiles_013                                                0068 GR
+  0 _g_newtiles_014                                                0070 GR
+  0 _g_newtiles_015                                                0078 GR
+  0 _g_newtiles_016                                                0080 GR
+  0 _g_newtiles_017                                                0088 GR
+  0 _g_newtiles_018                                                0090 GR
+  0 _g_newtiles_019                                                0098 GR
+  0 _g_newtiles_020                                                00A0 GR
+  0 _g_newtiles_021                                                00A8 GR
+  0 _g_newtiles_022                                                00B0 GR
+  0 _g_newtiles_023                                                00B8 GR
+  0 _g_newtiles_024                                                00C0 GR
+  0 _g_newtiles_025                                                00C8 GR
+  0 _g_newtiles_026                                                00D0 GR
+  0 _g_newtiles_027                                                00D8 GR
+  0 _g_newtiles_028                                                00E0 GR
+  0 _g_newtiles_029                                                00E8 GR
+  0 _g_newtiles_030                                                00F0 GR
+  0 _g_newtiles_031                                                00F8 GR
+  0 _g_newtiles_032                                                0100 GR
+  0 _g_newtiles_033                                                0108 GR
+  0 _g_newtiles_034                                                0110 GR
+  0 _g_newtiles_035                                                0118 GR
+  0 _g_newtiles_036                                                0120 GR
+  0 _g_newtiles_037                                                0128 GR
+  0 _g_newtiles_038                                                0130 GR
+  0 _g_newtiles_039                                                0138 GR
+  0 _g_newtiles_040                                                0140 GR
+  0 _g_newtiles_041                                                0148 GR
+  0 _g_newtiles_042                                                0150 GR
+  0 _g_newtiles_043                                                0158 GR
+  0 _g_newtiles_044                                                0160 GR
+  0 _g_newtiles_045                                                0168 GR
+  0 _g_newtiles_046                                                0170 GR
+  0 _g_newtiles_047                                                0178 GR
+  0 _g_newtiles_048                                                0180 GR
+  0 _g_newtiles_049                                                0188 GR
+  0 _g_newtiles_050                                                0190 GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  0 _g_newtiles_051                                                0198 GR
+  0 _g_newtiles_052                                                01A0 GR
+  0 _g_newtiles_053                                                01A8 GR
+  0 _g_newtiles_054                                                01B0 GR
+  0 _g_newtiles_055                                                01B8 GR
+  0 _g_newtiles_056                                                01C0 GR
+  0 _g_newtiles_057                                                01C8 GR
+  0 _g_newtiles_058                                                01D0 GR
+  0 _g_newtiles_059                                                01D8 GR
+  0 _g_newtiles_060                                                01E0 GR
+  0 _g_newtiles_061                                                01E8 GR
+  0 _g_newtiles_062                                                01F0 GR
+  0 _g_newtiles_063                                                01F8 GR
+  0 _g_newtiles_064                                                0200 GR
+  0 _g_newtiles_065                                                0208 GR
+  0 _g_newtiles_066                                                0210 GR
+  0 _g_newtiles_067                                                0218 GR
+  0 _g_newtiles_068                                                0220 GR
+  0 _g_newtiles_069                                                0228 GR
+  0 _g_newtiles_070                                                0230 GR
+  0 _g_newtiles_071                                                0238 GR
+  0 _g_newtiles_072                                                0240 GR
+  0 _g_newtiles_073                                                0248 GR
+  0 _g_newtiles_074                                                0250 GR
+  0 _g_newtiles_075                                                0258 GR
+  0 _g_newtiles_076                                                0260 GR
+  0 _g_newtiles_077                                                0268 GR
+  0 _g_newtiles_078                                                0270 GR
+  0 _g_newtiles_079                                                0278 GR
+  0 _g_newtiles_080                                                0280 GR
+  0 _g_newtiles_081                                                0288 GR
+  0 _g_newtiles_082                                                0290 GR
+  0 _g_newtiles_083                                                0298 GR
+  0 _g_newtiles_084                                                02A0 GR
+  0 _g_newtiles_085                                                02A8 GR
+  0 _g_newtiles_086                                                02B0 GR
+  0 _g_newtiles_087                                                02B8 GR
+  0 _g_newtiles_088                                                02C0 GR
+  0 _g_newtiles_089                                                02C8 GR
+  0 _g_newtiles_090                                                02D0 GR
+  0 _g_newtiles_091                                                02D8 GR
+  0 _g_newtiles_092                                                02E0 GR
+  0 _g_newtiles_093                                                02E8 GR
+  0 _g_newtiles_094                                                02F0 GR
+  0 _g_newtiles_095                                                02F8 GR
+  0 _g_newtiles_096                                                0300 GR
+  0 _g_newtiles_097                                                0308 GR
+  0 _g_newtiles_098                                                0310 GR
+  0 _g_newtiles_099                                                0318 GR
+  0 _g_newtiles_100                                                0320 GR
+  0 _g_newtiles_101                                                0328 GR
+  0 _g_newtiles_102                                                0330 GR
+  0 _g_newtiles_103                                                0338 GR
+  0 _g_newtiles_104                                                0340 GR
+  0 _g_newtiles_105                                                0348 GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  0 _g_newtiles_106                                                0350 GR
+  0 _g_newtiles_107                                                0358 GR
+  0 _g_newtiles_108                                                0360 GR
+  0 _g_newtiles_109                                                0368 GR
+  0 _g_newtiles_110                                                0370 GR
+  0 _g_newtiles_111                                                0378 GR
+  0 _g_newtiles_112                                                0380 GR
+  0 _g_newtiles_113                                                0388 GR
+  0 _g_newtiles_114                                                0390 GR
+  0 _g_newtiles_115                                                0398 GR
+  0 _g_newtiles_116                                                03A0 GR
+  0 _g_newtiles_117                                                03A8 GR
+  0 _g_newtiles_118                                                03B0 GR
+  0 _g_newtiles_119                                                03B8 GR
+  0 _g_newtiles_120                                                03C0 GR
+  0 _g_newtiles_121                                                03C8 GR
+  0 _g_newtiles_122                                                03D0 GR
+  0 _g_newtiles_123                                                03D8 GR
+  0 _g_newtiles_124                                                03E0 GR
+  0 _g_newtiles_125                                                03E8 GR
+  0 _g_newtiles_126                                                03F0 GR
+  0 _g_newtiles_127                                                03F8 GR
+  0 _g_newtiles_128                                                0400 GR
+  0 _g_newtiles_129                                                0408 GR
+  0 _g_newtiles_130                                                0410 GR
+  0 _g_newtiles_131                                                0418 GR
+  0 _g_newtiles_132                                                0420 GR
+  0 _g_newtiles_133                                                0428 GR
+  0 _g_newtiles_134                                                0430 GR
+  0 _g_newtiles_135                                                0438 GR
+  0 _g_newtiles_136                                                0440 GR
+  0 _g_newtiles_137                                                0448 GR
+  0 _g_newtiles_138                                                0450 GR
+  0 _g_newtiles_139                                                0458 GR
+  0 _g_newtiles_140                                                0460 GR
+  0 _g_newtiles_141                                                0468 GR
+  0 _g_newtiles_142                                                0470 GR
+  0 _g_newtiles_143                                                0478 GR
+  0 _g_newtiles_144                                                0480 GR
+  0 _g_newtiles_145                                                0488 GR
+  0 _g_newtiles_146                                                0490 GR
+  0 _g_newtiles_147                                                0498 GR
+  0 _g_newtiles_148                                                04A0 GR
+  0 _g_newtiles_149                                                04A8 GR
+  0 _g_newtiles_150                                                04B0 GR
+  0 _g_newtiles_151                                                04B8 GR
+  0 _g_newtiles_152                                                04C0 GR
+  0 _g_newtiles_153                                                04C8 GR
+  0 _g_newtiles_154                                                04D0 GR
+  0 _g_newtiles_155                                                04D8 GR
+  0 _g_newtiles_156                                                04E0 GR
+  0 _g_newtiles_157                                                04E8 GR
+  0 _g_newtiles_158                                                04F0 GR
+  0 _g_newtiles_159                                                04F8 GR
+  0 _g_newtiles_160                                                0500 GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  0 _g_newtiles_161                                                0508 GR
+  0 _g_newtiles_162                                                0510 GR
+  0 _g_newtiles_163                                                0518 GR
+  0 _g_newtiles_164                                                0520 GR
+  0 _g_newtiles_165                                                0528 GR
+  0 _g_newtiles_166                                                0530 GR
+  0 _g_newtiles_167                                                0538 GR
+  0 _g_newtiles_168                                                0540 GR
+  0 _g_newtiles_169                                                0548 GR
+  0 _g_newtiles_170                                                0550 GR
+  0 _g_newtiles_171                                                0558 GR
+  0 _g_newtiles_172                                                0560 GR
+  0 _g_newtiles_173                                                0568 GR
+  0 _g_newtiles_174                                                0570 GR
+  0 _g_newtiles_175                                                0578 GR
+  0 _g_newtiles_176                                                0580 GR
+  0 _g_newtiles_177                                                0588 GR
+  0 _g_newtiles_178                                                0590 GR
+  0 _g_newtiles_179                                                0598 GR
+  0 _g_newtiles_180                                                05A0 GR
+  0 _g_newtiles_181                                                05A8 GR
+  0 _g_newtiles_182                                                05B0 GR
+  0 _g_newtiles_183                                                05B8 GR
+  0 _g_newtiles_184                                                05C0 GR
+  0 _g_newtiles_185                                                05C8 GR
+  0 _g_newtiles_186                                                05D0 GR
+  0 _g_newtiles_187                                                05D8 GR
+  0 _g_newtiles_188                                                05E0 GR
+  0 _g_newtiles_189                                                05E8 GR
+  0 _g_newtiles_190                                                05F0 GR
+  0 _g_newtiles_191                                                05F8 GR
+  0 _g_newtiles_192                                                0600 GR
+  0 _g_newtiles_193                                                0608 GR
+  0 _g_newtiles_194                                                0610 GR
+  0 _g_newtiles_195                                                0618 GR
+  0 _g_newtiles_196                                                0620 GR
+  0 _g_newtiles_197                                                0628 GR
+  0 _g_newtiles_198                                                0630 GR
+  0 _g_newtiles_199                                                0638 GR
+  0 _g_newtiles_200                                                0640 GR
+  0 _g_newtiles_201                                                0648 GR
+  0 _g_newtiles_202                                                0650 GR
+  0 _g_newtiles_203                                                0658 GR
+  0 _g_newtiles_204                                                0660 GR
+  0 _g_newtiles_205                                                0668 GR
+  0 _g_newtiles_206                                                0670 GR
+  0 _g_newtiles_207                                                0678 GR
+  0 _g_newtiles_208                                                0680 GR
+  0 _g_newtiles_209                                                0688 GR
+  0 _g_newtiles_210                                                0690 GR
+  0 _g_newtiles_211                                                0698 GR
+  0 _g_newtiles_212                                                06A0 GR
+  0 _g_newtiles_213                                                06A8 GR
+  0 _g_newtiles_214                                                06B0 GR
+  0 _g_newtiles_215                                                06B8 GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  0 _g_newtiles_216                                                06C0 GR
+  0 _g_newtiles_217                                                06C8 GR
+  0 _g_newtiles_218                                                06D0 GR
+  0 _g_newtiles_219                                                06D8 GR
+  0 _g_newtiles_220                                                06E0 GR
+  0 _g_newtiles_221                                                06E8 GR
+  0 _g_newtiles_222                                                06F0 GR
+  0 _g_newtiles_223                                                06F8 GR
+  0 _g_newtiles_224                                                0700 GR
+  0 _g_newtiles_225                                                0708 GR
+  0 _g_newtiles_226                                                0710 GR
+  0 _g_newtiles_227                                                0718 GR
+  0 _g_newtiles_228                                                0720 GR
+  0 _g_newtiles_229                                                0728 GR
+  0 _g_newtiles_230                                                0730 GR
+  0 _g_newtiles_231                                                0738 GR
+  0 _g_newtiles_232                                                0740 GR
+  0 _g_newtiles_233                                                0748 GR
+  0 _g_newtiles_234                                                0750 GR
+  0 _g_newtiles_235                                                0758 GR
+  0 _g_newtiles_236                                                0760 GR
+  0 _g_newtiles_237                                                0768 GR
+  0 _g_newtiles_238                                                0770 GR
+  0 _g_newtiles_239                                                0778 GR
+  0 _g_newtiles_240                                                0780 GR
+  0 _g_newtiles_241                                                0788 GR
+  0 _g_newtiles_242                                                0790 GR
+  0 _g_newtiles_243                                                0798 GR
+  0 _g_newtiles_244                                                07A0 GR
+  0 _g_newtiles_245                                                07A8 GR
+  0 _g_newtiles_246                                                07B0 GR
+  0 _g_newtiles_247                                                07B8 GR
+  0 _g_newtiles_248                                                07C0 GR
+  0 _g_newtiles_249                                                07C8 GR
+  0 _g_newtiles_250                                                07D0 GR
+  0 _g_newtiles_251                                                07D8 GR
+  0 _g_newtiles_252                                                07E0 GR
+  0 _g_newtiles_253                                                07E8 GR
+  0 _g_newtiles_254                                                07F0 GR
+  0 _g_newtiles_255                                                07F8 GR
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 6.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size  800   flags    0
+   1 _DATA                                      size    0   flags    0
+   2 _INITIALIZED                               size    0   flags    0
+   3 _DABS                                      size    0   flags    8
+   4 _HOME                                      size    0   flags    0
+   5 _GSINIT                                    size    0   flags    0
+   6 _GSFINAL                                   size    0   flags    0
+   7 _INITIALIZER                               size    0   flags    0
+   8 _CABS                                      size    0   flags    8
+

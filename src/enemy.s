@@ -63,37 +63,50 @@ enm_jumptable: ;; -17
 ;;;     Maquina de estados finitos 
 ;;; El metodo de update se ocupa de ejecutar el metodo/estado en el que se encuentra
 ;;; Ademas comprobara si existe un evento de entrada para cambiar el estado
-;;;
+;;; Es necesario cambiar la etiqueta fsm1Method
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-FSM1:
+FSM1::
+    ;; Por defecto
+    ld a, e_health(ix);
+    ld bc, (#life)
+    cp c   ;; Evento, vida 2
+    jr nz, #noreset
+        ld hl, #enm_iddle ;; Cambiamos a estado JumpAndMove
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
+
+    noreset:
+
 
     ld a, e_health(ix);
-    cp #2
-    jr nc, #nosalta
-        ld hl, #jumpAndMove
-        ;Actualizar el enemigo
-        ld  e_up_h(ix), h 
-        ld  e_up_l(ix), l
-    ret 
+    cp #2   ;; Evento, vida 2
+    jr nz, #nosalta
+        ld hl, #jumpAndMove ;; Cambiamos a estado JumpAndMove
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
+
     nosalta:
 
 
     ld a, e_health(ix);
-    cp #3
-    jr nc, #nodispara
+    cp #3  ;; Evento, vida 3
+    jr nz, #nodispara
+        ld hl, #enm_move1 ;; Cambiamos a estado JumpAndMove 
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
 
-        ld hl, #enm_move1
-        ;Actualizar el enemigo
-        ld  e_up_h(ix), h 
-        ld  e_up_l(ix), l
-    ret 
+
     nodispara:
 
 
 
+    ;; ELSE Apply Function
+    fsm1Method  = . + 1           ;; | . + 1 es el call
+    call    0x0000   
 
-    ;; Si la vida > 2 disprar
-    ;; Si la vida < 2 Saltar y mover
+    ;; Poder mover al enemigo
+    call enm_move
+
 
 ret
 
@@ -106,16 +119,17 @@ jumpAndMove:
     jr  nz , skip             ;; A != 0. Jump is no activate, lest do
 
     ;; Jump is inactive, active it
+    
         ld  e_jump(ix), #0
           ;;Cambiar por sentido
-    ld  e_vx(ix), #-2
+    ld  e_vx(ix), #2
 
 skip:
   
 
 
     call enm_jumpControl
-    call enm_move
+
 
 
 ret	
