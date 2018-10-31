@@ -30,13 +30,13 @@ m_back_tileMap::  .dw #TScreenTilemapBack ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_initBuffers:
   ld hl, #0x8000
-  ld (hl), #0
+  ld (hl), #0x00
   ld de, #0x8000 + 1
   ld bc, #0x4000 - 1
   ldir
 
   ld hl, #0xC000
-  ld (hl), #0
+  ld (hl), #0x00
   ld de, #0xC000 + 1
   ld bc, #0x4000 - 1
   ldir
@@ -425,7 +425,7 @@ pintar_vidas:
     call cpct_getScreenPtr_asm ;; return in hl
     
     ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
-	ld  hl, #_hearth_sp;;Imagen que voy a pintar
+	ld  hl, #_g_hearth;;Imagen que voy a pintar
     ld  c, #8    ;Bytes width se tiene que meter en bytes, en modo 0 1 byte = 2 píxeles y entre [1-63]
 	ld  b, #12   ;Pixels height puede ser el valor que sea dentro de la pantalla > 0 y es el mismo en bytes que en píxeles
 	call cpct_drawSprite_asm
