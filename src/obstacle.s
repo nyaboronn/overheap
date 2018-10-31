@@ -569,6 +569,7 @@ obs_update_hero:
     ld    m_murieron_obs(iy), a   ;; m_murieron_obs(ix)value = A
      ;Tenemos que limpiar la imagen porque acabas de morir
     call ren_DestroyEntity
+       pop iy 
    ret
    obs_isOkey:
     pop iy 
