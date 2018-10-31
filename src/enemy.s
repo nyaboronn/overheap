@@ -13,16 +13,19 @@
 
 
 ListaEnemigos: ;    
+     
+    DefineEnemyShoot eshoot2, 55, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
+    DefineEnemyShoot eshoot3, 90, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3
+     
     DefineEnemyShoot eshoot, 30, 37,   0x04, 0x04, _sprite_vampiro,    FSMTote, -1,  1,  3
-    DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
     DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  3
 
-    DefineEnemyShoot eshoot5, 3, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, 1,  1,  3   
-    DefineEnemyShoot eshoot6, 21, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3     ;;Duoataque
-
-    DefineEnemyShoot eshoot4, 105, 4,   0x08, 0x06,  coche,     enm_move1, -1, 0,  3 
+    DefineEnemyShoot eshoot5, 3, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, 1,  1,  3      ;
+    DefineEnemyShoot eshoot6, 21, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3    ; ;;Duoataque
+    DefineEnemyShoot eshoot4, 105, 3,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
+  
     
-    DefineEnemyShoot eshoot3, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  1,  3
+   
 
 
 
@@ -447,7 +450,7 @@ reset_posi:
     pop ix
 
     ld  hl, #eshoot2
-    ld (hl), #60
+    ld (hl), #55
     inc hl
     ld (hl), #37
 
@@ -469,10 +472,10 @@ reset_posi:
     ld  hl, #eshoot4
     ld (hl), #105
     inc hl
-    ld (hl), #4
+    ld (hl), #3
 
     ld  hl, #eshoot3
-    ld (hl), #70
+    ld (hl), #90
     inc hl
     ld (hl), #37
 

@@ -82,3 +82,4 @@ $(eval $(call IMG2SPRITES,img/Skeleton.png,0,sprite,16,16,$(PALETTE2),mask,src/a
 $(eval $(call IMG2SPRITES,img/vampiro.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
 $(eval $(call IMG2SPRITES,img/bala.png,0,sprite,4,4,$(PALETTE2),mask,src/assets))
 $(eval $(call IMG2SPRITES,img/murcielago.png,0,sprite,16,16,$(PALETTE2),mask,src/assets))
+$(eval $(call IMG2SPRITES,img/coche.png,0,sprite,124,45,$(PALETTE2),mask,src/assets))

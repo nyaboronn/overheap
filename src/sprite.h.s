@@ -33,7 +33,7 @@
 .globl _sprite_Skeleton
 .globl _sprite_vampiro
 .globl _sprite_murcielago
-
+.globl _sprite_coche
 
 
 .globl pintar_sprite
