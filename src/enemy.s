@@ -1,22 +1,5 @@
 
-;;-----------------------------LICENSE NOTICE------------------------------------
-;;  This file is part of OverHeap: An AmstradCpc Game for the contest cpcretrodev
-;;  Copyright (C) 2018 jlga - jlq2 - ajah1 | @bastacpc 
-;;
-;;  This program is free software: you can redistribute it and/or modify
-;;  it under the terms of the GNU Lesser General Public License as published by
-;;  the Free Software Foundation, either version 3 of the License, or
-;;  (at your option) any later version.
-;;
-;;  This program is distributed in the hope that it will be useful,
-;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;  GNU Lesser General Public License for more details.
-;;
-;;  You should have received a copy of the GNU Lesser General Public License
-;;  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;;-------------------------------------------------------------------------------
-
+.include "tileManager.h.s"
 .include "sprite.h.s"
 .include "enemy.h.s"
 .include "entity.h.s"
@@ -427,10 +410,11 @@ ret
 ;; LLAMAR SIEMPRE ANTES DE HERO_DEFAULT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enemy_default::
-
+call reset_RepeatRender
+call reset_InputHL
    ; ld	hl, #enm_map_alive
    ; ld (hl), #2;;enemies
-    call reset_posi
+   call reset_posi
     ld hl, #CurrentEnemy
     ld (hl), #ListaEnemigos
     ld hl, #CurrentEnemyIt
@@ -444,7 +428,6 @@ enemy_default::
     
 ret
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Resetea las posiciones
 ;; Entrada IX -> Enemy
@@ -456,10 +439,12 @@ reset_posi:
     inc hl
     ld (hl), #37
 
+    push ix
     ld ix, #eshoot
     ld hl, #_sprite_vampiro
     ld de_sprite+1(ix),h
     ld de_sprite(ix),l
+    pop ix
 
     ld  hl, #eshoot2
     ld (hl), #60
@@ -502,7 +487,7 @@ reset_enemy::
     ;;ld de_y(ix), #37
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
-    call reset_posi
+ 
    
     ld e_health(ix), #3
 
@@ -711,18 +696,18 @@ enm_move0:
     
     ;; Primero empujar al hero y cambiar la dirección
     emp_hero_izq:
-    ld a, #5
-    ld e_vx(iy), a
-    call enm_move
+    ld a, de_x(iy)
+    add a, #3   ;; Empujar hero hacia la izquierda
+    ld de_x(iy), a
 
     cambiar_izq:
     ld e_direct(ix), #-1
     jp aplicar_sentido          ;; Aplicar el nuevo sentido a la X del enemigo
 
     emp_hero_der:
-    ld a, #-5
-    ld e_vx(iy), a
-    call enm_move
+    ld a, de_x(iy)
+    add a, #-3   ;; Empujar hero hacia la izquierda
+    ld de_x(iy), a
 
     cambiar_der:
     ld e_direct(ix), #1

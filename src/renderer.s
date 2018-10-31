@@ -1,21 +1,3 @@
-;;-----------------------------LICENSE NOTICE------------------------------------
-;;  This file is part of OverHeap: An AmstradCpc Game for the contest cpcretrodev
-;;  Copyright (C) 2018 jlga - jlq2 - ajah1 | @bastacpc 
-;;
-;;  This program is free software: you can redistribute it and/or modify
-;;  it under the terms of the GNU Lesser General Public License as published by
-;;  the Free Software Foundation, either version 3 of the License, or
-;;  (at your option) any later version.
-;;
-;;  This program is distributed in the hope that it will be useful,
-;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;  GNU Lesser General Public License for more details.
-;;
-;;  You should have received a copy of the GNU Lesser General Public License
-;;  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;;-------------------------------------------------------------------------------
-
 .include "renderer.h.s"
 .include "main.h.s"
 .include "tileManager.h.s"
@@ -439,7 +421,7 @@ pintar_vidas:
    
     ld a, (corazon)
     ld c, a ;x
-    ld b,#4*MAP_HEIGHT - 16  ;y
+    ld b,#4*MAP_HEIGHT - 14  ;y
     call cpct_getScreenPtr_asm ;; return in hl
     
     ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
@@ -660,10 +642,6 @@ pintar_vidasc:
     push hl
     pop iy
 
-  ;; pointer to screen
-    ld d, pVideo+1(iy) ;; memory pointer
-    ld e, pVideo(iy)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Pintar el Corazón de la vida          ;;Hacer con el bucle
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -673,17 +651,13 @@ pintar_vidasc:
 
     ld c, a
 
-   
   ld b,#42   ;y
-    
 
   ld E, #4  ;; W
   ld D, #3  ;; h 
 
-
   ld A, #MAP_WIDTH ;; map_width
 
-  
   ld h, pTilemap+1(iy)
   ld l, pTilemap(iy)
   push hl
@@ -694,14 +668,40 @@ pintar_vidasc:
   
   push hl
 
-
-
-
-
   call cpct_etm_drawTileBox2x4_asm
 
 
+   ld hl, (#m_front_tileMap)
+    push hl
+    pop iy
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Pintar el Corazón de la vida          ;;Hacer con el bucle
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   ;; push de   ;;El valor del puntero se va a la pila
+
+    ld a, (corazon)
+
+    ld c, a
+
+  ld b,#43   ;y
+
+  ld E, #4  ;; W
+  ld D, #3  ;; h 
+
+  ld A, #MAP_WIDTH ;; map_width
+
+  ld h, pTilemap+1(iy)
+  ld l, pTilemap(iy)
+  push hl
+
+
+  ld h, pVideo+1(iy)
+  ld l, pVideo(iy)
+  
+  push hl
+
+  call cpct_etm_drawTileBox2x4_asm
 
 	ld a, #0    ;;Resetamos el valor de la variable, para la siguiente ejecución
 	ld (corazon), a
