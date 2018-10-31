@@ -540,10 +540,11 @@ obs_update_hero:
   call absA
    cp #18
   jr c, obs_isOkey
-   pop iy 
+  
+  pop iy 
   push iy
   
-
+  jr kill
 
 
   ;;check if entity is in a solid tile
@@ -551,6 +552,7 @@ obs_update_hero:
   call    obs_is_solidTile        ;; Devuelve en B true o false
   jr z,   obs_isOkey
 
+  kill:
     ;; ELSE: Borrarlo e incrementar m_murieron_obs
     ld    o_alive(ix), #0         ;; o_alive(ix) = 0
     ;; Incrementar contador de muertos
