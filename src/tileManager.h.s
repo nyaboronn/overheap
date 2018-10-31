@@ -40,6 +40,8 @@ scroll = 4
 .globl _g_tileset
 
 .globl scrollScreenTilemap
+.globl reDrawLeft
+;.globl reDrawRight
 
 .globl TScreenTilemapFront
 .globl TScreenTilemapBack
