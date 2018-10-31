@@ -14,7 +14,7 @@
 
 ListaEnemigos: ;    
     DefineEnemyShoot eshoot, 30, 37,   0x04, 0x04, _sprite_vampiro,    FSMTote, -1,  1,  3
-    DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
+    DefineEnemyShoot eshoot2, 15, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move0, -1,  -1,  3
     DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  3
 
     DefineEnemyShoot eshoot5, 3, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, 1,  1,  3   
@@ -32,8 +32,8 @@ CurrentEnemyIt: .db 0x00 ;; Iterator
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;
-k_lim_der       = #124       ;; Limite Derecho del movimiento
-k_lim_izq       = #80        ;; Limite Izquierdo del movimiento
+k_lim_der       = #30       ;; Limite Derecho del movimiento
+k_lim_izq       = #15        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
 k_total_enm     = #2           ;; Total de enemigos en memoria
 k_enm_size      = #24 + k_max_balas*15 ; 5*obs + 14+9
@@ -48,11 +48,17 @@ life: .db 0x03      ;;Vidas de los enemigos que se van ingrementando
 
 
 ;; enm Jump Table (puede volar)
+;enm_jumptable: ;; -17 
+;     .db #-4, #-3, #-3, #-2
+;     .db #-1, #-1, #5, #2
+;     .db #3, #2, #1, #1
+;     .db #0x80
+
 enm_jumptable: ;; -17 
-     .db #-4, #-3, #-3, #-2
-     .db #-1, #-1, #5, #2
-     .db #3, #2, #1, #1
-     .db #0x80     
+    .db #-3, #-2, #-1, #-1
+    .db #-1, #1, #1, #1
+    .db #2, #3
+    .db #0x80
 
 
 
@@ -778,6 +784,22 @@ ret
 ;;          IY -> Puntero a hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_update:
+    
+    ;; Comprobar si Hero Colisiona con Enmy
+    call obs_checkCollision     ;; CheckCollision bettewm hero and enemy
+    cp a, #0                    ;;
+    jr z, seguir_update         ;; IF a = 0 THEN no collision
+
+        ;; ELSE: decrementar la vida al hero
+        ld a, e_health(iy)
+        cp a, #0
+        jr c, seguir_update
+
+            ;; ELSE: vida > 0, decrementarla
+           dec a
+           ld e_health(iy), a
+
+    seguir_update:
 
     ;Salvamos ix e iy 
     push ix
