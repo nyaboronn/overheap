@@ -17,6 +17,7 @@
 ;;-------------------------------------------------------------------------------
 
 .globl AtoBCextendendsign
+.globl absA
 
 
 ;; Macro for multiplying 16-bits by 8 bits, doing

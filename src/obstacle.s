@@ -20,6 +20,7 @@
 .include "entity.h.s"
 .include "enemy.h.s"
 .include "utils.h.s"
+.include "hero.h.s"
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Shoots Data
@@ -524,3 +525,54 @@ ret
 obs_no_collision:
   ld	a, #0x00
 ret
+
+
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ACTUALIZAR UNa obstaculo
+;; REGISTROS DESTRUIDOS: TODOS
+;; ENTRADA: 
+;;   
+;;          IX => Al obstaculo -> Una bala
+;;          IY => Enemigo 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+obs_update_hero:
+  ;;check if entity is in a solid tile
+  ;;Cambiar logica del if, porque no estabamos usando el bit mas significativo para representar la colision
+   push iy
+  
+  ld	iy, #hero_data  ;;Cargamos el valor de hero en ix
+  ld a, de_x(ix); x de la bala
+  ld b, de_x(iy)
+  sub b
+  call absA
+   cp #18
+  jr c, obs_isOkey
+   pop iy 
+  push iy
+  
+       ;; ELSE: Borrarlo e incrementar m_murieron_obs
+    ld    o_alive(ix), #0         ;; o_alive(ix) = 0
+    ;; Incrementar contador de muertos
+    ld    a, m_murieron_obs(iy)   ;; A = m_murieron_obs(ix) value
+    inc   a                       ;; A++
+    ld    m_murieron_obs(iy), a   ;; m_murieron_obs(ix)value = A
+     ;Tenemos que limpiar la imagen porque acabas de morir
+    call ren_DestroyEntity
+   call    obs_is_solidTile        ;; 
+  jr z,   obs_isOkey
+     ;; ELSE: Borrarlo e incrementar m_murieron_obs
+    ld    o_alive(ix), #0         ;; o_alive(ix) = 0
+    ;; Incrementar contador de muertos
+    ld    a, m_murieron_obs(iy)   ;; A = m_murieron_obs(ix) value
+    inc   a                       ;; A++
+    ld    m_murieron_obs(iy), a   ;; m_murieron_obs(ix)value = A
+     ;Tenemos que limpiar la imagen porque acabas de morir
+    call ren_DestroyEntity
+   ret
+   obs_isOkey:
+    pop iy 
+  call ent_update
+ ret
+
+
