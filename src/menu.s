@@ -26,19 +26,22 @@
 .include "tileManager.h.s"
 .include "enemy.h.s"
 
-.globl _overHeap_pal
-.globl _youLost_pal
 
 fps2: .db #1
 ronda: .db #0
 max_ronda: .db #3
+
+
+menuPal: .db  0x54, 0x5c, 0x44, 0x55, 0x57, 0x58, 0x5c, 0x4c, 0x4e, 0x47, 0x4a, 0x40, 0x56, 0x52, 0x46,  0x4b
+
+
 
 ;;;;;;;;;;;;;;;;;
 ;;Pinta Menu
 ;;;;;;;;;;;;;;;;
 menu:
 
-    ld  hl,  #_overHeap_pal
+    ld  hl,  #menuPal
     ld  de,  #16      
     call cpct_setPalette_asm   
     
@@ -93,7 +96,7 @@ ret
 ;;Muestra por pantalla Z para reiniciar y X para siguiente
 next_game:
 
-    ld  hl,  #_youLost_pal
+    ld  hl,  #menuPal
     ld  de,  #16      
     call cpct_setPalette_asm   
     call scroll_default
@@ -197,7 +200,7 @@ ret
 
 
 fin_rondas:
-     ld  hl,  #_youLost_pal
+     ld  hl,  #menuPal
     ld  de,  #16      
     call cpct_setPalette_asm
 
@@ -219,7 +222,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 end_game:
 
-    ld  hl,  #_youLost_pal
+    ld  hl,  #menuPal
     ld  de,  #16      
     call cpct_setPalette_asm 
 

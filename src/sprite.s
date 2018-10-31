@@ -34,19 +34,3 @@ pintar_sprite:	;84,47
 
 
 ret
-
-fondo_negro:
-    ld hl, #0xC000
-    ld (hl), #3		;;Poner negro con la palete final
-    ld de, #0xC000 + 1
-    ld bc, #0x4000 - 1
-    ldir
-
-    ld hl, #0x8000
-    ld (hl), #3		;;Poner negro con la palete final
-    ld de, #0x8000 + 1
-    ld bc, #0x4000 - 1
-    ldir
-
-
-ret
