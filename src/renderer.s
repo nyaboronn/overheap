@@ -421,7 +421,7 @@ pintar_vidas:
    
     ld a, (corazon)
     ld c, a ;x
-    ld b,#4*MAP_HEIGHT - 14  ;y
+    ld b,#4*MAP_HEIGHT - 13  ;y
     call cpct_getScreenPtr_asm ;; return in hl
     
     ex de, hl ;;(2B DE) memory	Video memory pointer to the upper left box corner byte
@@ -651,7 +651,7 @@ pintar_vidasc:
 
     ld c, a
 
-  ld b,#42   ;y
+  ld b,#43   ;y
 
   ld E, #4  ;; W
   ld D, #3  ;; h 
