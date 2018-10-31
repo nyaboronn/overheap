@@ -51,11 +51,13 @@ life: .db 0x03      ;;Vidas de los enemigos que se van ingrementando
 
 
 ;; enm Jump Table (puede volar)
+
+
 enm_jumptable: ;; -17 
-     .db #-4, #-3, #-3, #-2
-     .db #-1, #-1, #5, #2
-     .db #3, #2, #1, #1
-     .db #0x80     
+    .db #-3, #-2, #-1, #-1
+    .db #-1, #1, #1, #1
+    .db #2, #3
+    .db #0x80
 
 
 
