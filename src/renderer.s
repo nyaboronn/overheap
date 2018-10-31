@@ -90,7 +90,7 @@ ren_DWisInScreen:
 
   pertenece:
 
-  cp  #MAP_WIDTH + 4 
+  cp  #MAP_WIDTH + 4 -1
   jr nc, pertenece2
   ld a, #0
   ret
@@ -102,8 +102,7 @@ ret
 
 
 
-
-ren_DWisInScreenDeleteFORClear:
+ren_DWisInScreenDelete:
   ld iy, (#m_back_tileMap)
 
   ;; 0 < Offset + WinSize - X(ix) +MAP_WIDTH  < winSize +MAP_WIDTH
@@ -114,24 +113,23 @@ ren_DWisInScreenDeleteFORClear:
   sub a, b
   ld b,#MAP_WIDTH
   add a, b
-  cp #SCR_TILE_WIDTH + #MAP_WIDTH   ;; izquierda
+  cp #SCR_TILE_WIDTH + #MAP_WIDTH + 1
 
-  jr c, perteneceex
+  jr c, pertenecee
   ld a, #0
   ret
 
-  perteneceex:
+  pertenecee:
 
-  cp  #MAP_WIDTH + 4 -1    ;; dereca
-  jr nc, pertenece22x
+  cp  #MAP_WIDTH + 4 -1
+  jr nc, pertenece22
   ld a, #0
   ret
 
 
-  pertenece22x:
+  pertenece22:
   ld a,#1
 ret	
-
 
 
 
@@ -179,9 +177,6 @@ ren_drawEntity:
   call ren_DWisInScreen
   cp #0
   ret z
-
-
-
 
   ;;  ld de, #0xC000       ;;Comienzo memoria de video
   ld hl, (#m_back_tileMap)
@@ -240,22 +235,23 @@ ren_drawEntityAlpha:
 
   call ren_DWisInScreen
   cp #0
-ret z
+  ret z
 
 
+  ;;  ld de, #0xC000       ;;Comienzo memoria de video
   ld hl, (#m_back_tileMap)
   push hl
   pop iy
   ld d, pVideo+1(iy)
   ld e, #0 ;pVideo(iy)
 
+
+
   ;; Convert de X tile in X in bytes
   ld C, de_x(ix)    ;; X
   ld A, de_x(ix)    ;; X
   add a,c
   ld c, a
-
-
   ;; Convert de y tile in y in bytes
   ld b, de_y(ix)    ;; y
   ld A, de_y(ix)    ;; y
@@ -268,12 +264,30 @@ ret z
 
   ex    de, hl   ;; DE = Puntero a memoria
 
+  ; ld  b, de_h(ix)   ;; alto
+  ; ld A, de_h(ix)    ;; y
+  ; add a,b
+  ; add a,a
+  ; ld b, a
+  ;
+  ; ld  c, de_w(ix)   ;; Ancho
+  ; ld A, de_w(ix)    ;; X
+  ; add a,c
+  ; ld c, a
+  ;  ld  a, de_col(ix)   ;; Color
+  ; 
+  ; call cpct_drawSolidBox_asm
+
+
+  ; pvmem = cpct_getScreenPtr(CPCT_VMEM_START, x, y);      
+  ; cpct_drawSpriteMasked(G_sprite_EMR, pvmem, SPR_W, SPR_H);
+
 
   ld h, de_sprite+1(ix)
   ld l, de_sprite(ix)
-                    ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
-                    ;;(2B DE) memory	Destination video memory pointer
-  ld  c, de_w(ix)   ;; Ancho ; ld c, #4  ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
+  ;;(2B HL) sprite	Source Sprite Pointer (array with pixel and mask data)
+                  ;;(2B DE) memory	Destination video memory pointer
+  ld  c, de_w(ix)   ;; Ancho ; ld c, #4              ;;(1B C ) width	Sprite Width in bytes (>0) (Beware, not in pixels!)
   ld  a, de_w(ix)
   add a,c 
   ld c, a
@@ -298,9 +312,7 @@ ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ren_DestroyEntity:
 
-  call ren_DWisInScreen
-  cp #0
-ret z
+  ;; TODO, no borro la bala que se queda al final
 
   ld hl, (#m_front_tileMap)
   push hl
@@ -350,8 +362,8 @@ ret
 ren_clearEntity:
 
   ;; TODO, no borro la bala que se queda al final
-call ren_DWisInScreenDeleteFORClear 
- cp #0
+  call ren_DWisInScreenDelete
+  cp #0
   jr nz, nodestroy
 
 ;
@@ -369,7 +381,7 @@ ret
 
   ;; A la X le restamos el scroll para solucionar el problema de borrado  el scroll hardware 
   ld a, de_oldx(ix)    ;; X
- ; dec a
+  dec a
   ld c, scroll(iy)
   sub c
   ld c, a
@@ -379,7 +391,7 @@ ret
 
 
   ld E, de_w(ix)  ;; W
-  ;inc e
+  inc e
   ld D, de_h(ix)  ;; h
 
 

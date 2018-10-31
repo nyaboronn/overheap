@@ -149,33 +149,6 @@ ret
 
 
 
-
-
-
-reDrawLeft:
-    ld iy, (#m_back_tileMap)
-
-  ;; Repintamos una columna, izquierda o derecha
-    ld C, #0    ;; X
-    ld B, #0x00  ;; Y
-    ld E, #4  ;; W
-    ld D, #MAP_HEIGHT  ;; H
-    ld A, #MAP_WIDTH ;; map_width
-
-    ld h, pTilemap+1(iy)
-    ld l, pTilemap(iy)
-    push hl
-
-    ld h, pVideo+1(iy)
-    ld l, pVideo(iy)
-    push hl
-
-    call cpct_etm_drawTileBox2x4_asm
-
-
-
-
-ret	
  
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Desplaza el tilemap, modifica los punteros y dibuja una columa a la derecha o izquierda 
@@ -263,6 +236,10 @@ scrollScreenTilemap::
 
     ;; Esperamos al raster
 
+    ;; La clave del hardware scrolling es moficiar el puntero a memoria
+  ;;ld l, scroll(iy)
+  ;;call cpct_setVideoMemoryOffset_asm
+
 
     pop hl
     push hl ;; Recuperamos dos parametros, la L
@@ -284,6 +261,10 @@ scrollScreenTilemap::
     push hl
 
     call cpct_etm_drawTileBox2x4_asm
+
+
+
+
 
 
     pop hl

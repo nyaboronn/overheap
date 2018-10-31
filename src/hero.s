@@ -292,7 +292,7 @@ hero_moveKeyboard:
 
     ld a, #0
     cp h
-    JP z, cleanColumn ;;
+    JP z, funcRet ;;
 
 
     ld a, #1
@@ -301,7 +301,7 @@ hero_moveKeyboard:
 
     ;;If A >= N, then C flag is reset.
     ld a, scroll(iy)
-    add a, #14
+    add a, #10
     ld d,de_x(ix)
     cp d
     jr c, funcRet
@@ -345,12 +345,6 @@ hero_moveKeyboard:
 
     calltoFuncOtherBuffer:
     call scrollScreenTilemap
-
-   
-
-    cleanColumn:
-    call reDrawLeft
-    ;call reDrawRight
 
     funcRet:
 
