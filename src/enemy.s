@@ -1,4 +1,20 @@
-
+;;-----------------------------LICENSE NOTICE------------------------------------
+;;  This file is part of OverHeap: An AmstradCpc Game for the contest cpcretrodev
+;;  Copyright (C) 2018 jlga - jlq2 - ajah1 | @bastacpc 
+;;
+;;  This program is free software: you can redistribute it and/or modify
+;;  it under the terms of the GNU Lesser General Public License as published by
+;;  the Free Software Foundation, either version 3 of the License, or
+;;  (at your option) any later version.
+;;
+;;  This program is distributed in the hope that it will be useful,
+;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;  GNU Lesser General Public License for more details.
+;;
+;;  You should have received a copy of the GNU Lesser General Public License
+;;  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;;-------------------------------------------------------------------------------
 
 .include "sprite.h.s"
 .include "enemy.h.s"
@@ -162,7 +178,7 @@ FSM1::
 
 
     ld a, e_health(ix);
-    cp #2   ;; Evento, vida 2
+    cp #1   ;; Evento, vida 2
     jr nz, #nosalta
         ld hl, #jumpAndMove ;; Cambiamos a estado JumpAndMove
         ld  (fsm1Method), hl         ;; (meotodo) = HL
@@ -172,7 +188,7 @@ FSM1::
 
 
     ld a, e_health(ix);
-    cp #3  ;; Evento, vida 3
+    cp #2  ;; Evento, vida 3
     jr nz, #nodispara
         ld hl, #enm_move1 ;; Cambiamos a estado JumpAndMove 
         ld  (fsm1Method), hl         ;; (meotodo) = HL
