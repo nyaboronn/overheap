@@ -557,18 +557,18 @@ enm_move0:
     
     ;; Primero empujar al hero y cambiar la dirección
     emp_hero_izq:
-    ld a, de_x(iy)
-    add a, #3   ;; Empujar hero hacia la izquierda
-    ld de_x(iy), a
+    ld a, #5
+    ld e_vx(iy), a
+    call enm_move
 
     cambiar_izq:
     ld e_direct(ix), #-1
     jp aplicar_sentido          ;; Aplicar el nuevo sentido a la X del enemigo
 
     emp_hero_der:
-    ld a, de_x(iy)
-    add a, #-3   ;; Empujar hero hacia la izquierda
-    ld de_x(iy), a
+    ld a, #-5
+    ld e_vx(iy), a
+    call enm_move
 
     cambiar_der:
     ld e_direct(ix), #1
