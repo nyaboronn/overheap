@@ -11,7 +11,7 @@
 
 fps2: .db #1
 ronda: .db #0
-max_ronda: .db #3
+max_ronda: .db #5
 
 
 menuPal: .db  0x54, 0x5c, 0x44, 0x55, 0x57, 0x58, 0x5c, 0x4c, 0x4e, 0x47, 0x4a, 0x40, 0x56, 0x52, 0x46,  0x4b
@@ -81,6 +81,9 @@ next_game:
     ld  hl,  #menuPal
     ld  de,  #16      
     call cpct_setPalette_asm   
+    call reset_RepeatRender
+    call reset_InputHL
+
     call scroll_default
     call ren_initBuffers
 

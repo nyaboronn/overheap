@@ -12,10 +12,9 @@
 .include "utils.h.s"
 .globl end_game
 .include "menu.h.s"
+.include "sprite.h.s"
 
 
-;; SPRITE usado por el Hero
-.globl _sprite_Xemnas
 
 ;; Hero Jump Table
 ; hero_jumptable:
@@ -308,7 +307,7 @@ hero_moveKeyboard:
 
     ;;If A < N, then C flag is set.|| CP REGister N
     ld a, scroll(iy)
-    add a, #24
+    add a, #15
     ld d,de_x(ix)
     cp d
     jr nc, funcRet

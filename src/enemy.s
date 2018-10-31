@@ -1,24 +1,29 @@
 
 
-
+.include "sprite.h.s"
 .include "enemy.h.s"
 .include "entity.h.s"
 .include "obstacle.h.s"
 .include "menu.h.s"
 
-;; SPRITE que usan los enemigos
-.globl _sprite_Skeleton
-.globl _sprite_vampiro
+
 
 .globl coche
 
 
-ListaEnemigos: ;                                                                       
-    ;DefineEnemyShoot eshoot, 10, 37,   0x04, 0x04, _sprite_Skeleton,    enm_iddle, 1,  1,  10
+
+ListaEnemigos: ;    
+      
+
+    DefineEnemyShoot eshoot, 35, 17,   0x04, 0x04, _sprite_vampiro,    enm_iddle, -1,  1,  3
     DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  -1,  3
-    ;DefineEnemyShoot eshoot3, 10, 37,  0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  1,  10
-   DefineEnemyShoot eshoot4, 2, 37,   0x04, 0x04,  _sprite_Skeleton,     FSM1, 1, 1,  3
-    DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_iddle,               -1, 0,  10
+    DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_iddle,               -1, 0,  3
+
+    DefineEnemyShoot eshoot5, 3, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, 1,  1,  3   
+    DefineEnemyShoot eshoot6, 21, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3     ;;Duoataque
+
+    DefineEnemyShoot eshoot4, 105, 4,   0x08, 0x06,  coche,     enm_move1, -1, 0,  3 
+    
     DefineEnemyShoot eshoot3, 70, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  1,  3
 
 
@@ -58,6 +63,80 @@ enm_jumptable: ;; -17
 ;If A != N, then Z flag is reset.
 ;If A < N, then C flag is set.
 ;If A >= N, then C flag is reset.
+
+
+FSMTote:
+
+     ;; Por defecto
+    ld a, e_health(ix);
+    ld bc, (#life)
+    cp c   ;; Evento, vida 2
+    jr nz, #noreset2
+        ld hl, #enm_move1 ;; Cambiamos a estado JumpAndMove
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
+
+    noreset2:
+
+
+    ld a, e_health(ix);
+    cp #2   ;; Evento, vida 2
+    jr nz, #nosalta2
+        ld hl, #enm_move1 
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
+
+    nosalta2:
+
+
+    ld a, e_health(ix);
+    cp #3  ;; Evento, vida 3
+    jr nz, #nodispara2
+        call piro_bat
+        ld hl, #jumpAndMove ;; Cambiamos a estado JumpAndMove 
+        ld  (fsm1Method), hl         ;; (meotodo) = HL
+        jr fsm1Method-1
+
+
+    nodispara2:
+
+    ;;ld a, e_health(ix);
+    ;;cp #3  ;; Evento, vida 3
+    ;;jr z, #nodispara3
+    ;;    call bat_piro
+    ;;    ld hl, #enm_move1 ;; Cambiamos a estado JumpAndMove 
+    ;;    ld  (fsm1Method), hl         ;; (meotodo) = HL
+    ;;    jr fsm1Method-1
+;;
+;;
+    ;;nodispara3:
+
+    ;; ELSE Apply Function
+    fsm1Method  = . + 1           ;; | . + 1 es el call
+    call    enm_iddle   
+
+    ;; Poder mover al enemigo
+    call enm_move
+ret
+
+
+bat_piro:
+
+    ld hl, #_sprite_vampiro
+    ld de_sprite+1(ix),h
+    ld de_sprite(ix),l
+
+
+ret
+
+piro_bat:
+
+    ld hl, #_sprite_murcielago
+    ld de_sprite+1(ix),h
+    ld de_sprite(ix),l
+
+ret
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;     Maquina de estados finitos 
@@ -102,7 +181,7 @@ FSM1::
 
     ;; ELSE Apply Function
     fsm1Method  = . + 1           ;; | . + 1 es el call
-    call    0x0000   
+    call    enm_iddle   
 
     ;; Poder mover al enemigo
     call enm_move
@@ -358,6 +437,16 @@ reset_enemy::
     ;;ld de_y(ix), #37
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
+    ld  hl, #eshoot
+    ld (hl), #30
+    inc hl
+    ld (hl), #37
+
+    ld  hl, #eshoot2
+    ld (hl), #60
+    inc hl
+    ld (hl), #37
+
    
     ld e_health(ix), #3
 
@@ -408,6 +497,22 @@ ret
 aplica_life:
     ld a, (life)
     ld e_health(ix),a
+
+    ld  hl, #eshoot     ;;Lo uso para cargar las posiciones ddefault de los personajes cuando me lo paso
+    ld (hl), #30
+    inc hl              ;;Enemigo 1
+    ld (hl), #37
+
+    ld  hl, #eshoot2
+    ld (hl), #60        ;;Enemigo 2
+    inc hl
+    ld (hl), #37
+
+   ;; ld de_x(ix), #60
+   ;; ld de_y(ix), #37
+   ;; ld de_oldx(ix), #60
+   ;; ld de_oldy(ix), #37
+
 ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

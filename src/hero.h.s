@@ -10,7 +10,7 @@
 .endm
 
 
-k_max_hero_balas = 5
+k_max_hero_balas = 2
 
 
 

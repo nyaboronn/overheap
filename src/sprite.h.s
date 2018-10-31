@@ -10,6 +10,11 @@
 .globl _Restart_sp
 .globl _Next_sp
 
+;;Sprites
+.globl _sprite_Xemnas
+.globl _sprite_Skeleton
+.globl _sprite_vampiro
+.globl _sprite_murcielago
 
 
 
