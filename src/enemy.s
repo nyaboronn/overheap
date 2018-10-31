@@ -13,11 +13,9 @@
 
 
 ListaEnemigos: ;    
-      
-
-    DefineEnemyShoot eshoot, 35, 17,   0x04, 0x04, _sprite_vampiro,    enm_iddle, -1,  1,  3
-    DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_iddle, -1,  -1,  3
-    DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_iddle,               -1, 0,  3
+    DefineEnemyShoot eshoot, 30, 37,   0x04, 0x04, _sprite_vampiro,    FSMTote, -1,  1,  3
+    DefineEnemyShoot eshoot2, 60, 37,   0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  -1,  3
+    DefineEnemyShoot car, 100,   37,   0x08, 0x06, coche,   enm_move1,               -1, 0,  3
 
     DefineEnemyShoot eshoot5, 3, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, 1,  1,  3   
     DefineEnemyShoot eshoot6, 21, 3,  0x04, 0x04, _sprite_Skeleton,   enm_move1, -1,  1,  3     ;;Duoataque
@@ -34,10 +32,10 @@ CurrentEnemyIt: .db 0x00 ;; Iterator
 ;;;;;;;;;;;;;;;;
 ;; Constantes
 ;;;;;;;;;;;;;;;;
-k_lim_der       = #30       ;; Limite Derecho del movimiento
-k_lim_izq       = #0        ;; Limite Izquierdo del movimiento
+k_lim_der       = #124       ;; Limite Derecho del movimiento
+k_lim_izq       = #80        ;; Limite Izquierdo del movimiento
 k_lim_detectar  = #15       ;; Distancia maxima a la que detecta al hero
-k_total_enm     = #2          ;; Total de enemigos en memoria
+k_total_enm     = #2           ;; Total de enemigos en memoria
 k_enm_size      = #24 + k_max_balas*15 ; 5*obs + 14+9
 
 ;; Numero de enemigos vivos en el MapX
@@ -415,6 +413,7 @@ enemy_default::
 
    ; ld	hl, #enm_map_alive
    ; ld (hl), #2;;enemies
+    call reset_posi
     ld hl, #CurrentEnemy
     ld (hl), #ListaEnemigos
     ld hl, #CurrentEnemyIt
@@ -428,6 +427,55 @@ enemy_default::
     
 ret
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Resetea las posiciones
+;; Entrada IX -> Enemy
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+reset_posi:
+
+    ld  hl, #eshoot
+    ld (hl), #30
+    inc hl
+    ld (hl), #37
+
+    ld ix, #eshoot
+    ld hl, #_sprite_vampiro
+    ld de_sprite+1(ix),h
+    ld de_sprite(ix),l
+
+    ld  hl, #eshoot2
+    ld (hl), #60
+    inc hl
+    ld (hl), #37
+
+    ld  hl, #car
+    ld (hl), #100
+    inc hl
+    ld (hl), #37
+
+    ld  hl, #eshoot5
+    ld (hl), #3
+    inc hl
+    ld (hl), #3
+
+    ld  hl, #eshoot6
+    ld (hl), #21
+    inc hl
+    ld (hl), #3
+
+    ld  hl, #eshoot4
+    ld (hl), #105
+    inc hl
+    ld (hl), #4
+
+    ld  hl, #eshoot3
+    ld (hl), #70
+    inc hl
+    ld (hl), #37
+
+ret
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Resetea los bits del enemy
 ;; Entrada IX -> Enemy
@@ -437,16 +485,7 @@ reset_enemy::
     ;;ld de_y(ix), #37
     ;;ld de_oldx(ix), #60
     ;;ld de_oldy(ix), #37
-    ld  hl, #eshoot
-    ld (hl), #30
-    inc hl
-    ld (hl), #37
-
-    ld  hl, #eshoot2
-    ld (hl), #60
-    inc hl
-    ld (hl), #37
-
+    call reset_posi
    
     ld e_health(ix), #3
 
@@ -473,6 +512,7 @@ enemy_improve::
     call increase_enemies
     ;;call reiniciar_enm_map_alive
     call increase_life
+    call reset_posi
 
     ld hl, #aplica_life
     call enm_doForAllForDead
@@ -498,15 +538,7 @@ aplica_life:
     ld a, (life)
     ld e_health(ix),a
 
-    ld  hl, #eshoot     ;;Lo uso para cargar las posiciones ddefault de los personajes cuando me lo paso
-    ld (hl), #30
-    inc hl              ;;Enemigo 1
-    ld (hl), #37
-
-    ld  hl, #eshoot2
-    ld (hl), #60        ;;Enemigo 2
-    inc hl
-    ld (hl), #37
+   
 
    ;; ld de_x(ix), #60
    ;; ld de_y(ix), #37
@@ -636,7 +668,6 @@ ret
 ;;          IY => puntero al hero
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 enm_move0:
-
     ;; Comprobar colisión
     call obs_checkCollision
     cp a, #1
@@ -645,8 +676,8 @@ enm_move0:
         ;; Invertir Sentido Enemy
         ld a, e_direct(ix)
         cp a, #-1
-        jr z, cambiar_der
-        jr cambiar_izq
+        jr z, emp_hero_der
+        jr emp_hero_izq
 
     seguir_movimiento:
 
@@ -660,12 +691,25 @@ enm_move0:
         jr z, cambiar_der       ;; IF A==lim_izq THEN move right
         jp aplicar_sentido      ;; Aplicar el nuevo sentido a la X del enemigo
 
+    
+    ;; Primero empujar al hero y cambiar la dirección
+    emp_hero_izq:
+    ld a, de_x(iy)
+    add a, #3   ;; Empujar hero hacia la izquierda
+    ld de_x(iy), a
+
     cambiar_izq:
     ld e_direct(ix), #-1
     jp aplicar_sentido          ;; Aplicar el nuevo sentido a la X del enemigo
 
+    emp_hero_der:
+    ld a, de_x(iy)
+    add a, #-3   ;; Empujar hero hacia la izquierda
+    ld de_x(iy), a
+
     cambiar_der:
     ld e_direct(ix), #1
+
 
     ;; Aplica El Sentido Obtenido
     aplicar_sentido:

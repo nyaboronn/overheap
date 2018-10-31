@@ -135,16 +135,6 @@ hero_check_hit:
     push ix     ;; IX -> Puntero a hero
     push iy     ;; IY -> Puntero a entidad, enemy
 
-    ;; SI Detecta colisión, empujar al hero
-    ;call obs_checkCollision
-    ;cp a, #1
-    ;jr nz, no_empujar_al_hero
-;
-    ;    ld a, de_x(iy)
-    ;    add a, #-3
-    ;    ld de_x(iy), a
-;
-    ;no_empujar_al_hero:
     ;; Comprobar colisión con las balas enemigas
     ld   hl, #obs_checkCollision    ;; HL = puntero a la función a ejecutar
     call obs_doForAllBool
@@ -493,12 +483,13 @@ hero_move:
         ld de_oldx(ix), #3
         ;jr checkY
     no_llega_al_margen_izq:
-    cp a, #124
+    cp a, #115
     jr c, seguir_move   ;; IF de_x < 1 Obligar al margen izquierdo
         ;; ELSE Llega al margen izq, setear a cero la X
-        ld de_x(ix), #124
-        ld de_oldx(ix), #124
-
+        ld de_x(ix), #115
+        ld de_oldx(ix), #115
+        ;jr .
+;
     seguir_move:
     ;;Sumamos velocidad X a posicion X
     ld      a, de_x(ix)
