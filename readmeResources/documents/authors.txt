@@ -1,0 +1,49 @@
+
+ ______   __   __   ______   ______    ___   ___   ______   ________   ______    
+/_____/\ /_/\ /_/\ /_____/\ /_____/\  /__/\ /__/\ /_____/\ /_______/\ /_____/\   
+\:::_ \ \\:\ \\ \ \\::::_\/_\:::_ \ \ \::\ \\  \ \\::::_\/_\::: _  \ \\:::_ \ \  
+ \:\ \ \ \\:\ \\ \ \\:\/___/\\:(_) ) )_\::\/_\ .\ \\:\/___/\\::(_)  \ \\:(_) \ \ 
+  \:\ \ \ \\:\_/.:\ \\::___\/_\: __ `\ \\:: ___::\ \\::___\/_\:: __  \ \\: ___\/ 
+   \:\_\ \ \\ ..::/ / \:\____/\\ \ `\ \ \\: \ \\::\ \\:\____/\\:.\ \  \ \\ \ \   
+    \_____\/ \___/_(   \_____\/ \_\/ \_\/ \__\/ \::\/ \_____\/ \__\/\__\/ \_\/   
+                                                                                     
+OVERHEAP
+
+
+Authors: BastaCPC - Twitter @bastacpc
+---------------------------
+Juan López Quiles	GitHub  psjuan97   Mail  jlq2@alu.ua.es
+José Luis Gómez Antón	 	jlga10		 Jlga10@alu.ua.es
+Alejandro Aliaga Hyder	 	alihyder1	 ajah1@alu.ua.es
+
+
+Third Party source code used
+----------------------------
+1) CPCTELERA - https://github.com/lronaldo/cpctelera - github @lronaldo - twitter @FranGallegoBR
+getScreenPtr		- Function from CPCtelera - GNU Lesser General Public License.
+drawSolidBox		- Function from CPCtelera - GNU Lesser General Public License.
+scanKeyboard		- Function from CPCtelera - GNU Lesser General Public License. 
+isKeyPressed		- Function from CPCtelera - GNU Lesser General Public License.
+drawSprite		- Function from CPCtelera - GNU Lesser General Public License.
+setPALColour		- Function from CPCtelera - GNU Lesser General Public License.
+etm_setTileset2x4	- Function from CPCtelera - GNU Lesser General Public License.
+etm_drawTileBox2x4	- Function from CPCtelera - GNU Lesser General Public License.
+scanKeyboard_f		- Function from CPCtelera - GNU Lesser General Public License.
+setVideoMemoryOffset	- Function from CPCtelera - GNU Lesser General Public License.
+setPalette		- Function from CPCtelera - GNU Lesser General Public License.
+disableFirmware		- Function from CPCtelera - GNU Lesser General Public License.
+setVideoMode		- Function from CPCtelera - GNU Lesser General Public License.
+waitVSYNC		- Function from CPCtelera - GNU Lesser General Public License.
+getBit			- Function from CPCtelera - GNU Lesser General Public License.
+setVideoMemoryPage	- Function from CPCtelera - GNU Lesser General Public License.
+setDrawCharM0		- Function from CPCtelera - GNU Lesser General Public License.
+drawStringM0		- Function from CPCtelera - GNU Lesser General Public License.
+setDrawCharM1		- Function from CPCtelera - GNU Lesser General Public License.
+drawStringM1		- Function from CPCtelera - GNU Lesser General Public License.
+drawSpriteMasked	- Function from CPCtelera - GNU Lesser General Public License.
+hflipSpriteMaskedM0	- Function from CPCtelera - GNU Lesser General Public License.
+
+2) Z80 Routine-AtoBCextendendsign - http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Signed_Math
+AtoBCextendendsign	- Used in src/utils.s
+
+OVERHEAP IS RELEASED UNDER GNU GENERAL PUBLIC LICENSE. SOURCE CODE IS INCLUDED.
